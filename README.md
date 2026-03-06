@@ -128,6 +128,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `supabase/migrations/0002_phase3_commercial_settings.sql` migracion incremental para Phase 3 sobre proyectos ya creados.
 - `supabase/migrations/0003_phase4_account_profiles.sql` migracion incremental para onboarding comercial y perfil de cuenta.
 - `supabase/migrations/0004_phase5_pipeline_lists.sql` migracion incremental para follow-ups y listas/campañas.
+- `supabase/migrations/0005_fix_missing_account_settings.sql` reparacion idempotente para proyectos donde falta `account_settings` o el trigger de alta de usuario quedó roto.
 
 ## 3) Configuración local
 
@@ -160,6 +161,7 @@ La app abrirá directamente en `/today`.
 2. Ve a SQL Editor y ejecuta:
    - proyecto nuevo desde cero: `supabase/migrations/0001_init.sql`
    - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql` y despues `supabase/migrations/0004_phase5_pipeline_lists.sql`
+   - si la UI muestra `Error guardando` en configuracion comercial o el registro devuelve `Database error saving new user`: ejecuta `supabase/migrations/0005_fix_missing_account_settings.sql`
 3. En Authentication > Providers:
    - Email activado.
 4. En Authentication > URL Configuration:

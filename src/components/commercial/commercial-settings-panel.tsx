@@ -83,7 +83,7 @@ export function CommercialSettingsPanel({
           <p className="mt-2 text-xs text-slate-500">
             {tableAvailable
               ? "La configuracion se persiste por cuenta en Supabase y mantiene fallback local."
-              : "La tabla account_settings no existe todavia. La configuracion funciona en local, pero debes ejecutar la migracion 0002 para persistirla en Supabase."}
+              : "La tabla account_settings no existe todavia. La configuracion funciona en local, pero debes ejecutar la migracion 0005_fix_missing_account_settings.sql para reparar la persistencia en Supabase."}
           </p>
         </div>
       </section>

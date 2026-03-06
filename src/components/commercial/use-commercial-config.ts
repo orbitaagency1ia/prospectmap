@@ -17,6 +17,7 @@ import {
 } from "@/lib/commercial/account-settings";
 import { buildDefaultCommercialSettings, getVerticalConfig } from "@/lib/commercial/verticals";
 import { createClient } from "@/lib/supabase/client";
+import { isMissingTableError } from "@/lib/supabase/error-helpers";
 
 type SaveState = "idle" | "saving" | "saved" | "local_only" | "error";
 
@@ -49,8 +50,9 @@ export function useCommercialConfig(userId: string, fallbackVertical: VerticalId
 
       if (!cancelled) {
         if (error) {
-          if (error.code === "42P01") {
+          if (isMissingTableError(error, "account_settings")) {
             setTableAvailable(false);
+            setSaveState("local_only");
           }
           setReady(true);
           return;
@@ -91,10 +93,12 @@ export function useCommercialConfig(userId: string, fallbackVertical: VerticalId
       }
 
       setSaveState("saving");
-      const { error } = await supabase.from("account_settings").upsert(toAccountSettingsUpsert(userId, settings));
+      const { error } = await supabase
+        .from("account_settings")
+        .upsert(toAccountSettingsUpsert(userId, settings), { onConflict: "user_id" });
 
       if (error) {
-        if (error.code === "42P01") {
+        if (isMissingTableError(error, "account_settings")) {
           setTableAvailable(false);
           setSaveState("local_only");
           return;

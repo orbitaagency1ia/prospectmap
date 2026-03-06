@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
+import { isMissingTableError } from "@/lib/supabase/error-helpers";
 import {
   buildDefaultAccountCommercialProfile,
   sanitizeAccountCommercialProfile,
@@ -36,8 +37,9 @@ export function useAccountCommercialProfile(userId: string) {
 
       if (!cancelled) {
         if (error) {
-          if (error.code === "42P01") {
+          if (isMissingTableError(error, "account_profiles")) {
             setTableAvailable(false);
+            setSaveState("local_only");
           }
           setReady(true);
           return;
@@ -77,10 +79,12 @@ export function useAccountCommercialProfile(userId: string) {
       }
 
       setSaveState("saving");
-      const { error } = await supabase.from("account_profiles").upsert(toAccountCommercialProfileUpsert(userId, profile));
+      const { error } = await supabase
+        .from("account_profiles")
+        .upsert(toAccountCommercialProfileUpsert(userId, profile), { onConflict: "user_id" });
 
       if (error) {
-        if (error.code === "42P01") {
+        if (isMissingTableError(error, "account_profiles")) {
           setTableAvailable(false);
           setSaveState("local_only");
           return;
@@ -109,10 +113,12 @@ export function useAccountCommercialProfile(userId: string) {
     }
 
     setSaveState("saving");
-    const { error } = await supabase.from("account_profiles").upsert(toAccountCommercialProfileUpsert(userId, sanitized));
+    const { error } = await supabase
+      .from("account_profiles")
+      .upsert(toAccountCommercialProfileUpsert(userId, sanitized), { onConflict: "user_id" });
 
     if (error) {
-      if (error.code === "42P01") {
+      if (isMissingTableError(error, "account_profiles")) {
         setTableAvailable(false);
         setSaveState("local_only");
         return true;
