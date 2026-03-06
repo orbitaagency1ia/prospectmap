@@ -28,7 +28,9 @@ export type MapMarker = {
   name: string;
   category: string | null;
   score: number;
+  opportunityLabel: string;
   serviceLabel: string;
+  urgency: "alta" | "media" | "baja";
   nextAction: string;
   status: ProspectStatus;
   worked: boolean;
@@ -147,11 +149,21 @@ export function MapCanvas({
               }}
             >
               <Tooltip direction="top" offset={[0, -6]}>
-                <div className="min-w-[180px] space-y-1 text-xs">
-                  <p className="font-semibold text-slate-50">{marker.name}</p>
-                  <p className="text-slate-300">{marker.category ?? "Sin categoría"}</p>
-                  <p className="text-cyan-200">Score: {marker.score}</p>
-                  <p className="text-slate-300">Estado: {status.label}</p>
+                <div className="min-w-[220px] space-y-2 text-xs">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-slate-50">{marker.name}</p>
+                      <p className="text-slate-300">{marker.category ?? "Sin categoría"}</p>
+                    </div>
+                    <span className="rounded-full border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-cyan-200">
+                      {marker.score}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">{marker.opportunityLabel}</span>
+                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">{status.label}</span>
+                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">Urgencia {marker.urgency}</span>
+                  </div>
                   <p className="text-slate-300">Servicio: {marker.serviceLabel}</p>
                   <p className="text-slate-400">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
                   <p className="line-clamp-2 text-slate-400">
@@ -161,14 +173,30 @@ export function MapCanvas({
               </Tooltip>
 
               <Popup>
-                <div className="space-y-1 text-xs">
-                  <p className="font-semibold">{marker.name}</p>
-                  <p>{marker.category ?? "Sin categoría"}</p>
-                  <p>Score {marker.score}</p>
-                  <p>{status.label}</p>
+                <div className="min-w-[220px] space-y-3 text-xs">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">{marker.name}</p>
+                      <p>{marker.category ?? "Sin categoría"}</p>
+                    </div>
+                    <span className="rounded-full border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-cyan-200">
+                      Score {marker.score}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full border border-slate-700 px-2 py-1">{marker.opportunityLabel}</span>
+                    <span className="rounded-full border border-slate-700 px-2 py-1">{status.label}</span>
+                  </div>
                   <p>{marker.serviceLabel}</p>
                   <p>{marker.nextAction}</p>
                   <p>{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
+                  <button
+                    type="button"
+                    onClick={() => onMarkerSelect(marker.key)}
+                    className="w-full rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-left font-medium text-cyan-100"
+                  >
+                    Abrir informe
+                  </button>
                 </div>
               </Popup>
             </Marker>

@@ -3,13 +3,29 @@ import type { CombinedBusiness } from "@/lib/types";
 import { clamp, normalizeText } from "@/lib/utils";
 
 import { getVerticalConfig, getVerticalLabel } from "./verticals";
-import type { ScoreBreakdownItem, ScoringConfig, SectorPattern, VerticalId } from "./types";
+import type {
+  AccountCommercialProfile,
+  ScoreBreakdownItem,
+  ScoringConfig,
+  SectorPattern,
+  VerticalId,
+} from "./types";
 
-const BASE_SCORE = 12;
+const BASE_SCORE = 10;
 const DEAD_LEAD_PENALTY = 34;
 
 export function getBusinessText(business: CombinedBusiness) {
-  return normalizeText([business.name, business.category, business.city].filter(Boolean).join(" "));
+  return normalizeText(
+    [
+      business.name,
+      business.category,
+      business.city,
+      business.business?.address ?? business.overpass?.address,
+      business.business?.website ?? business.overpass?.website,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
 }
 
 export function getCityLabel(business: CombinedBusiness, fallbackCity?: string) {
@@ -68,6 +84,22 @@ function getMomentumFactor(status: ProspectStatus) {
   };
 
   return factors[status];
+}
+
+function getBusinessSignalRichness(business: CombinedBusiness) {
+  const row = business.business;
+  const signals = [
+    row?.direct_phone,
+    row?.direct_email,
+    row?.owner_name,
+    row?.owner_role,
+    row?.phone ?? business.overpass?.phone,
+    row?.email ?? business.overpass?.email,
+    row?.website ?? business.overpass?.website,
+    row?.opening_hours ?? business.overpass?.opening_hours,
+  ].filter(Boolean).length;
+
+  return clamp(signals / 8, 0.08, 1);
 }
 
 function getContactabilityFactor(business: CombinedBusiness) {
@@ -153,15 +185,164 @@ function getVerticalAlignmentFactor(effectiveVertical: VerticalId, marketVertica
   return 0.42;
 }
 
+function toKeywordPool(values: Array<string | null | undefined>) {
+  return values
+    .flatMap((value) => sanitizeTextFragments(value))
+    .filter(Boolean);
+}
+
+function sanitizeTextFragments(value?: string | null) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(/[,;|\n]+/)
+    .map((chunk) => normalizeText(chunk))
+    .filter((chunk) => chunk.length >= 3);
+}
+
+function keywordMatchFactor(text: string, keywords: string[]) {
+  if (keywords.length === 0) {
+    return 0.54;
+  }
+
+  const matched = keywords.filter((keyword) => text.includes(keyword)).length;
+  const ratio = matched / keywords.length;
+  return clamp(0.22 + ratio * 0.92, 0.14, 1);
+}
+
+function excludedKeywordPenalty(text: string, keywords: string[]) {
+  if (keywords.length === 0) {
+    return 0;
+  }
+
+  return keywords.some((keyword) => text.includes(keyword)) ? 0.28 : 0;
+}
+
+function getIcpFitFactor(business: CombinedBusiness, profile: AccountCommercialProfile, fallbackCity?: string) {
+  const businessText = getBusinessText(business);
+  const positiveKeywords = toKeywordPool([
+    profile.sector,
+    profile.idealCustomerProfile.targetCustomer,
+    ...profile.targetVerticals,
+    ...profile.targetSubsectors,
+    ...profile.idealCustomerProfile.bestFitCompanyTraits,
+    ...profile.knowledgeSummary.detectedTargetSegments,
+  ]);
+  const geographyKeywords = toKeywordPool([
+    getCityLabel(business, fallbackCity),
+    ...profile.idealCustomerProfile.targetGeographies,
+  ]);
+  const excludedKeywords = toKeywordPool(profile.idealCustomerProfile.excludedCompanyTraits);
+
+  const base = keywordMatchFactor(businessText, positiveKeywords);
+  const geographyBoost = keywordMatchFactor(businessText, geographyKeywords) * 0.16;
+  const penalty = excludedKeywordPenalty(businessText, excludedKeywords);
+
+  return clamp(base + geographyBoost - penalty, 0.05, 1);
+}
+
+function getOfferFitFactor(
+  business: CombinedBusiness,
+  profile: AccountCommercialProfile,
+  sectorPattern: SectorPattern | null,
+) {
+  const businessText = getBusinessText(business);
+  const offerKeywords = toKeywordPool([
+    profile.offerProfile.whatYouSell,
+    profile.offerProfile.mainProblemSolved,
+    profile.offerProfile.valueProposition,
+    ...profile.offerProfile.mainServices,
+    ...profile.offerProfile.secondaryServices,
+    ...profile.offerProfile.recommendedAngles,
+    ...profile.knowledgeSummary.detectedServices,
+    ...profile.knowledgeSummary.detectedValueProps,
+  ]);
+
+  const base = keywordMatchFactor(businessText, offerKeywords);
+  const verticalPatternBoost = sectorPattern ? 0.14 : 0;
+
+  return clamp(base + verticalPatternBoost, 0.08, 1);
+}
+
+function parseTicketValue(value: string) {
+  const normalized = value.replace(/\./g, "").replace(/,/g, ".").match(/[0-9]+(?:\.[0-9]+)?/);
+  if (!normalized) {
+    return null;
+  }
+
+  const parsed = Number(normalized[0]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getTicketFitFactor(business: CombinedBusiness, profile: AccountCommercialProfile) {
+  const minimumTicket = parseTicketValue(profile.pricingProfile.minimumDesiredTicket);
+  const averageRange = parseTicketValue(profile.pricingProfile.averagePriceRange);
+  const richness = getBusinessSignalRichness(business);
+  const hasWebsite = Boolean(business.business?.website ?? business.overpass?.website);
+  const hasOwner = Boolean(business.business?.owner_name || business.business?.owner_role);
+
+  if (!minimumTicket && !averageRange) {
+    return clamp(0.42 + richness * 0.42, 0.22, 0.9);
+  }
+
+  const desiredLevel = minimumTicket ?? averageRange ?? 0;
+
+  if (desiredLevel >= 5000) {
+    return hasWebsite && hasOwner ? clamp(0.46 + richness * 0.56, 0.26, 1) : clamp(0.18 + richness * 0.4, 0.08, 0.74);
+  }
+
+  if (desiredLevel >= 2000) {
+    return clamp(0.3 + richness * 0.56, 0.16, 0.92);
+  }
+
+  return clamp(0.48 + richness * 0.38, 0.2, 0.96);
+}
+
+function getNeedSignalFactor(
+  business: CombinedBusiness,
+  profile: AccountCommercialProfile,
+  sectorPattern: SectorPattern | null,
+) {
+  const businessText = getBusinessText(business);
+  const missingSignals = [
+    !(business.business?.website ?? business.overpass?.website),
+    !(business.business?.phone ?? business.overpass?.phone),
+    !business.business?.owner_name,
+    !(business.business?.email ?? business.overpass?.email),
+  ].filter(Boolean).length;
+  const profilePainKeywords = toKeywordPool([
+    profile.offerProfile.mainProblemSolved,
+    ...profile.knowledgeSummary.detectedPainPoints,
+  ]);
+  const painMatch = keywordMatchFactor(businessText, profilePainKeywords);
+
+  return clamp(0.18 + missingSignals * 0.14 + painMatch * 0.42 + (sectorPattern ? 0.08 : 0), 0.08, 1);
+}
+
+function getPotentialSignalFactor(
+  business: CombinedBusiness,
+  effectiveVertical: VerticalId,
+  marketVertical: VerticalId,
+) {
+  const richness = getBusinessSignalRichness(business);
+  const verticalAlignment = getVerticalAlignmentFactor(effectiveVertical, marketVertical);
+  const pipelineMomentum = getMomentumFactor(business.status);
+
+  return clamp(0.18 + richness * 0.44 + verticalAlignment * 0.24 + pipelineMomentum * 0.18, 0.08, 1);
+}
+
 export function calculateScoreLayer(input: {
   business: CombinedBusiness;
   scoringConfig: ScoringConfig;
   effectiveVertical: VerticalId;
   marketVertical: VerticalId;
   sectorPattern: SectorPattern | null;
+  accountProfile: AccountCommercialProfile;
   fallbackCity?: string;
 }) {
-  const { business, scoringConfig, effectiveVertical, marketVertical, sectorPattern } = input;
+  const { business, scoringConfig, effectiveVertical, marketVertical, sectorPattern, accountProfile } = input;
   const sectorFitFactor = sectorPattern
     ? clamp(
         Math.max(...Object.values(sectorPattern.serviceBias)) /
@@ -174,33 +355,53 @@ export function calculateScoreLayer(input: {
 
   const verticalAlignmentFactor = getVerticalAlignmentFactor(effectiveVertical, marketVertical);
   const sectorFit = sectorFitFactor * verticalAlignmentFactor * scoringConfig.sectorFit;
+  const icpFitFactor = getIcpFitFactor(business, accountProfile, input.fallbackCity);
+  const icpFit = icpFitFactor * scoringConfig.icpFit;
+  const offerFitFactor = getOfferFitFactor(business, accountProfile, sectorPattern);
+  const offerFit = offerFitFactor * scoringConfig.offerFit;
+  const ticketFitFactor = getTicketFitFactor(business, accountProfile);
+  const ticketFit = ticketFitFactor * scoringConfig.ticketFit;
   const contactability = getContactabilityFactor(business) * scoringConfig.contactability;
   const websiteGap = getWebsiteGapFactor(business) * scoringConfig.websiteGap;
   const decisionMaker = getDecisionMakerFactor(business) * scoringConfig.decisionMaker;
   const prioritySignal = getPriorityFactor(business.priority) * scoringConfig.prioritySignal;
   const momentum = getMomentumFactor(business.status) * scoringConfig.momentum;
   const followUpUrgency = getFollowUpUrgencyFactor(business) * scoringConfig.followUpUrgency;
+  const needSignalFactor = getNeedSignalFactor(business, accountProfile, sectorPattern);
+  const needSignal = needSignalFactor * scoringConfig.needSignal;
+  const potentialSignalFactor = getPotentialSignalFactor(business, effectiveVertical, marketVertical);
+  const potentialSignal = potentialSignalFactor * scoringConfig.potentialSignal;
   const deadLeadPenalty = getNonViablePenaltyFactor(business.status) * DEAD_LEAD_PENALTY;
 
   const scoreMax =
     BASE_SCORE +
     scoringConfig.sectorFit +
+    scoringConfig.icpFit +
+    scoringConfig.offerFit +
+    scoringConfig.ticketFit +
     scoringConfig.contactability +
     scoringConfig.websiteGap +
     scoringConfig.decisionMaker +
     scoringConfig.prioritySignal +
     scoringConfig.momentum +
-    scoringConfig.followUpUrgency;
+    scoringConfig.followUpUrgency +
+    scoringConfig.needSignal +
+    scoringConfig.potentialSignal;
 
   const rawScore =
     BASE_SCORE +
     sectorFit +
+    icpFit +
+    offerFit +
+    ticketFit +
     contactability +
     websiteGap +
     decisionMaker +
     prioritySignal +
     momentum +
-    followUpUrgency -
+    followUpUrgency +
+    needSignal +
+    potentialSignal -
     deadLeadPenalty;
 
   const score = clamp(Math.round((rawScore / scoreMax) * 100), 0, 100);
@@ -213,6 +414,36 @@ export function calculateScoreLayer(input: {
       reason: sectorPattern
         ? `Patron detectado: ${sectorPattern.label}. Vertical activa: ${getVerticalLabel(effectiveVertical)}.`
         : `Sin patron claro. Vertical activa: ${getVerticalLabel(effectiveVertical)}.`,
+      direction: "plus",
+    },
+    {
+      key: "icpFit",
+      label: "Encaje ICP",
+      value: Math.round(icpFit * 10) / 10,
+      max: scoringConfig.icpFit,
+      reason: accountProfile.idealCustomerProfile.targetCustomer
+        ? `Se compara con el cliente ideal definido por la cuenta: ${accountProfile.idealCustomerProfile.targetCustomer}.`
+        : "La cuenta no ha definido todavia un ICP detallado; se usa una base neutra.",
+      direction: "plus",
+    },
+    {
+      key: "offerFit",
+      label: "Compatibilidad de oferta",
+      value: Math.round(offerFit * 10) / 10,
+      max: scoringConfig.offerFit,
+      reason: accountProfile.offerProfile.whatYouSell
+        ? `Se cruza el negocio con la oferta declarada: ${accountProfile.offerProfile.whatYouSell}.`
+        : "Falta describir la oferta exacta de la cuenta para afinar mejor este bloque.",
+      direction: "plus",
+    },
+    {
+      key: "ticketFit",
+      label: "Encaje de ticket",
+      value: Math.round(ticketFit * 10) / 10,
+      max: scoringConfig.ticketFit,
+      reason: accountProfile.pricingProfile.minimumDesiredTicket
+        ? `Se calibra frente al ticket minimo deseado (${accountProfile.pricingProfile.minimumDesiredTicket}).`
+        : "Sin ticket objetivo definido, se usa una lectura conservadora del potencial del negocio.",
       direction: "plus",
     },
     {
@@ -261,6 +492,22 @@ export function calculateScoreLayer(input: {
       value: Math.round(followUpUrgency * 10) / 10,
       max: scoringConfig.followUpUrgency,
       reason: "Detecta cuando merece tocar hoy para no perder timing.",
+      direction: "plus",
+    },
+    {
+      key: "needSignal",
+      label: "Senal de necesidad",
+      value: Math.round(needSignal * 10) / 10,
+      max: scoringConfig.needSignal,
+      reason: "Sube cuando se detecta friccion, hueco operativo o dolor comercial visible.",
+      direction: "plus",
+    },
+    {
+      key: "potentialSignal",
+      label: "Senal de potencial",
+      value: Math.round(potentialSignal * 10) / 10,
+      max: scoringConfig.potentialSignal,
+      reason: "Intenta separar negocios con mas capacidad aparente de los que parecen menos aprovechables.",
       direction: "plus",
     },
     {

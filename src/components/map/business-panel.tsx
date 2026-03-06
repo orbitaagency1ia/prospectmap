@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
-import { Lock, Save, X } from "lucide-react";
+import { FormEvent, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { CircleSlash, Copy, Flag, Lock, Save, Sparkles, X } from "lucide-react";
 
 import {
   PRIORITY_OPTIONS,
@@ -13,6 +13,8 @@ import {
 import { OPPORTUNITY_META, VERTICAL_CONFIGS, type ProspectInsight, type VerticalId } from "@/lib/prospect-intelligence";
 import type { CombinedBusiness, NoteRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
+
+import { ProspectingPrepSheet } from "../prospects/prospecting-prep-sheet";
 
 type EditableBusiness = {
   name: string;
@@ -131,6 +133,9 @@ export function BusinessPanel({
 }: Props) {
   const [formState, setFormState] = useState<EditableBusiness>(() => buildFormState(selected));
   const [noteText, setNoteText] = useState("");
+  const [activeTab, setActiveTab] = useState<"informe" | "datos" | "notas">("informe");
+  const [showPrep, setShowPrep] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const isSaved = selected?.mode === "saved" && selected.business;
 
@@ -168,6 +173,35 @@ export function BusinessPanel({
 
     await onAddNote(selected.business.id, noteText.trim());
     setNoteText("");
+  };
+
+  const handleQuickUpdate = async (
+    payload: Partial<EditableBusiness>,
+    nextTab?: "informe" | "datos" | "notas",
+  ) => {
+    if (!selected || selected.mode !== "saved" || !selected.business) {
+      return;
+    }
+
+    await onUpdateBusiness(selected.business.id, payload);
+
+    if (nextTab) {
+      setActiveTab(nextTab);
+    }
+  };
+
+  const handleCopy = async (key: string, value?: string) => {
+    if (!value) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      window.setTimeout(() => setCopiedKey(null), 1400);
+    } catch {
+      setCopiedKey(null);
+    }
   };
 
   if (!selected) {
@@ -213,7 +247,7 @@ export function BusinessPanel({
         ) : null}
 
         {insight ? (
-          <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+          <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.24)]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
                 Score {insight.score}
@@ -237,6 +271,11 @@ export function BusinessPanel({
                   Mercado detectado: {insight.marketVerticalLabel}
                 </span>
               ) : null}
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-300">Resumen ejecutivo</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">{insight.executiveSummary}</p>
             </div>
 
             {showDemoBadges && insight.demoBadges.length > 0 ? (
@@ -263,7 +302,66 @@ export function BusinessPanel({
               </div>
             ) : null}
 
-            <InsightBlock title="Siguiente mejor acción">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <QuickActionButton
+                onClick={() => setShowPrep(true)}
+                icon={Sparkles}
+                label="Preparar prospeccion"
+                tone="cyan"
+              />
+              <QuickActionButton
+                onClick={() => handleCopy("initial", insight.messages.initial)}
+                icon={Copy}
+                label={copiedKey === "initial" ? "Mensaje copiado" : "Copiar mensaje inicial"}
+              />
+              {isSaved ? (
+                <>
+                  <QuickActionButton
+                    onClick={() =>
+                      handleQuickUpdate(
+                        {
+                          prospect_status: "intento_contacto",
+                          last_contact_at: new Date().toISOString().slice(0, 16),
+                        },
+                        "notas",
+                      )
+                    }
+                    icon={Flag}
+                    label="Marcar intento"
+                  />
+                  <QuickActionButton
+                    onClick={() => handleQuickUpdate({ priority: "alta" }, "informe")}
+                    icon={Flag}
+                    label="Subir prioridad"
+                    tone="amber"
+                  />
+                  <QuickActionButton
+                    onClick={() => handleQuickUpdate({ prospect_status: "perdido" }, "informe")}
+                    icon={CircleSlash}
+                    label="Descartar"
+                    tone="rose"
+                  />
+                </>
+              ) : null}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Informe" />
+              <TabButton active={activeTab === "datos"} onClick={() => setActiveTab("datos")} label="Datos" />
+              {isSaved ? <TabButton active={activeTab === "notas"} onClick={() => setActiveTab("notas")} label="Notas" /> : null}
+            </div>
+          </section>
+        ) : null}
+
+        {activeTab === "informe" && insight ? (
+          <section className="space-y-3">
+            <InsightBlock title="Nivel de encaje y angulo">
+              <p className="text-sm font-medium text-slate-100">{insight.fitSummary}</p>
+              <p className="mt-1 text-sm text-slate-300">{insight.commercialAngle}</p>
+              <p className="mt-2 text-xs text-slate-500">{insight.ctaSuggestion}</p>
+            </InsightBlock>
+
+            <InsightBlock title="Siguiente mejor accion">
               <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {insight.nextAction.channel} · {insight.nextAction.reason}
@@ -271,7 +369,7 @@ export function BusinessPanel({
               <p className="mt-2 text-xs text-slate-500">Urgencia: {insight.nextAction.urgency}</p>
             </InsightBlock>
 
-            <InsightBlock title="Servicio Órbita recomendado">
+            <InsightBlock title="Servicio Orbita recomendado">
               <p className="text-sm font-medium text-slate-100">{insight.service.label}</p>
               <p className="mt-1 text-sm text-slate-300">{insight.service.reason}</p>
               <div className="mt-2 space-y-1">
@@ -283,10 +381,12 @@ export function BusinessPanel({
               </div>
             </InsightBlock>
 
-            <InsightBlock title="Dolor principal detectado">
-              <p className="text-sm font-medium text-slate-100">{insight.painPoint}</p>
-              <p className="mt-1 text-sm text-slate-300">{insight.commercialFocus}</p>
-            </InsightBlock>
+            <div className="grid gap-3">
+              <ListInsightBlock title="Que lo hace prioritario" items={insight.fitSignals} />
+              <ListInsightBlock title="Riesgos y objeciones" items={[...insight.riskSignals, ...insight.missingData]} />
+              <ListInsightBlock title="Que revisar antes de contactar" items={insight.reviewChecklist} />
+              <ListInsightBlock title="Que no decir" items={insight.avoidTalkingPoints} />
+            </div>
 
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Mensajes sugeridos</p>
@@ -296,7 +396,17 @@ export function BusinessPanel({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Lógica del score</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Objeciones probables</p>
+              {insight.objections.map((item) => (
+                <div key={item.objection} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="text-sm font-medium text-slate-100">{item.objection}</p>
+                  <p className="mt-1 text-sm text-slate-300">{item.response}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Logica del score</p>
               {insight.breakdown.map((item) => (
                 <div key={item.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-2">
                   <div className="flex items-center justify-between gap-3">
@@ -315,20 +425,11 @@ export function BusinessPanel({
                 </div>
               ))}
             </div>
-
-            <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Objeciones probables</p>
-              {insight.objections.map((item) => (
-                <div key={item.objection} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-                  <p className="text-sm font-medium text-slate-100">{item.objection}</p>
-                  <p className="mt-1 text-sm text-slate-300">{item.response}</p>
-                </div>
-              ))}
-            </div>
           </section>
         ) : null}
 
-        <form className="space-y-3" onSubmit={handleSave}>
+        {activeTab === "datos" ? (
+          <form className="space-y-3" onSubmit={handleSave}>
           <Field label="Nombre">
             <input
               value={formState.name}
@@ -518,9 +619,10 @@ export function BusinessPanel({
               {busy ? "Guardando..." : "Guardar cambios"}
             </button>
           ) : null}
-        </form>
+          </form>
+        ) : null}
 
-        {isSaved ? (
+        {activeTab === "notas" && isSaved ? (
           <section className="space-y-3 border-t border-slate-800 pt-4">
             <h3 className="text-sm font-semibold text-slate-200">Notas e interacciones</h3>
 
@@ -565,6 +667,15 @@ export function BusinessPanel({
           Estado no viable. Se recomienda excluir de campañas activas.
         </div>
       ) : null}
+
+      <ProspectingPrepSheet
+        open={showPrep}
+        businessName={selected.name}
+        insight={insight}
+        priority={selected.priority}
+        statusLabel={panelStatus?.label}
+        onClose={() => setShowPrep(false)}
+      />
     </aside>
   );
 }
@@ -574,7 +685,7 @@ function InsightBlock({
   children,
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
@@ -604,12 +715,84 @@ function Field({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <label className="block space-y-1">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</span>
       {children}
     </label>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-lg border px-3 py-2 text-xs font-medium transition",
+        active
+          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100"
+          : "border-slate-700 bg-slate-950 text-slate-300 hover:border-slate-500",
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+function QuickActionButton({
+  onClick,
+  icon: Icon,
+  label,
+  tone = "slate",
+}: {
+  onClick: () => void;
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  tone?: "cyan" | "amber" | "rose" | "slate";
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition",
+        tone === "cyan"
+          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100 hover:border-cyan-400"
+          : tone === "amber"
+            ? "border-amber-500/60 bg-amber-500/15 text-amber-100 hover:border-amber-400"
+            : tone === "rose"
+              ? "border-rose-500/60 bg-rose-500/15 text-rose-100 hover:border-rose-400"
+              : "border-slate-700 bg-slate-950 text-slate-200 hover:border-slate-500",
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      {label}
+    </button>
+  );
+}
+
+function ListInsightBlock({ title, items }: { title: string; items: string[] }) {
+  return (
+    <InsightBlock title={title}>
+      <div className="space-y-2">
+        {items.length === 0 ? <p className="text-sm text-slate-500">Nada relevante todavia.</p> : null}
+        {items.map((item) => (
+          <p key={item} className="text-sm text-slate-300">
+            • {item}
+          </p>
+        ))}
+      </div>
+    </InsightBlock>
   );
 }

@@ -18,7 +18,7 @@ export function AppNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-2">
+    <nav className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-1.5 shadow-[0_12px_34px_rgba(2,6,23,0.22)]">
       {links.map(({ href, label, icon: Icon }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -27,10 +27,10 @@ export function AppNav() {
             key={href}
             href={href}
             className={cn(
-              "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition",
+              "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition",
               active
-                ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100"
-                : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-600 hover:text-slate-100",
+                ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100 shadow-[0_0_0_1px_rgba(34,211,238,0.1)]"
+                : "border-transparent bg-transparent text-slate-300 hover:border-slate-700 hover:bg-slate-950/70 hover:text-slate-100",
             )}
           >
             <Icon className="h-4 w-4" />

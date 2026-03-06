@@ -25,6 +25,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { BusinessRow, CombinedBusiness, NoteRow, OverpassResponse, ProfileRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
 import { ProspectCard } from "../prospects/prospect-ui";
@@ -54,6 +55,7 @@ type InfoMessage = {
 export function MapWorkspace({ profile }: Props) {
   const supabase = createClient();
   const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
 
   const [savedBusinesses, setSavedBusinesses] = useState<BusinessRow[]>([]);
   const [overpassBusinesses, setOverpassBusinesses] = useState<OverpassResponse["businesses"]>([]);
@@ -171,8 +173,8 @@ export function MapWorkspace({ profile }: Props) {
   const categoryOptions = useMemo(() => buildCategoryOptions(combinedBusinesses), [combinedBusinesses]);
 
   const prospectRecords = useMemo(
-    () => buildProspectRecords(combinedBusinesses, settings, profile.city_name),
-    [combinedBusinesses, profile.city_name, settings],
+    () => buildProspectRecords(combinedBusinesses, settings, accountProfile, profile.city_name),
+    [accountProfile, combinedBusinesses, profile.city_name, settings],
   );
 
   const filteredRecords = useMemo(
@@ -216,7 +218,9 @@ export function MapWorkspace({ profile }: Props) {
         name: record.business.name,
         category: record.business.category,
         score: record.insight.score,
+        opportunityLabel: record.insight.tierLabel,
         serviceLabel: record.insight.service.shortLabel,
+        urgency: record.insight.nextAction.urgency,
         nextAction: record.insight.nextAction.action,
         status: record.business.status,
         worked: record.business.worked,
@@ -425,7 +429,7 @@ export function MapWorkspace({ profile }: Props) {
             onReset={() => setFilters(DEFAULT_FILTERS)}
           />
           <CommercialContextInline
-            ready={ready}
+            ready={ready && profileReady}
             vertical={settings.vertical}
             demoMode={settings.demoMode}
             saveState={saveState}
@@ -495,7 +499,7 @@ export function MapWorkspace({ profile }: Props) {
             />
             <div className="mt-3 space-y-2">
               <CommercialContextInline
-                ready={ready}
+                ready={ready && profileReady}
                 vertical={settings.vertical}
                 demoMode={settings.demoMode}
                 saveState={saveState}

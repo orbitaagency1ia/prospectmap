@@ -171,6 +171,60 @@ export type Database = {
           }
         ];
       };
+      account_profiles: {
+        Row: {
+          user_id: string;
+          sector: string;
+          target_verticals: string[];
+          target_subsectors: string[];
+          ideal_customer_profile: Json;
+          offer_profile: Json;
+          pricing_profile: Json;
+          prospecting_preferences: Json;
+          knowledge_base_text: string;
+          knowledge_summary: Json;
+          onboarding_completed: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          sector?: string;
+          target_verticals?: string[];
+          target_subsectors?: string[];
+          ideal_customer_profile?: Json;
+          offer_profile?: Json;
+          pricing_profile?: Json;
+          prospecting_preferences?: Json;
+          knowledge_base_text?: string;
+          knowledge_summary?: Json;
+          onboarding_completed?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          sector?: string;
+          target_verticals?: string[];
+          target_subsectors?: string[];
+          ideal_customer_profile?: Json;
+          offer_profile?: Json;
+          pricing_profile?: Json;
+          prospecting_preferences?: Json;
+          knowledge_base_text?: string;
+          knowledge_summary?: Json;
+          onboarding_completed?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "account_profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       account_settings: {
         Row: {
           user_id: string;

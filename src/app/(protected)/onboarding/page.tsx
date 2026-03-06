@@ -1,30 +1,35 @@
 import { redirect } from "next/navigation";
 
-import { AccountProfileForm } from "@/components/layout/account-profile-form";
+import { OnboardingWorkspace } from "@/components/layout/onboarding-workspace";
 import { isProfileComplete, requireUser } from "@/lib/auth";
+import { isAccountCommercialProfileComplete, parseAccountCommercialProfileRow } from "@/lib/prospect-intelligence";
 
 export default async function OnboardingPage() {
   const { supabase, user } = await requireUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("company_name,city_name,email,city_lat,city_lng,id,created_at,updated_at")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: accountProfileRow }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("company_name,city_name,email,city_lat,city_lng,id,created_at,updated_at")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase.from("account_profiles").select("*").eq("user_id", user.id).maybeSingle(),
+  ]);
 
-  const existingProfile = profile;
+  const profileComplete = isProfileComplete(profile);
+  const accountProfile = parseAccountCommercialProfileRow(accountProfileRow);
 
-  if (isProfileComplete(profile)) {
+  if (profileComplete && isAccountCommercialProfileComplete(accountProfile)) {
     redirect("/today");
   }
 
   return (
-    <AccountProfileForm
-      mode="onboarding"
+    <OnboardingWorkspace
       userId={user.id}
-      email={existingProfile?.email ?? user.email ?? ""}
-      initialCompany={existingProfile?.company_name ?? ""}
-      initialCity={existingProfile?.city_name ?? ""}
+      email={profile?.email ?? user.email ?? ""}
+      initialCompany={profile?.company_name ?? ""}
+      initialCity={profile?.city_name ?? ""}
+      profileComplete={profileComplete}
     />
   );
 }

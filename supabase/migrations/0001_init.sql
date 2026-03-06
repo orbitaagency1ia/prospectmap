@@ -63,6 +63,22 @@ create table if not exists public.account_settings (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.account_profiles (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  sector text not null default '',
+  target_verticals text[] not null default '{}'::text[],
+  target_subsectors text[] not null default '{}'::text[],
+  ideal_customer_profile jsonb not null default '{}'::jsonb,
+  offer_profile jsonb not null default '{}'::jsonb,
+  pricing_profile jsonb not null default '{}'::jsonb,
+  prospecting_preferences jsonb not null default '{}'::jsonb,
+  knowledge_base_text text not null default '',
+  knowledge_summary jsonb not null default '{}'::jsonb,
+  onboarding_completed boolean not null default false,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create table if not exists public.business_notes (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -103,6 +119,9 @@ create index if not exists businesses_user_updated_idx
 
 create index if not exists businesses_user_vertical_override_idx
   on public.businesses(user_id, vertical_override);
+
+create index if not exists account_profiles_user_sector_idx
+  on public.account_profiles(user_id, sector);
 
 create index if not exists business_notes_user_business_idx
   on public.business_notes(user_id, business_id, created_at desc);
@@ -147,6 +166,11 @@ for each row execute function public.set_updated_at();
 drop trigger if exists set_account_settings_updated_at on public.account_settings;
 create trigger set_account_settings_updated_at
 before update on public.account_settings
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_account_profiles_updated_at on public.account_profiles;
+create trigger set_account_profiles_updated_at
+before update on public.account_profiles
 for each row execute function public.set_updated_at();
 
 drop trigger if exists touch_business_when_note_created on public.business_notes;
@@ -195,6 +219,10 @@ begin
   values (new.id)
   on conflict (user_id) do nothing;
 
+  insert into public.account_profiles (user_id)
+  values (new.id)
+  on conflict (user_id) do nothing;
+
   return new;
 end;
 $$;
@@ -207,6 +235,7 @@ for each row execute function public.handle_new_user();
 alter table public.profiles enable row level security;
 alter table public.businesses enable row level security;
 alter table public.account_settings enable row level security;
+alter table public.account_profiles enable row level security;
 alter table public.business_notes enable row level security;
 alter table public.csv_import_errors enable row level security;
 
@@ -276,6 +305,31 @@ create policy "account_settings_update_own"
 drop policy if exists "account_settings_delete_own" on public.account_settings;
 create policy "account_settings_delete_own"
   on public.account_settings
+  for delete
+  using (auth.uid() = user_id);
+
+drop policy if exists "account_profiles_select_own" on public.account_profiles;
+create policy "account_profiles_select_own"
+  on public.account_profiles
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "account_profiles_insert_own" on public.account_profiles;
+create policy "account_profiles_insert_own"
+  on public.account_profiles
+  for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "account_profiles_update_own" on public.account_profiles;
+create policy "account_profiles_update_own"
+  on public.account_profiles
+  for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "account_profiles_delete_own" on public.account_profiles;
+create policy "account_profiles_delete_own"
+  on public.account_profiles
   for delete
   using (auth.uid() = user_id);
 

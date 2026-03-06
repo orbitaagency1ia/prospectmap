@@ -1,13 +1,25 @@
 import { STATUS_RANK } from "@/lib/constants";
 import type { CombinedBusiness } from "@/lib/types";
 
+import { buildDefaultAccountCommercialProfile, parseAccountCommercialProfileRow } from "./account-profile";
 import { parseAccountSettingsRow } from "./account-settings";
 import { buildDemoBadges, buildSuggestedMessages } from "./messaging";
 import { buildObjectionResponses } from "./objections";
 import { buildCommercialFocus, buildNextBestAction, buildServiceRecommendation, detectPainPoint } from "./recommendations";
+import {
+  buildAvoidTalkingPoints,
+  buildCommercialAngle,
+  buildCtaSuggestion,
+  buildExecutiveSummary,
+  buildFitSignals,
+  buildMissingData,
+  buildReviewChecklist,
+  buildRiskSignals,
+} from "./report";
 import { calculateScoreLayer, resolveSectorPattern } from "./scoring";
 import { getVerticalLabel, inferMarketVerticalId } from "./verticals";
 import type {
+  AccountCommercialProfile,
   AccountCommercialSettings,
   CommandCenterSummary,
   OpportunityTier,
@@ -48,9 +60,11 @@ export function getOpportunityTier(score: number): OpportunityTier {
 export function buildProspectInsight(input: {
   business: CombinedBusiness;
   settings: AccountCommercialSettings;
+  accountProfile?: AccountCommercialProfile;
   fallbackCity?: string;
 }): ProspectInsight {
   const { business, settings, fallbackCity } = input;
+  const accountProfile = input.accountProfile ?? buildDefaultAccountCommercialProfile();
   const marketVertical = inferMarketVerticalId(business);
   const effectiveVertical = (business.business?.vertical_override as VerticalId | null) ?? settings.vertical;
   const verticalSource = business.business?.vertical_override ? "override" : "account";
@@ -61,10 +75,11 @@ export function buildProspectInsight(input: {
     effectiveVertical,
     marketVertical,
     sectorPattern,
+    accountProfile,
     fallbackCity,
   });
-  const painPoint = detectPainPoint(business, effectiveVertical, sectorPattern);
-  const commercialFocus = buildCommercialFocus(effectiveVertical, settings.commercialPreferences, painPoint);
+  const painPoint = detectPainPoint(business, effectiveVertical, sectorPattern, accountProfile);
+  const commercialFocus = buildCommercialFocus(effectiveVertical, settings.commercialPreferences, painPoint, accountProfile);
   const service = buildServiceRecommendation({
     business,
     effectiveVertical,
@@ -72,12 +87,14 @@ export function buildProspectInsight(input: {
     sectorPattern,
     score: scoring.score,
     painPoint,
+    accountProfile,
   });
   const nextAction = buildNextBestAction({
     business,
     service,
     followUpUrgencyFactor: scoring.urgencyFactor,
     preferences: settings.commercialPreferences,
+    accountProfile,
   });
   const messages = buildSuggestedMessages({
     business,
@@ -85,8 +102,9 @@ export function buildProspectInsight(input: {
     service,
     painPoint,
     preferences: settings.commercialPreferences,
+    accountProfile,
   });
-  const objections = buildObjectionResponses(effectiveVertical, service.service);
+  const objections = buildObjectionResponses(effectiveVertical, service.service, accountProfile);
   const demoBadges = buildDemoBadges({
     business,
     service,
@@ -95,6 +113,39 @@ export function buildProspectInsight(input: {
     effectiveVertical,
   });
   const tier = getOpportunityTier(scoring.score);
+  const fitSignals = buildFitSignals({
+    business,
+    accountProfile,
+    service,
+    effectiveVertical,
+  });
+  const riskSignals = buildRiskSignals({
+    business,
+    objections,
+  });
+  const missingData = buildMissingData(business);
+  const reviewChecklist = buildReviewChecklist({
+    business,
+    accountProfile,
+    service,
+  });
+  const avoidTalkingPoints = buildAvoidTalkingPoints(accountProfile, objections);
+  const commercialAngle = buildCommercialAngle({
+    accountProfile,
+    service,
+    painPoint,
+  });
+  const ctaSuggestion = buildCtaSuggestion(accountProfile, nextAction);
+  const executiveSummary = buildExecutiveSummary({
+    business,
+    service,
+    nextAction,
+    painPoint,
+    accountProfile,
+  });
+  const fitSummary =
+    fitSignals[0] ??
+    `Encaje ${service.fitLabel} basado en vertical, oferta y nivel de oportunidad actual.`;
 
   return {
     score: scoring.score,
@@ -112,6 +163,15 @@ export function buildProspectInsight(input: {
     messages,
     objections,
     breakdown: scoring.breakdown,
+    executiveSummary,
+    fitSummary,
+    fitSignals,
+    riskSignals,
+    missingData,
+    reviewChecklist,
+    avoidTalkingPoints,
+    commercialAngle,
+    ctaSuggestion,
     sectorLabel: scoring.sectorLabel,
     cityLabel: scoring.cityLabel,
     isHot: scoring.isHot,
@@ -124,6 +184,7 @@ export function buildProspectInsight(input: {
 export function buildProspectRecords(
   businesses: CombinedBusiness[],
   settings: AccountCommercialSettings,
+  accountProfile?: AccountCommercialProfile,
   fallbackCity?: string,
 ) {
   return businesses.map((business) => ({
@@ -131,6 +192,7 @@ export function buildProspectRecords(
     insight: buildProspectInsight({
       business,
       settings,
+      accountProfile,
       fallbackCity,
     }),
   }));
@@ -290,3 +352,4 @@ export function normalizeRankingFilters() {
 }
 
 export { parseAccountSettingsRow };
+export { parseAccountCommercialProfileRow };

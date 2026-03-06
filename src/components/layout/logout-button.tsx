@@ -11,7 +11,7 @@ export function LogoutButton() {
   return (
     <button
       type="button"
-      className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800"
+      className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800"
       onClick={async () => {
         const supabase = createClient();
         await supabase.auth.signOut();

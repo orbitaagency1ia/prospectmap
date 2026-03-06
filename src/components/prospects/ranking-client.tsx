@@ -16,6 +16,7 @@ import {
   buildCommandCenterSummary,
   buildProspectRecords,
   buildSectorOptions,
+  isAccountCommercialProfileComplete,
   normalizeRankingFilters,
   sortProspectRecordsByScore,
 } from "@/lib/prospect-intelligence";
@@ -23,6 +24,7 @@ import type { ProfileRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
+import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
@@ -43,6 +45,7 @@ type RankingFilters = {
 export function RankingClient({ profile }: Props) {
   const { businesses, latestNotes, loading, error } = useSavedProspects();
   const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
 
   const [filters, setFilters] = useState<RankingFilters>(normalizeRankingFilters());
   const [descending, setDescending] = useState(true);
@@ -59,8 +62,8 @@ export function RankingClient({ profile }: Props) {
   );
 
   const allRecords = useMemo(
-    () => sortProspectRecordsByScore(buildProspectRecords(combinedBusinesses, settings, profile.city_name)),
-    [combinedBusinesses, profile.city_name, settings],
+    () => sortProspectRecordsByScore(buildProspectRecords(combinedBusinesses, settings, accountProfile, profile.city_name)),
+    [accountProfile, combinedBusinesses, profile.city_name, settings],
   );
   const cityOptions = useMemo(() => buildCityOptions(allRecords), [allRecords]);
   const sectorOptions = useMemo(() => buildSectorOptions(allRecords), [allRecords]);
@@ -91,8 +94,9 @@ export function RankingClient({ profile }: Props) {
     () => buildCommandCenterSummary(sortedRecords, settings.vertical),
     [settings.vertical, sortedRecords],
   );
+  const commercialProfileComplete = isAccountCommercialProfileComplete(accountProfile);
 
-  if (loading || !ready) {
+  if (loading || !ready || !profileReady) {
     return <PageState text="Calculando ranking de prospectos..." />;
   }
 
@@ -108,6 +112,13 @@ export function RankingClient({ profile }: Props) {
         onDemoModeChange={setDemoMode}
         saveState={saveState}
       />
+
+      {!commercialProfileComplete ? (
+        <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          El perfil comercial de la cuenta sigue incompleto. El ranking actual usa la base vertical, pero puede afinar
+          mucho mas cuando completes ICP, oferta y ticket en `Cuenta`.
+        </section>
+      ) : null}
 
       <div className="grid gap-4 2xl:grid-cols-[1.55fr_0.92fr]">
         <div className="space-y-4">

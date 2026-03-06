@@ -19,12 +19,17 @@ export type MarketVerticalSource = "override" | "account" | "inferred";
 
 export type ScoringConfig = {
   sectorFit: number;
+  icpFit: number;
+  offerFit: number;
+  ticketFit: number;
   contactability: number;
   websiteGap: number;
   decisionMaker: number;
   prioritySignal: number;
   momentum: number;
   followUpUrgency: number;
+  needSignal: number;
+  potentialSignal: number;
 };
 
 export type CommercialPreferences = {
@@ -37,6 +42,59 @@ export type AccountCommercialSettings = {
   demoMode: boolean;
   scoringConfig: ScoringConfig;
   commercialPreferences: CommercialPreferences;
+};
+
+export type AccountKnowledgeSummary = {
+  detectedServices: string[];
+  detectedPainPoints: string[];
+  detectedObjections: string[];
+  detectedValueProps: string[];
+  detectedTargetSegments: string[];
+  sourceNote: string;
+};
+
+export type IdealCustomerProfile = {
+  targetCustomer: string;
+  targetGeographies: string[];
+  bestFitCompanyTraits: string[];
+  excludedCompanyTraits: string[];
+};
+
+export type OfferProfile = {
+  whatYouSell: string;
+  mainServices: string[];
+  secondaryServices: string[];
+  mainProblemSolved: string;
+  valueProposition: string;
+  typicalObjections: string[];
+  preferredCta: string;
+  salesStyle: string;
+  reviewBeforeContact: string[];
+  avoidTalkingPoints: string[];
+  recommendedAngles: string[];
+};
+
+export type PricingProfile = {
+  averagePriceRange: string;
+  minimumDesiredTicket: string;
+};
+
+export type ProspectingPreferencesProfile = {
+  preferredChannels: string[];
+  focusPriorities: string[];
+};
+
+export type AccountCommercialProfile = {
+  sector: string;
+  targetVerticals: string[];
+  targetSubsectors: string[];
+  idealCustomerProfile: IdealCustomerProfile;
+  offerProfile: OfferProfile;
+  pricingProfile: PricingProfile;
+  prospectingPreferences: ProspectingPreferencesProfile;
+  knowledgeBaseText: string;
+  knowledgeSummary: AccountKnowledgeSummary;
+  onboardingCompleted: boolean;
 };
 
 export type ScoreBreakdownItem = {
@@ -123,6 +181,15 @@ export type ProspectInsight = {
   messages: SuggestedMessages;
   objections: ObjectionResponse[];
   breakdown: ScoreBreakdownItem[];
+  executiveSummary: string;
+  fitSummary: string;
+  fitSignals: string[];
+  riskSignals: string[];
+  missingData: string[];
+  reviewChecklist: string[];
+  avoidTalkingPoints: string[];
+  commercialAngle: string;
+  ctaSuggestion: string;
   sectorLabel: string;
   cityLabel: string;
   isHot: boolean;

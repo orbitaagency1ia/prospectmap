@@ -18,12 +18,18 @@ function sanitizeScoringConfig(value: unknown, vertical: VerticalId): ScoringCon
 
   return {
     sectorFit: typeof value.sectorFit === "number" ? value.sectorFit : fallback.sectorFit,
+    icpFit: typeof value.icpFit === "number" ? value.icpFit : fallback.icpFit,
+    offerFit: typeof value.offerFit === "number" ? value.offerFit : fallback.offerFit,
+    ticketFit: typeof value.ticketFit === "number" ? value.ticketFit : fallback.ticketFit,
     contactability: typeof value.contactability === "number" ? value.contactability : fallback.contactability,
     websiteGap: typeof value.websiteGap === "number" ? value.websiteGap : fallback.websiteGap,
     decisionMaker: typeof value.decisionMaker === "number" ? value.decisionMaker : fallback.decisionMaker,
     prioritySignal: typeof value.prioritySignal === "number" ? value.prioritySignal : fallback.prioritySignal,
     momentum: typeof value.momentum === "number" ? value.momentum : fallback.momentum,
     followUpUrgency: typeof value.followUpUrgency === "number" ? value.followUpUrgency : fallback.followUpUrgency,
+    needSignal: typeof value.needSignal === "number" ? value.needSignal : fallback.needSignal,
+    potentialSignal:
+      typeof value.potentialSignal === "number" ? value.potentialSignal : fallback.potentialSignal,
   };
 }
 

@@ -2,6 +2,7 @@ import type { CombinedBusiness } from "@/lib/types";
 
 import { SERVICE_META, getVerticalConfig } from "./verticals";
 import type {
+  AccountCommercialProfile,
   CommercialPreferences,
   DemoBadge,
   NextBestAction,
@@ -28,16 +29,26 @@ export function buildSuggestedMessages(input: {
   service: ServiceRecommendation;
   painPoint: string;
   preferences: CommercialPreferences;
+  accountProfile?: AccountCommercialProfile;
 }): SuggestedMessages {
-  const { business, effectiveVertical, service, painPoint, preferences } = input;
+  const { business, effectiveVertical, service, painPoint, preferences, accountProfile } = input;
   const vertical = getVerticalConfig(effectiveVertical);
   const narrativeHook = getNarrativeHook(preferences);
   const benefit = SERVICE_META[service.service].benefit;
+  const cta =
+    accountProfile?.offerProfile.preferredCta ||
+    "Si te encaja, te enseño un caso muy concreto en 15 minutos.";
+  const valueProp = accountProfile?.offerProfile.valueProposition
+    ? ` Nuestra propuesta suele entrar por ${accountProfile.offerProfile.valueProposition}.`
+    : "";
+  const salesStyle = accountProfile?.offerProfile.salesStyle
+    ? ` Mantendria un tono ${accountProfile.offerProfile.salesStyle.toLowerCase()}.`
+    : "";
 
   return {
-    initial: `Hola ${business.name}, soy del equipo de Orbita. En ${vertical.shortLabel.toLowerCase()} solemos ver mucho desgaste en ${painPoint}. Creemos que ${service.label.toLowerCase()} puede ayudaros a ${benefit}, con foco en ${narrativeHook}. Si te encaja, te enseño un caso muy concreto en 15 minutos.`,
-    followUp1: `Retomo esto por si se os paso. La idea para ${business.name} no es meter complejidad, sino atacar ${painPoint} con ${service.shortLabel.toLowerCase()} y una implantacion bastante ligera. Si quieres, te paso un ejemplo realista.`,
-    followUp2: `Cierro el hilo por ahora. Si mas adelante queréis mejorar ${vertical.messageHooks.opening} o probar una solucion tipo ${service.shortLabel.toLowerCase()}, en Orbita lo podemos aterrizar muy a medida.`,
+    initial: `Hola ${business.name}, soy del equipo de Orbita. En ${vertical.shortLabel.toLowerCase()} solemos ver mucho desgaste en ${painPoint}. Creemos que ${service.label.toLowerCase()} puede ayudaros a ${benefit}, con foco en ${narrativeHook}.${valueProp}${salesStyle} ${cta}`.trim(),
+    followUp1: `Retomo esto por si se os paso. La idea para ${business.name} no es meter complejidad, sino atacar ${painPoint} con ${service.shortLabel.toLowerCase()} y una implantacion bastante ligera.${valueProp} Si quieres, te paso un ejemplo realista.`,
+    followUp2: `Cierro el hilo por ahora. Si mas adelante queréis mejorar ${vertical.messageHooks.opening} o probar una solucion tipo ${service.shortLabel.toLowerCase()}, en Orbita lo podemos aterrizar muy a medida. ${cta}`.trim(),
   };
 }
 

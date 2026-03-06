@@ -1,5 +1,5 @@
 import { SERVICE_META, getVerticalConfig } from "./verticals";
-import type { ObjectionResponse, OrbitaService, VerticalId } from "./types";
+import type { AccountCommercialProfile, ObjectionResponse, OrbitaService, VerticalId } from "./types";
 
 const SERVICE_OBJECTIONS: Record<OrbitaService, ObjectionResponse[]> = {
   asistente_multicanal: [
@@ -28,11 +28,22 @@ const SERVICE_OBJECTIONS: Record<OrbitaService, ObjectionResponse[]> = {
   ],
 };
 
-export function buildObjectionResponses(vertical: VerticalId, service: OrbitaService): ObjectionResponse[] {
+export function buildObjectionResponses(
+  vertical: VerticalId,
+  service: OrbitaService,
+  accountProfile?: AccountCommercialProfile,
+): ObjectionResponse[] {
   const verticalObjections = getVerticalConfig(vertical).objectionLibrary;
   const serviceObjections = SERVICE_OBJECTIONS[service] ?? [];
+  const accountObjections =
+    accountProfile?.offerProfile.typicalObjections.slice(0, 3).map((item) => ({
+      objection: item,
+      response:
+        accountProfile.offerProfile.valueProposition ||
+        `La propuesta con ${SERVICE_META[service].shortLabel.toLowerCase()} busca impacto real sin meter complejidad innecesaria.`,
+    })) ?? [];
 
-  return [...verticalObjections, ...serviceObjections].slice(0, 3).map((item) => ({
+  return [...accountObjections, ...verticalObjections, ...serviceObjections].slice(0, 4).map((item) => ({
     objection: item.objection,
     response:
       item.response ||

@@ -8,6 +8,7 @@ import {
   buildCommandCenterSummary,
   buildProspectRecords,
   buildTodayBuckets,
+  isAccountCommercialProfileComplete,
   type CommandCenterSummary,
   type ProspectRecord,
 } from "@/lib/prospect-intelligence";
@@ -15,6 +16,7 @@ import type { ProfileRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
+import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
@@ -28,6 +30,7 @@ type Props = {
 export function TodayClient({ profile }: Props) {
   const { businesses, latestNotes, loading, error } = useSavedProspects();
   const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const combinedBusinesses = useMemo(
@@ -41,15 +44,16 @@ export function TodayClient({ profile }: Props) {
   );
 
   const records = useMemo(
-    () => buildProspectRecords(combinedBusinesses, settings, profile.city_name),
-    [combinedBusinesses, profile.city_name, settings],
+    () => buildProspectRecords(combinedBusinesses, settings, accountProfile, profile.city_name),
+    [accountProfile, combinedBusinesses, profile.city_name, settings],
   );
   const buckets = useMemo(() => buildTodayBuckets(records), [records]);
   const summary = useMemo(() => buildCommandCenterSummary(records, settings.vertical), [records, settings.vertical]);
+  const commercialProfileComplete = isAccountCommercialProfileComplete(accountProfile);
   const selected =
     records.find((record) => record.business.key === selectedKey) ?? buckets.prioritizedToday[0] ?? records[0] ?? null;
 
-  if (loading || !ready) {
+  if (loading || !ready || !profileReady) {
     return <PageState text="Preparando command center comercial..." />;
   }
 
@@ -65,6 +69,13 @@ export function TodayClient({ profile }: Props) {
         onDemoModeChange={setDemoMode}
         saveState={saveState}
       />
+
+      {!commercialProfileComplete ? (
+        <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          Falta completar el perfil comercial de la cuenta. ProspectMap ya funciona, pero el scoring, los mensajes y el
+          informe del negocio seran mucho mejores cuando completes el onboarding comercial en `Cuenta`.
+        </section>
+      ) : null}
 
       {records.length === 0 ? (
         <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-[0_24px_60px_rgba(2,6,23,0.3)]">

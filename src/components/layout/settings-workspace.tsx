@@ -2,6 +2,7 @@
 
 import { AccountProfileForm } from "@/components/layout/account-profile-form";
 
+import { AccountCommercialProfileForm } from "../commercial/account-commercial-profile-form";
 import { CommercialSettingsPanel } from "../commercial/commercial-settings-panel";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 
@@ -48,16 +49,19 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
         </section>
 
         {ready ? (
-          <CommercialSettingsPanel
-            settings={settings}
-            saveState={saveState}
-            tableAvailable={tableAvailable}
-            onVerticalChange={setVertical}
-            onDemoModeChange={setDemoMode}
-            onScoringChange={setScoringConfig}
-            onPreferencesChange={setCommercialPreferences}
-            onReset={resetScoringToVertical}
-          />
+          <>
+            <CommercialSettingsPanel
+              settings={settings}
+              saveState={saveState}
+              tableAvailable={tableAvailable}
+              onVerticalChange={setVertical}
+              onDemoModeChange={setDemoMode}
+              onScoringChange={setScoringConfig}
+              onPreferencesChange={setCommercialPreferences}
+              onReset={resetScoringToVertical}
+            />
+            <AccountCommercialProfileForm mode="settings" userId={userId} />
+          </>
         ) : (
           <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-5 text-sm text-slate-400">
             Cargando configuracion comercial...

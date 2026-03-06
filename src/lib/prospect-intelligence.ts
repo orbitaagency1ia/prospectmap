@@ -24,16 +24,33 @@ export {
 } from "@/lib/commercial/verticals";
 
 export { parseAccountSettingsRow } from "@/lib/commercial/account-settings";
+export {
+  applyKnowledgeSummaryToProfile,
+  buildDefaultAccountCommercialProfile,
+  extractKnowledgeSummaryFromText,
+  isAccountCommercialProfileComplete,
+  parseAccountCommercialProfileRow,
+  readAccountCommercialProfileFromStorage,
+  sanitizeAccountCommercialProfile,
+  toAccountCommercialProfileUpsert,
+  writeAccountCommercialProfileToStorage,
+} from "@/lib/commercial/account-profile";
 
 export type {
+  AccountCommercialProfile,
   AccountCommercialSettings,
+  AccountKnowledgeSummary,
   CommercialPreferences,
   CommandCenterSummary,
   DemoBadge,
+  IdealCustomerProfile,
   ObjectionResponse,
+  OfferProfile,
   OpportunityTier,
   OrbitaService,
+  PricingProfile,
   ProspectInsight,
+  ProspectingPreferencesProfile,
   ProspectRecord,
   ScoreBreakdownItem,
   ScoringConfig,

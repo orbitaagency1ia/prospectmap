@@ -12,9 +12,10 @@ type Props = {
   email: string;
   initialCompany: string;
   initialCity: string;
+  redirectPath?: string | null;
 };
 
-export function AccountProfileForm({ mode, userId, email, initialCompany, initialCity }: Props) {
+export function AccountProfileForm({ mode, userId, email, initialCompany, initialCity, redirectPath }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
@@ -98,7 +99,13 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
     setLoading(false);
 
     if (mode === "onboarding") {
-      router.replace("/today");
+      const nextPath = redirectPath === undefined ? "/today" : redirectPath;
+
+      if (nextPath) {
+        router.replace(nextPath);
+      } else {
+        router.refresh();
+      }
     } else {
       router.refresh();
     }

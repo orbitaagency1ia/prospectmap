@@ -9,6 +9,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - Nominatim (geocodificación)
 - Recharts (dashboard)
 - Papaparse (importación CSV)
+- pdfjs-dist (extracción local de texto desde PDF)
 
 ## 1) Qué incluye ahora
 
@@ -16,6 +17,15 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - Perfil de empresa (nombre + ciudad principal).
 - Mapa principal con clustering de marcadores.
 - Carga real de negocios por zona visible con Overpass.
+- Rediseño UX/UI más premium:
+  - navegación más clara,
+  - mejor jerarquía visual,
+  - ficha con tabs (`Informe`, `Datos`, `Notas`),
+  - mejores previews en mapa,
+  - mejor lectura de cards, badges y estados.
+- Onboarding comercial guiado.
+- Configuración comercial desde formulario estructurado + texto/PDF opcional.
+- Perfil comercial de cuenta persistente en Supabase.
 - Vista `Hoy` convertida en **Command Center** con:
   - negocios prioritarios del dia,
   - follow-ups pendientes,
@@ -31,10 +41,20 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - Hoteles
   - General B2B
 - Prospect Score 0-100 con logica visible, editable y persistida por cuenta.
+- Scoring ampliado con ICP, oferta, ticket deseado, señales de necesidad y potencial.
 - Siguiente mejor accion por negocio.
 - Servicio Orbita recomendado por negocio.
 - Mensajes sugeridos para apertura y seguimiento.
 - Objeciones probables + respuesta corta sugerida.
+- Informe detallado del negocio con:
+  - resumen ejecutivo,
+  - encaje,
+  - riesgos,
+  - CTA,
+  - que revisar antes de contactar,
+  - que no decir,
+  - angulo comercial.
+- Modo `Preparar prospeccion` para copiar playbook casi listo.
 - Modo Barrido sobre la zona visible del mapa.
 - Demo Mode profesional con badges comerciales y presentacion mas vendible.
 - Ficha lateral (desktop) / bottom sheet (móvil) con:
@@ -43,6 +63,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - prioridad,
   - datos de decisor,
   - timeline de notas,
+  - informe comercial,
   - score,
   - dolor principal detectado,
   - foco comercial,
@@ -50,7 +71,8 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - servicio recomendado,
   - mensajes sugeridos,
   - objeciones y respuestas,
-  - vertical efectiva por negocio.
+  - vertical efectiva por negocio,
+  - acciones rápidas.
 - Filtros combinables por sector, estado y prioridad.
 - Importación CSV + geocodificación Nominatim + registro de errores.
 - Dashboard con métricas y gráficos.
@@ -63,20 +85,24 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `src/app/api/overpass` proxy Overpass + normalización + caché.
 - `src/app/api/geocode/*` búsqueda de ciudad y geocodificación de direcciones.
 - `src/components/commercial/*` persistencia de configuracion comercial, selectors y paneles de control.
+- `src/components/layout/onboarding-workspace.tsx` onboarding de empresa + onboarding comercial.
 - `src/components/map/*` mapa, ficha comercial, importador CSV.
 - `src/components/prospects/*` command center, ranking, detalle comercial y UI de prospectos.
 - `src/components/dashboard/*` cards y gráficos.
+- `src/lib/commercial/account-profile.ts` saneado, persistencia local y resumen heurístico del perfil comercial.
 - `src/lib/commercial/types.ts` tipos del dominio comercial.
 - `src/lib/commercial/verticals.ts` configuracion centralizada de verticales, presets y librerias.
 - `src/lib/commercial/scoring.ts` capa de scoring.
 - `src/lib/commercial/recommendations.ts` capa de servicio recomendado, dolor, accion y canal.
 - `src/lib/commercial/messaging.ts` mensajes sugeridos y demo badges.
 - `src/lib/commercial/objections.ts` objeciones probables y respuestas.
+- `src/lib/commercial/report.ts` resumen ejecutivo, checklist, CTA, riesgos y angulos comerciales.
 - `src/lib/commercial/engine.ts` ensamblado final de insights y command center.
 - `src/lib/prospect-intelligence.ts` facade/re-export del motor comercial.
 - `src/lib/*` lógica de negocio (status, métricas, merge de negocios, clientes Supabase).
 - `supabase/migrations/0001_init.sql` schema completo + RLS + triggers.
 - `supabase/migrations/0002_phase3_commercial_settings.sql` migracion incremental para Phase 3 sobre proyectos ya creados.
+- `supabase/migrations/0003_phase4_account_profiles.sql` migracion incremental para onboarding comercial y perfil de cuenta.
 
 ## 3) Configuración local
 
@@ -108,7 +134,7 @@ La app abrirá directamente en `/today`.
 1. Crea un proyecto en Supabase Free.
 2. Ve a SQL Editor y ejecuta:
    - proyecto nuevo desde cero: `supabase/migrations/0001_init.sql`
-   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`
+   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql` y despues `supabase/migrations/0003_phase4_account_profiles.sql`
 3. En Authentication > Providers:
    - Email activado.
 4. En Authentication > URL Configuration:
@@ -124,27 +150,76 @@ Tablas implementadas:
 - `business_notes`
 - `csv_import_errors`
 - `account_settings`
+- `account_profiles`
 
 RLS:
 - cada operación valida `auth.uid()` contra `id`/`user_id`.
 - una empresa no puede leer ni modificar datos de otra.
 - el estado comercial y notas siempre son privadas por cuenta.
 - la configuracion comercial (vertical, demo mode, pesos y preferencias) tambien es privada por cuenta.
+- el perfil comercial de cuenta (ICP, oferta, ticket, texto base y resumen estructurado) tambien es privado por cuenta.
 
 Datos públicos (Overpass/OSM):
 - solo se consumen para mostrar oportunidades.
 - la capa comercial se guarda privada en Supabase.
 
-## 6) Motor comercial Fase 3
+## 6) Motor comercial y onboarding de cuenta
 
-La Fase 3 convierte ProspectMap en un motor comercial determinista por capas, sin IA externa ni APIs de pago.
+La fase actual convierte ProspectMap en un motor comercial determinista por capas, con perfil comercial real por cuenta y sin IA externa ni APIs de pago.
 
 Capas:
 - `scoring.ts`: calcula score 0-100 y desglose.
 - `recommendations.ts`: detecta dolor principal, servicio recomendado, canal y siguiente accion.
 - `messaging.ts`: construye mensaje inicial, follow-up 1, follow-up 2 y badges de demo.
 - `objections.ts`: adjunta objeciones probables y su respuesta corta.
+- `report.ts`: construye resumen ejecutivo, checklist, riesgos, CTA y angulo comercial.
 - `engine.ts`: compone el insight final del negocio y resume el command center.
+
+### Onboarding comercial
+
+El onboarding ya no se limita a empresa + ciudad.
+
+Ahora existe un segundo paso donde la cuenta puede definir:
+- sector principal
+- verticales y subsectores objetivo
+- cliente ideal
+- empresas que encajan / no encajan
+- zonas geograficas
+- oferta principal y secundaria
+- problema principal que resuelve
+- propuesta de valor
+- objeciones tipicas
+- canales preferidos
+- estilo comercial
+- CTA preferida
+- checklist previo y cosas que no decir
+
+Tambien puede subir:
+- texto base
+- `.txt`
+- `.md`
+- `.pdf`
+
+El PDF/TXT se procesa localmente con `pdfjs-dist` y heuristicas simples para generar un resumen estructurado. No se usa IA de pago.
+
+Archivos clave:
+- `src/components/commercial/account-commercial-profile-form.tsx`
+- `src/components/commercial/use-account-commercial-profile.ts`
+- `src/lib/commercial/account-profile.ts`
+
+### Perfil comercial de cuenta
+
+Se guarda en `account_profiles` con una estructura simple pero extensible:
+- `sector`
+- `target_verticals`
+- `target_subsectors`
+- `ideal_customer_profile`
+- `offer_profile`
+- `pricing_profile`
+- `prospecting_preferences`
+- `knowledge_base_text`
+- `knowledge_summary`
+- `onboarding_completed`
 
 ### Verticales operativas
 
@@ -175,12 +250,17 @@ El score se calcula entre `0` y `100` usando reglas transparentes y editables.
 
 Factores incluidos:
 - encaje sectorial,
+- encaje con ICP,
+- compatibilidad con la oferta,
+- encaje de ticket,
 - contactabilidad,
 - hueco digital visible,
 - acceso a decisor,
 - prioridad interna,
 - momento comercial segun estado,
-- urgencia del follow-up.
+- urgencia del follow-up,
+- senal de necesidad,
+- senal de potencial.
 
 Penalizacion:
 - `perdido` y `bloqueado` reducen fuertemente el score.
@@ -207,6 +287,7 @@ Comportamiento:
 
 Hook principal:
 - `src/components/commercial/use-commercial-config.ts`
+- `src/components/commercial/use-account-commercial-profile.ts`
 
 ### Siguiente mejor acción
 
@@ -222,6 +303,7 @@ La recomendación depende de:
 - disponibilidad de canales de contacto,
 - score total.
 - preferencias comerciales de la cuenta.
+- perfil comercial de la cuenta.
 
 ### Servicio Orbita recomendado
 
@@ -236,6 +318,7 @@ La recomendación se basa en heurísticas baratas y transparentes:
 - señales operativas (horarios, teléfono, web, decisor),
 - madurez comercial del lead.
 - vertical efectiva y vertical de mercado detectada.
+- compatibilidad con la oferta real declarada por la cuenta.
 
 ### Mensajes sugeridos
 
@@ -249,6 +332,7 @@ Se adaptan a:
 - servicio recomendado,
 - dolor comercial más probable del negocio.
 - narrativa comercial de la cuenta.
+- propuesta de valor y CTA declaradas por la cuenta.
 
 ### Objeciones probables
 
@@ -258,6 +342,25 @@ Objetivo:
 - que el equipo sepa que ofrecer,
 - que decir,
 - y como responder sin depender de IA externa.
+
+### Informe detallado del negocio
+
+La ficha y el panel de detalle ahora muestran un informe comercial mucho mas util:
+- resumen ejecutivo
+- nivel de encaje
+- score y oportunidad
+- dolor principal
+- servicio recomendado
+- por que encaja
+- riesgos y objeciones
+- siguiente mejor accion
+- mejor canal
+- CTA sugerida
+- que revisar antes de contactar
+- que no decir
+- angulo comercial recomendado
+
+Tambien existe `Preparar prospeccion`, que abre un playbook listo para copiar y usar.
 
 ### Modo Barrido
 
@@ -312,7 +415,7 @@ Límite MVP por importación: **150 filas** para respetar APIs gratuitas.
 
 No se requiere backend separado ni infraestructura adicional.
 
-## 10) Dónde cambiar reglas y verticales
+## 10) Dónde cambiar reglas, verticales y perfil comercial
 
 Cambios mas importantes:
 - verticales, textos, dolores, objeciones, boosts de servicio:
@@ -327,19 +430,27 @@ Cambios mas importantes:
   - `src/lib/commercial/objections.ts`
 - composicion final del insight:
   - `src/lib/commercial/engine.ts`
+- resumen ejecutivo, CTA, checklist, riesgos y angulo:
+  - `src/lib/commercial/report.ts`
 - persistencia por cuenta:
   - `src/components/commercial/use-commercial-config.ts`
   - `src/lib/commercial/account-settings.ts`
+- perfil comercial de cuenta:
+  - `src/components/commercial/use-account-commercial-profile.ts`
+  - `src/lib/commercial/account-profile.ts`
 
 ## 11) Qué queda preparado para escalar
 
 - configuracion comercial por cuenta en tabla propia (`account_settings`)
+- perfil comercial de cuenta en tabla propia (`account_profiles`)
 - sistema de verticales centralizado y extensible
 - separacion clara entre dominio comercial y UI
 - override de vertical por negocio sin romper la vertical global
 - motor determinista por capas facil de ampliar
 - fallback local si la persistencia remota no esta disponible
 - componentes reutilizables para mapa, ranking, command center y ficha
+- onboarding reutilizable y ampliable
+- capa de informe comercial preparada para enriquecerse en futuras fases
 
 No se ha implementado todavia:
 - multiusuario por empresa
@@ -357,6 +468,7 @@ No se ha implementado todavia:
 5. Sin PostGIS ni motores premium, no hay analisis geoespacial avanzado.
 6. El motor comercial sigue siendo determinista; no usa enrichment externo ni IA generativa.
 7. El barrido funciona sobre la zona visible actual, no sobre poligonos dibujados.
+8. La extraccion de PDF es local y heuristica; si el archivo viene mal estructurado, tocara revisar manualmente el texto resumido.
 
 El código queda preparado para sustituir endpoints externos en el futuro sin romper el dominio principal.
 
