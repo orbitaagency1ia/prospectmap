@@ -98,7 +98,7 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
     setLoading(false);
 
     if (mode === "onboarding") {
-      router.replace("/map");
+      router.replace("/today");
     } else {
       router.refresh();
     }

@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Map, Settings } from "lucide-react";
+import { BarChart3, Compass, ListOrdered, Map, Settings } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "/today", label: "Hoy", icon: Compass },
   { href: "/map", label: "Mapa", icon: Map },
+  { href: "/ranking", label: "Ranking", icon: ListOrdered },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/settings", label: "Cuenta", icon: Settings },
 ];

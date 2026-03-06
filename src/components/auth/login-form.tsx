@@ -31,7 +31,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
       return;
     }
 
-    router.replace("/map");
+    router.replace("/today");
     router.refresh();
   };
 

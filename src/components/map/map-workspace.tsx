@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Filter, Loader2, Upload } from "lucide-react";
+import { Filter, Loader2, ScanSearch, Upload } from "lucide-react";
 
 import {
   OVERPASS_FETCH_DEBOUNCE_MS,
@@ -12,16 +12,20 @@ import {
   type PriorityLevel,
   type ProspectStatus,
 } from "@/lib/constants";
+import { buildCategoryOptions, mergeBusinesses, type BusinessFilters, DEFAULT_FILTERS } from "@/lib/business-helpers";
 import {
-  applyFilters,
-  buildCategoryOptions,
-  DEFAULT_FILTERS,
-  mergeBusinesses,
-  type BusinessFilters,
-} from "@/lib/business-helpers";
+  buildProspectRecords,
+  filterByBounds,
+  sortProspectRecordsByScore,
+  type ProspectRecord,
+} from "@/lib/prospect-intelligence";
 import { createClient } from "@/lib/supabase/client";
 import type { BusinessRow, CombinedBusiness, NoteRow, OverpassResponse, ProfileRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
+import { ProspectCard } from "../prospects/prospect-ui";
+import { useScoringConfig } from "../prospects/use-scoring-config";
 
 import { BusinessPanel } from "./business-panel";
 import { CsvImportDialog } from "./csv-import-dialog";
@@ -46,7 +50,8 @@ type InfoMessage = {
 };
 
 export function MapWorkspace({ profile }: Props) {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
+  const { config } = useScoringConfig();
 
   const [savedBusinesses, setSavedBusinesses] = useState<BusinessRow[]>([]);
   const [overpassBusinesses, setOverpassBusinesses] = useState<OverpassResponse["businesses"]>([]);
@@ -67,15 +72,17 @@ export function MapWorkspace({ profile }: Props) {
   const [showCsvImport, setShowCsvImport] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
+  const [showSweepMode, setShowSweepMode] = useState(false);
+  const [sweepSelectedKey, setSweepSelectedKey] = useState<string | null>(null);
 
   const [message, setMessage] = useState<InfoMessage | null>(null);
 
-  const showMessage = useCallback((info: InfoMessage) => {
+  const showMessage = (info: InfoMessage) => {
     setMessage(info);
     window.setTimeout(() => {
       setMessage(null);
     }, 3500);
-  }, []);
+  };
 
   const loadSavedBusinesses = useCallback(async () => {
     setLoadingSaved(true);
@@ -116,7 +123,7 @@ export function MapWorkspace({ profile }: Props) {
       showMessage({ type: "error", text: "No pude cargar negocios guardados." });
       setLoadingSaved(false);
     });
-  }, [loadSavedBusinesses, showMessage]);
+  }, [loadSavedBusinesses]);
 
   useEffect(() => {
     if (!mapBounds) {
@@ -147,7 +154,7 @@ export function MapWorkspace({ profile }: Props) {
     }, OVERPASS_FETCH_DEBOUNCE_MS);
 
     return () => clearTimeout(handle);
-  }, [mapBounds, showMessage]);
+  }, [mapBounds]);
 
   const combinedBusinesses = useMemo(
     () =>
@@ -161,31 +168,80 @@ export function MapWorkspace({ profile }: Props) {
 
   const categoryOptions = useMemo(() => buildCategoryOptions(combinedBusinesses), [combinedBusinesses]);
 
-  const filteredBusinesses = useMemo(
-    () => applyFilters(combinedBusinesses, filters),
-    [combinedBusinesses, filters],
+  const prospectRecords = useMemo(
+    () => buildProspectRecords(combinedBusinesses, config, profile.city_name),
+    [combinedBusinesses, config, profile.city_name],
   );
 
-  const selectedBusiness = useMemo(
-    () => combinedBusinesses.find((business) => business.key === selectedKey) ?? null,
-    [combinedBusinesses, selectedKey],
+  const filteredRecords = useMemo(
+    () =>
+      prospectRecords.filter((record) => {
+        if (filters.category !== "all") {
+          if ((record.business.category ?? "").trim() !== filters.category) {
+            return false;
+          }
+        }
+
+        if (filters.status !== "all" && record.business.status !== filters.status) {
+          return false;
+        }
+
+        if (filters.priority !== "all") {
+          if (!record.business.priority || record.business.priority !== filters.priority) {
+            return false;
+          }
+        }
+
+        return true;
+      }),
+    [filters, prospectRecords],
   );
+
+  const selectedRecord = useMemo(
+    () => prospectRecords.find((record) => record.business.key === selectedKey) ?? null,
+    [prospectRecords, selectedKey],
+  );
+
+  const selectedBusiness = selectedRecord?.business ?? null;
+  const selectedInsight = selectedRecord?.insight ?? null;
 
   const mapMarkers = useMemo(
     () =>
-      filteredBusinesses.map((business) => ({
-        key: business.key,
-        lat: business.lat,
-        lng: business.lng,
-        name: business.name,
-        category: business.category,
-        status: business.status,
-        worked: business.worked,
-        lastInteractionAt: business.lastInteractionAt,
-        latestNote: business.latestNote,
+      filteredRecords.map((record) => ({
+        key: record.business.key,
+        lat: record.business.lat,
+        lng: record.business.lng,
+        name: record.business.name,
+        category: record.business.category,
+        score: record.insight.score,
+        serviceLabel: record.insight.service.shortLabel,
+        nextAction: record.insight.nextAction.action,
+        status: record.business.status,
+        worked: record.business.worked,
+        lastInteractionAt: record.business.lastInteractionAt,
+        latestNote: record.business.latestNote,
       })),
-    [filteredBusinesses],
+    [filteredRecords],
   );
+
+  const sweepRecords = useMemo(() => {
+    if (!mapBounds) {
+      return [];
+    }
+
+    return sortProspectRecordsByScore(filteredRecords.filter((record) => filterByBounds(record, mapBounds))).slice(0, 20);
+  }, [filteredRecords, mapBounds]);
+
+  const selectedSweepRecord = useMemo(
+    () => sweepRecords.find((record) => record.business.key === sweepSelectedKey) ?? sweepRecords[0] ?? null,
+    [sweepRecords, sweepSelectedKey],
+  );
+
+  useEffect(() => {
+    if (showSweepMode && !sweepSelectedKey && sweepRecords[0]) {
+      setSweepSelectedKey(sweepRecords[0].business.key);
+    }
+  }, [showSweepMode, sweepRecords, sweepSelectedKey]);
 
   useEffect(() => {
     if (!selectedBusiness || selectedBusiness.mode !== "saved" || !selectedBusiness.business) {
@@ -193,12 +249,14 @@ export function MapWorkspace({ profile }: Props) {
       return;
     }
 
+    const businessId = selectedBusiness.business.id;
+
     const loadNotes = async () => {
       setLoadingNotes(true);
       const { data, error } = await supabase
         .from("business_notes")
         .select("*")
-        .eq("business_id", selectedBusiness.business!.id)
+        .eq("business_id", businessId)
         .order("created_at", { ascending: false });
 
       if (!error && data) {
@@ -213,153 +271,144 @@ export function MapWorkspace({ profile }: Props) {
     });
   }, [selectedBusiness, supabase]);
 
-  const handleSaveOverpass = useCallback(
-    async (business: CombinedBusiness) => {
-      if (business.mode !== "overpass" || !business.overpass) {
-        return;
-      }
+  const handleSaveOverpass = async (business: CombinedBusiness) => {
+    if (business.mode !== "overpass" || !business.overpass) {
+      return;
+    }
 
-      setBusy(true);
+    setBusy(true);
 
-      const payload = {
-        user_id: profile.id,
-        source: "overpass" as const,
-        external_source_id: business.overpass.externalSourceId,
-        name: business.overpass.name,
-        address: business.overpass.address,
-        city: business.overpass.city,
-        category: business.overpass.category,
-        phone: business.overpass.phone,
-        email: business.overpass.email,
-        website: business.overpass.website,
-        opening_hours: business.overpass.opening_hours,
-        lat: business.overpass.lat,
-        lng: business.overpass.lng,
-        prospect_status: "sin_contactar" as ProspectStatus,
-        priority: "media" as PriorityLevel,
-      };
+    const payload = {
+      user_id: profile.id,
+      source: "overpass" as const,
+      external_source_id: business.overpass.externalSourceId,
+      name: business.overpass.name,
+      address: business.overpass.address,
+      city: business.overpass.city ?? profile.city_name,
+      category: business.overpass.category,
+      phone: business.overpass.phone,
+      email: business.overpass.email,
+      website: business.overpass.website,
+      opening_hours: business.overpass.opening_hours,
+      lat: business.overpass.lat,
+      lng: business.overpass.lng,
+      prospect_status: "sin_contactar" as ProspectStatus,
+      priority: "media" as PriorityLevel,
+    };
 
-      const { data, error } = await supabase.from("businesses").insert(payload).select("*").single();
+    const { data, error } = await supabase.from("businesses").insert(payload).select("*").single();
 
-      if (error) {
-        if (error.code === "23505") {
-          const { data: existing } = await supabase
-            .from("businesses")
-            .select("*")
-            .eq("external_source_id", business.overpass.externalSourceId)
-            .maybeSingle();
+    if (error) {
+      if (error.code === "23505") {
+        const { data: existing } = await supabase
+          .from("businesses")
+          .select("*")
+          .eq("external_source_id", business.overpass.externalSourceId)
+          .maybeSingle();
 
-          if (existing) {
-            setSelectedKey(`saved:${existing.id}`);
-            await loadSavedBusinesses();
-            showMessage({ type: "success", text: "Negocio ya estaba guardado. Se abrió su ficha." });
-          }
-        } else {
-          showMessage({ type: "error", text: `No se pudo guardar: ${error.message}` });
+        if (existing) {
+          setSelectedKey(`saved:${existing.id}`);
+          await loadSavedBusinesses();
+          showMessage({ type: "success", text: "Negocio ya estaba guardado. Se abrió su ficha." });
         }
-
-        setBusy(false);
-        return;
+      } else {
+        showMessage({ type: "error", text: `No se pudo guardar: ${error.message}` });
       }
 
-      await loadSavedBusinesses();
-      setSelectedKey(`saved:${data.id}`);
-      showMessage({ type: "success", text: "Negocio guardado correctamente." });
       setBusy(false);
+      return;
+    }
+
+    await loadSavedBusinesses();
+    setSelectedKey(`saved:${data.id}`);
+    showMessage({ type: "success", text: "Negocio guardado correctamente." });
+    setBusy(false);
+  };
+
+  const handleUpdateBusiness = async (
+    businessId: string,
+    payload: {
+      name?: string;
+      address?: string;
+      city?: string;
+      category?: string;
+      phone?: string;
+      email?: string;
+      website?: string;
+      opening_hours?: string;
+      owner_name?: string;
+      owner_role?: string;
+      direct_phone?: string;
+      direct_email?: string;
+      contact_notes?: string;
+      prospect_status?: ProspectStatus;
+      priority?: PriorityLevel;
+      last_contact_at?: string;
     },
-    [loadSavedBusinesses, profile.id, showMessage, supabase],
-  );
+  ) => {
+    const toNullable = (value?: string) => (value && value.trim() ? value.trim() : null);
 
-  const handleUpdateBusiness = useCallback(
-    async (
-      businessId: string,
-      payload: {
-        name?: string;
-        address?: string;
-        city?: string;
-        category?: string;
-        phone?: string;
-        email?: string;
-        website?: string;
-        opening_hours?: string;
-        owner_name?: string;
-        owner_role?: string;
-        direct_phone?: string;
-        direct_email?: string;
-        contact_notes?: string;
-        prospect_status?: ProspectStatus;
-        priority?: PriorityLevel;
-        last_contact_at?: string;
-      },
-    ) => {
-      const toNullable = (value?: string) => (value && value.trim() ? value.trim() : null);
+    setBusy(true);
 
-      setBusy(true);
+    const { error } = await supabase
+      .from("businesses")
+      .update({
+        name: payload.name?.trim(),
+        address: toNullable(payload.address),
+        city: toNullable(payload.city),
+        category: toNullable(payload.category),
+        phone: toNullable(payload.phone),
+        email: toNullable(payload.email),
+        website: toNullable(payload.website),
+        opening_hours: toNullable(payload.opening_hours),
+        owner_name: toNullable(payload.owner_name),
+        owner_role: toNullable(payload.owner_role),
+        direct_phone: toNullable(payload.direct_phone),
+        direct_email: toNullable(payload.direct_email),
+        contact_notes: toNullable(payload.contact_notes),
+        prospect_status: payload.prospect_status,
+        priority: payload.priority,
+        last_contact_at: payload.last_contact_at ? new Date(payload.last_contact_at).toISOString() : null,
+      })
+      .eq("id", businessId);
 
-      const { error } = await supabase
-        .from("businesses")
-        .update({
-          name: payload.name?.trim(),
-          address: toNullable(payload.address),
-          city: toNullable(payload.city),
-          category: toNullable(payload.category),
-          phone: toNullable(payload.phone),
-          email: toNullable(payload.email),
-          website: toNullable(payload.website),
-          opening_hours: toNullable(payload.opening_hours),
-          owner_name: toNullable(payload.owner_name),
-          owner_role: toNullable(payload.owner_role),
-          direct_phone: toNullable(payload.direct_phone),
-          direct_email: toNullable(payload.direct_email),
-          contact_notes: toNullable(payload.contact_notes),
-          prospect_status: payload.prospect_status,
-          priority: payload.priority,
-          last_contact_at: payload.last_contact_at ? new Date(payload.last_contact_at).toISOString() : null,
-        })
-        .eq("id", businessId);
-
-      if (error) {
-        showMessage({ type: "error", text: `No se pudo actualizar: ${error.message}` });
-        setBusy(false);
-        return;
-      }
-
-      await loadSavedBusinesses();
-      showMessage({ type: "success", text: "Cambios guardados." });
+    if (error) {
+      showMessage({ type: "error", text: `No se pudo actualizar: ${error.message}` });
       setBusy(false);
-    },
-    [loadSavedBusinesses, showMessage, supabase],
-  );
+      return;
+    }
 
-  const handleAddNote = useCallback(
-    async (businessId: string, note: string) => {
-      setSavingNote(true);
+    await loadSavedBusinesses();
+    showMessage({ type: "success", text: "Cambios guardados." });
+    setBusy(false);
+  };
 
-      const { error } = await supabase.from("business_notes").insert({
-        business_id: businessId,
-        user_id: profile.id,
-        note_text: note,
-      });
+  const handleAddNote = async (businessId: string, note: string) => {
+    setSavingNote(true);
 
-      if (error) {
-        showMessage({ type: "error", text: `No se pudo guardar nota: ${error.message}` });
-        setSavingNote(false);
-        return;
-      }
+    const { error } = await supabase.from("business_notes").insert({
+      business_id: businessId,
+      user_id: profile.id,
+      note_text: note,
+    });
 
-      await loadSavedBusinesses();
-      const { data } = await supabase
-        .from("business_notes")
-        .select("*")
-        .eq("business_id", businessId)
-        .order("created_at", { ascending: false });
-
-      setSelectedNotes(data ?? []);
-      showMessage({ type: "success", text: "Nota añadida." });
+    if (error) {
+      showMessage({ type: "error", text: `No se pudo guardar nota: ${error.message}` });
       setSavingNote(false);
-    },
-    [loadSavedBusinesses, profile.id, showMessage, supabase],
-  );
+      return;
+    }
+
+    await loadSavedBusinesses();
+    const { data } = await supabase
+      .from("business_notes")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false });
+
+    setSelectedNotes(data ?? []);
+    showMessage({ type: "success", text: "Nota añadida." });
+    setSavingNote(false);
+  };
 
   return (
     <div className="relative flex h-[calc(100vh-78px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:rounded-2xl lg:border lg:border-slate-800">
@@ -373,16 +422,24 @@ export function MapWorkspace({ profile }: Props) {
           />
           <button
             type="button"
+            onClick={() => setShowSweepMode(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-xs font-medium text-cyan-100 transition hover:border-cyan-500"
+          >
+            <ScanSearch className="h-4 w-4" />
+            Modo Barrido
+          </button>
+          <button
+            type="button"
             onClick={() => setShowCsvImport(true)}
             className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-500"
           >
             <Upload className="h-4 w-4" />
             Importar CSV
           </button>
-          <SummaryTag total={combinedBusinesses.length} filtered={filteredBusinesses.length} />
+          <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
         </div>
 
-        <div className="flex items-center justify-between lg:hidden">
+        <div className="flex items-center justify-between gap-2 lg:hidden">
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
@@ -391,14 +448,24 @@ export function MapWorkspace({ profile }: Props) {
             <Filter className="h-4 w-4" />
             Filtros
           </button>
-          <button
-            type="button"
-            onClick={() => setShowCsvImport(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
-          >
-            <Upload className="h-4 w-4" />
-            CSV
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowSweepMode(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-cyan-700/50 bg-slate-950/90 px-3 py-2 text-xs text-cyan-100"
+            >
+              <ScanSearch className="h-4 w-4" />
+              Barrido
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCsvImport(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
+            >
+              <Upload className="h-4 w-4" />
+              CSV
+            </button>
+          </div>
         </div>
 
         {showMobileFilters ? (
@@ -410,7 +477,7 @@ export function MapWorkspace({ profile }: Props) {
               onReset={() => setFilters(DEFAULT_FILTERS)}
             />
             <div className="mt-2">
-              <SummaryTag total={combinedBusinesses.length} filtered={filteredBusinesses.length} />
+              <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
             </div>
           </div>
         ) : null}
@@ -451,10 +518,11 @@ export function MapWorkspace({ profile }: Props) {
         />
       </div>
 
-      <div className="hidden h-full w-[420px] shrink-0 lg:block">
+      <div className="hidden h-full w-[440px] shrink-0 lg:block">
         <BusinessPanel
-          key={selectedBusiness?.key ?? "none-desktop"}
+          key={selectedRecord?.business.key ?? "none-desktop"}
           selected={selectedBusiness}
+          insight={selectedInsight}
           notes={selectedNotes}
           notesLoading={loadingNotes}
           busy={busy}
@@ -466,15 +534,16 @@ export function MapWorkspace({ profile }: Props) {
         />
       </div>
 
-      {showMobilePanel && selectedBusiness ? (
+      {showMobilePanel && selectedRecord ? (
         <div className="fixed inset-0 z-[500] bg-slate-950/55 backdrop-blur-sm lg:hidden" onClick={() => setShowMobilePanel(false)}>
           <div
             className="absolute inset-x-0 bottom-0 top-[16%] overflow-hidden rounded-t-2xl border-t border-slate-700 bg-slate-950"
             onClick={(event) => event.stopPropagation()}
           >
             <BusinessPanel
-              key={selectedBusiness.key}
+              key={selectedRecord.business.key}
               selected={selectedBusiness}
+              insight={selectedInsight}
               notes={selectedNotes}
               notesLoading={loadingNotes}
               busy={busy}
@@ -486,6 +555,20 @@ export function MapWorkspace({ profile }: Props) {
             />
           </div>
         </div>
+      ) : null}
+
+      {showSweepMode ? (
+        <SweepModeModal
+          records={sweepRecords}
+          selectedRecord={selectedSweepRecord}
+          onClose={() => setShowSweepMode(false)}
+          onSelect={(record) => setSweepSelectedKey(record.business.key)}
+          onOpenBusiness={(record) => {
+            setSelectedKey(record.business.key);
+            setShowSweepMode(false);
+            setShowMobilePanel(true);
+          }}
+        />
       ) : null}
 
       <CsvImportDialog
@@ -577,6 +660,72 @@ function FiltersRow({
       >
         Limpiar
       </button>
+    </div>
+  );
+}
+
+function SweepModeModal({
+  records,
+  selectedRecord,
+  onClose,
+  onSelect,
+  onOpenBusiness,
+}: {
+  records: ProspectRecord[];
+  selectedRecord: ProspectRecord | null;
+  onClose: () => void;
+  onSelect: (record: ProspectRecord) => void;
+  onOpenBusiness: (record: ProspectRecord) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[520] bg-slate-950/70 p-3 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="mx-auto flex h-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl xl:grid xl:grid-cols-[1.2fr_0.8fr]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex min-h-0 flex-col border-b border-slate-800 xl:border-b-0 xl:border-r">
+          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Modo Barrido</p>
+              <h2 className="mt-1 text-lg font-semibold text-slate-100">Mejores negocios de la zona visible</h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200"
+            >
+              Cerrar
+            </button>
+          </div>
+
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            {records.length === 0 ? (
+              <p className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm text-slate-400">
+                No hay suficientes negocios visibles para generar barrido. Mueve el mapa o baja el zoom.
+              </p>
+            ) : null}
+            {records.map((record) => (
+              <ProspectCard key={record.business.key} record={record} onSelect={onSelect} actionLabel="Ver detalle" />
+            ))}
+          </div>
+        </div>
+
+        <div className="min-h-0 space-y-4 overflow-y-auto px-4 py-4">
+          <ProspectDetailPanel
+            record={selectedRecord}
+            emptyText="Selecciona un negocio del barrido para ver servicio, accion y mensajes."
+          />
+          {selectedRecord ? (
+            <button
+              type="button"
+              onClick={() => onOpenBusiness(selectedRecord)}
+              className="w-full rounded-lg bg-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+            >
+              Abrir ficha del negocio
+            </button>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }

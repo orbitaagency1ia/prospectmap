@@ -27,6 +27,9 @@ export type MapMarker = {
   lng: number;
   name: string;
   category: string | null;
+  score: number;
+  serviceLabel: string;
+  nextAction: string;
   status: ProspectStatus;
   worked: boolean;
   lastInteractionAt: string | null;
@@ -147,7 +150,9 @@ export function MapCanvas({
                 <div className="min-w-[180px] space-y-1 text-xs">
                   <p className="font-semibold text-slate-50">{marker.name}</p>
                   <p className="text-slate-300">{marker.category ?? "Sin categoría"}</p>
+                  <p className="text-cyan-200">Score: {marker.score}</p>
                   <p className="text-slate-300">Estado: {status.label}</p>
+                  <p className="text-slate-300">Servicio: {marker.serviceLabel}</p>
                   <p className="text-slate-400">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
                   <p className="line-clamp-2 text-slate-400">
                     {marker.latestNote ? `Nota: ${marker.latestNote}` : `Última interacción: ${formatDateTime(marker.lastInteractionAt)}`}
@@ -159,7 +164,10 @@ export function MapCanvas({
                 <div className="space-y-1 text-xs">
                   <p className="font-semibold">{marker.name}</p>
                   <p>{marker.category ?? "Sin categoría"}</p>
+                  <p>Score {marker.score}</p>
                   <p>{status.label}</p>
+                  <p>{marker.serviceLabel}</p>
+                  <p>{marker.nextAction}</p>
                   <p>{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
                 </div>
               </Popup>

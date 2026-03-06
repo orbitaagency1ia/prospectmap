@@ -26,6 +26,7 @@ export type CombinedBusiness = {
   worked: boolean;
   name: string;
   category: string | null;
+  city: string | null;
   lat: number;
   lng: number;
   status: ProspectStatus;

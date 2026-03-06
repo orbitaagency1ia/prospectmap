@@ -10,6 +10,7 @@ import {
   type PriorityLevel,
   type ProspectStatus,
 } from "@/lib/constants";
+import { OPPORTUNITY_META, type ProspectInsight } from "@/lib/prospect-intelligence";
 import type { CombinedBusiness, NoteRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
@@ -34,6 +35,7 @@ type EditableBusiness = {
 
 type Props = {
   selected: CombinedBusiness | null;
+  insight: ProspectInsight | null;
   notes: NoteRow[];
   notesLoading: boolean;
   busy: boolean;
@@ -111,6 +113,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
 
 export function BusinessPanel({
   selected,
+  insight,
   notes,
   notesLoading,
   busy,
@@ -201,6 +204,67 @@ export function BusinessPanel({
               {busy ? "Guardando..." : "Guardar negocio"}
             </button>
           </div>
+        ) : null}
+
+        {insight ? (
+          <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
+                Score {insight.score}
+              </span>
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-2 py-1 text-xs font-medium",
+                  OPPORTUNITY_META[insight.tier].badgeClass,
+                )}
+              >
+                {insight.tierLabel}
+              </span>
+              <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
+                {insight.service.label}
+              </span>
+            </div>
+
+            <InsightBlock title="Siguiente mejor acción">
+              <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
+              <p className="mt-1 text-sm text-slate-300">
+                {insight.nextAction.channel} · {insight.nextAction.reason}
+              </p>
+            </InsightBlock>
+
+            <InsightBlock title="Servicio Órbita recomendado">
+              <p className="text-sm font-medium text-slate-100">{insight.service.label}</p>
+              <p className="mt-1 text-sm text-slate-300">{insight.service.reason}</p>
+            </InsightBlock>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Mensajes sugeridos</p>
+              <MessageBlock label="Mensaje inicial" content={insight.messages.initial} />
+              <MessageBlock label="Follow-up 1" content={insight.messages.followUp1} />
+              <MessageBlock label="Follow-up 2" content={insight.messages.followUp2} />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Lógica del score</p>
+              {insight.breakdown.map((item) => (
+                <div key={item.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-medium text-slate-200">{item.label}</p>
+                    <p
+                      className={cn(
+                        "font-mono text-xs",
+                        item.direction === "minus" ? "text-rose-300" : "text-cyan-200",
+                      )}
+                    >
+                      {item.direction === "minus" ? "-" : "+"}
+                      {item.value.toFixed(1)} / {item.max}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-500">{item.reason}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         ) : null}
 
         <form className="space-y-3" onSubmit={handleSave}>
@@ -421,6 +485,36 @@ export function BusinessPanel({
         </div>
       ) : null}
     </aside>
+  );
+}
+
+function InsightBlock({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+      <div className="mt-1">{children}</div>
+    </section>
+  );
+}
+
+function MessageBlock({
+  label,
+  content,
+}: {
+  label: string;
+  content: string;
+}) {
+  return (
+    <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 text-sm text-slate-200">{content}</p>
+    </article>
   );
 }
 

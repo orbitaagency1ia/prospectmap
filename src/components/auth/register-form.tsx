@@ -102,7 +102,7 @@ export function RegisterForm() {
     }
 
     if (data.session) {
-      router.replace("/map");
+      router.replace("/today");
       router.refresh();
       return;
     }

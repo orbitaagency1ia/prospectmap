@@ -15,7 +15,7 @@ export default async function OnboardingPage() {
   const existingProfile = profile;
 
   if (isProfileComplete(profile)) {
-    redirect("/map");
+    redirect("/today");
   }
 
   return (
