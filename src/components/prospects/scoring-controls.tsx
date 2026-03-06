@@ -21,7 +21,7 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-slate-300">Reglas del score</h2>
           <p className="mt-1 text-sm text-slate-400">
-            Lógica visible y editable. Los cambios se guardan en este navegador.
+            Lógica visible y editable. Se persiste por cuenta cuando `account_settings` está disponible y mantiene fallback local.
           </p>
         </div>
         <button
@@ -65,7 +65,7 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
       </div>
 
       <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-500">
-        Base actual: {BASE_SUMMARY(DEFAULT_SCORING_CONFIG)}. Ajusta pesos, no estados ni datos del negocio.
+        Base de referencia: {BASE_SUMMARY(DEFAULT_SCORING_CONFIG)}. Ajusta pesos, no estados ni datos del negocio.
       </div>
     </section>
   );

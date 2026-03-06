@@ -1,4 +1,4 @@
-import { AccountProfileForm } from "@/components/layout/account-profile-form";
+import { SettingsWorkspace } from "@/components/layout/settings-workspace";
 import { requireUser } from "@/lib/auth";
 
 export default async function SettingsPage() {
@@ -11,8 +11,7 @@ export default async function SettingsPage() {
     .maybeSingle();
 
   return (
-    <AccountProfileForm
-      mode="settings"
+    <SettingsWorkspace
       userId={user.id}
       email={profile?.email ?? user.email ?? ""}
       initialCompany={profile?.company_name ?? ""}

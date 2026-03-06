@@ -10,7 +10,7 @@ import {
   type PriorityLevel,
   type ProspectStatus,
 } from "@/lib/constants";
-import { OPPORTUNITY_META, type ProspectInsight } from "@/lib/prospect-intelligence";
+import { OPPORTUNITY_META, VERTICAL_CONFIGS, type ProspectInsight, type VerticalId } from "@/lib/prospect-intelligence";
 import type { CombinedBusiness, NoteRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
@@ -19,6 +19,7 @@ type EditableBusiness = {
   address: string;
   city: string;
   category: string;
+  vertical_override: VerticalId | "";
   phone: string;
   email: string;
   website: string;
@@ -36,6 +37,7 @@ type EditableBusiness = {
 type Props = {
   selected: CombinedBusiness | null;
   insight: ProspectInsight | null;
+  showDemoBadges?: boolean;
   notes: NoteRow[];
   notesLoading: boolean;
   busy: boolean;
@@ -51,6 +53,7 @@ const emptyForm: EditableBusiness = {
   address: "",
   city: "",
   category: "",
+  vertical_override: "",
   phone: "",
   email: "",
   website: "",
@@ -81,6 +84,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
       address: valueToInput(business.address),
       city: valueToInput(business.city),
       category: valueToInput(business.category),
+      vertical_override: business.vertical_override ?? "",
       phone: valueToInput(business.phone),
       email: valueToInput(business.email),
       website: valueToInput(business.website),
@@ -100,6 +104,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
     ...emptyForm,
     name: selected.name,
     category: selected.category ?? "",
+    vertical_override: "",
     address: selected.overpass?.address ?? "",
     city: selected.overpass?.city ?? "",
     phone: selected.overpass?.phone ?? "",
@@ -114,6 +119,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
 export function BusinessPanel({
   selected,
   insight,
+  showDemoBadges = false,
   notes,
   notesLoading,
   busy,
@@ -223,18 +229,63 @@ export function BusinessPanel({
               <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
                 {insight.service.label}
               </span>
+              <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
+                {insight.effectiveVerticalLabel}
+              </span>
+              {insight.marketVertical !== insight.effectiveVertical ? (
+                <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-400">
+                  Mercado detectado: {insight.marketVerticalLabel}
+                </span>
+              ) : null}
             </div>
+
+            {showDemoBadges && insight.demoBadges.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {insight.demoBadges.map((badge) => (
+                  <span
+                    key={badge.label}
+                    className={cn(
+                      "inline-flex rounded-full border px-2 py-1 text-xs font-medium",
+                      badge.tone === "emerald"
+                        ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
+                        : badge.tone === "amber"
+                          ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
+                          : badge.tone === "violet"
+                            ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
+                            : badge.tone === "cyan"
+                              ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-200"
+                              : "border-slate-600 bg-slate-700/50 text-slate-200",
+                    )}
+                  >
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
 
             <InsightBlock title="Siguiente mejor acción">
               <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {insight.nextAction.channel} · {insight.nextAction.reason}
               </p>
+              <p className="mt-2 text-xs text-slate-500">Urgencia: {insight.nextAction.urgency}</p>
             </InsightBlock>
 
             <InsightBlock title="Servicio Órbita recomendado">
               <p className="text-sm font-medium text-slate-100">{insight.service.label}</p>
               <p className="mt-1 text-sm text-slate-300">{insight.service.reason}</p>
+              <div className="mt-2 space-y-1">
+                {insight.service.reasons.map((reason) => (
+                  <p key={reason} className="text-xs text-slate-500">
+                    • {reason}
+                  </p>
+                ))}
+              </div>
+            </InsightBlock>
+
+            <InsightBlock title="Dolor principal detectado">
+              <p className="text-sm font-medium text-slate-100">{insight.painPoint}</p>
+              <p className="mt-1 text-sm text-slate-300">{insight.commercialFocus}</p>
             </InsightBlock>
 
             <div className="space-y-2">
@@ -261,6 +312,16 @@ export function BusinessPanel({
                     </p>
                   </div>
                   <p className="mt-1 text-[11px] text-slate-500">{item.reason}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Objeciones probables</p>
+              {insight.objections.map((item) => (
+                <div key={item.objection} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="text-sm font-medium text-slate-100">{item.objection}</p>
+                  <p className="mt-1 text-sm text-slate-300">{item.response}</p>
                 </div>
               ))}
             </div>
@@ -311,6 +372,26 @@ export function BusinessPanel({
               </select>
             </Field>
           </div>
+
+          <Field label="Vertical del negocio">
+            <select
+              value={formState.vertical_override}
+              onChange={(event) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  vertical_override: event.target.value as VerticalId | "",
+                }))
+              }
+              className="field"
+            >
+              <option value="">Usar vertical global</option>
+              {Object.values(VERTICAL_CONFIGS).map((vertical) => (
+                <option key={vertical.id} value={vertical.id}>
+                  {vertical.label}
+                </option>
+              ))}
+            </select>
+          </Field>
 
           <Field label="Dirección">
             <input

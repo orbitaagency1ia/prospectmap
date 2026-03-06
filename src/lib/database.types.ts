@@ -46,6 +46,12 @@ export type Database = {
           user_id: string;
           source: "overpass" | "csv" | "manual";
           external_source_id: string | null;
+          vertical_override:
+            | "autoescuelas"
+            | "clinicas"
+            | "hoteles"
+            | "general_b2b"
+            | null;
           name: string;
           address: string | null;
           city: string | null;
@@ -81,6 +87,12 @@ export type Database = {
           user_id: string;
           source: "overpass" | "csv" | "manual";
           external_source_id?: string | null;
+          vertical_override?:
+            | "autoescuelas"
+            | "clinicas"
+            | "hoteles"
+            | "general_b2b"
+            | null;
           name: string;
           address?: string | null;
           city?: string | null;
@@ -114,6 +126,12 @@ export type Database = {
         Update: {
           source?: "overpass" | "csv" | "manual";
           external_source_id?: string | null;
+          vertical_override?:
+            | "autoescuelas"
+            | "clinicas"
+            | "hoteles"
+            | "general_b2b"
+            | null;
           name?: string;
           address?: string | null;
           city?: string | null;
@@ -148,6 +166,42 @@ export type Database = {
             foreignKeyName: "businesses_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      account_settings: {
+        Row: {
+          user_id: string;
+          vertical: "autoescuelas" | "clinicas" | "hoteles" | "general_b2b";
+          demo_mode: boolean;
+          scoring_config: Json;
+          commercial_preferences: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          vertical?: "autoescuelas" | "clinicas" | "hoteles" | "general_b2b";
+          demo_mode?: boolean;
+          scoring_config?: Json;
+          commercial_preferences?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          vertical?: "autoescuelas" | "clinicas" | "hoteles" | "general_b2b";
+          demo_mode?: boolean;
+          scoring_config?: Json;
+          commercial_preferences?: Json;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "account_settings_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           }

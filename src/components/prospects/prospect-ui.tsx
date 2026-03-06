@@ -10,6 +10,7 @@ type ProspectCardProps = {
   record: ProspectRecord;
   onSelect?: (record: ProspectRecord) => void;
   actionLabel?: string;
+  showDemoBadges?: boolean;
 };
 
 export function OpportunityBadge({ record }: { record: ProspectRecord }) {
@@ -35,18 +36,19 @@ export function UrgencyBadge({ urgency }: { urgency: UrgencyLevel }) {
   );
 }
 
-export function ProspectCard({ record, onSelect, actionLabel = "Abrir" }: ProspectCardProps) {
+export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemoBadges = false }: ProspectCardProps) {
   const status = STATUS_META[record.business.status];
   const Icon = record.insight.isHot ? Flame : record.insight.needsFollowUp ? RefreshCw : Target;
 
   return (
-    <article className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
+    <article className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.28)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-slate-100">{record.business.name}</p>
           <p className="mt-1 text-xs text-slate-400">
             {record.insight.sectorLabel} · {record.insight.cityLabel}
           </p>
+          <p className="mt-2 max-w-xl text-sm text-slate-300">{record.insight.painPoint}</p>
         </div>
         <div className="text-right">
           <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Score</p>
@@ -58,6 +60,33 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir" }: Prospe
         <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", status.badgeClass)}>{status.label}</span>
         <OpportunityBadge record={record} />
         <UrgencyBadge urgency={record.insight.nextAction.urgency} />
+        <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
+          {record.insight.effectiveVerticalLabel}
+        </span>
+        <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
+          {record.insight.service.shortLabel}
+        </span>
+        {showDemoBadges
+          ? record.insight.demoBadges.slice(0, 2).map((badge) => (
+              <span
+                key={`${record.business.key}-${badge.label}`}
+                className={cn(
+                  "inline-flex rounded-full border px-2 py-1 text-xs font-medium",
+                  badge.tone === "emerald"
+                    ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
+                    : badge.tone === "amber"
+                      ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
+                      : badge.tone === "violet"
+                        ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
+                        : badge.tone === "cyan"
+                          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-200"
+                          : "border-slate-600 bg-slate-700/50 text-slate-200",
+                )}
+              >
+                {badge.label}
+              </span>
+            ))
+          : null}
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -73,6 +102,11 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir" }: Prospe
             {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
           </p>
         </div>
+      </div>
+
+      <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+        <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Foco comercial</p>
+        <p className="mt-1 text-sm text-slate-300">{record.insight.commercialFocus}</p>
       </div>
 
       <div className="mt-4 flex items-center justify-between gap-3">

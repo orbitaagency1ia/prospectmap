@@ -17,15 +17,17 @@ import {
   buildProspectRecords,
   filterByBounds,
   sortProspectRecordsByScore,
+  VERTICAL_CONFIGS,
   type ProspectRecord,
+  type VerticalId,
 } from "@/lib/prospect-intelligence";
 import { createClient } from "@/lib/supabase/client";
 import type { BusinessRow, CombinedBusiness, NoteRow, OverpassResponse, ProfileRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import { useCommercialConfig } from "../commercial/use-commercial-config";
 import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
 import { ProspectCard } from "../prospects/prospect-ui";
-import { useScoringConfig } from "../prospects/use-scoring-config";
 
 import { BusinessPanel } from "./business-panel";
 import { CsvImportDialog } from "./csv-import-dialog";
@@ -51,7 +53,7 @@ type InfoMessage = {
 
 export function MapWorkspace({ profile }: Props) {
   const supabase = createClient();
-  const { config } = useScoringConfig();
+  const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
 
   const [savedBusinesses, setSavedBusinesses] = useState<BusinessRow[]>([]);
   const [overpassBusinesses, setOverpassBusinesses] = useState<OverpassResponse["businesses"]>([]);
@@ -169,8 +171,8 @@ export function MapWorkspace({ profile }: Props) {
   const categoryOptions = useMemo(() => buildCategoryOptions(combinedBusinesses), [combinedBusinesses]);
 
   const prospectRecords = useMemo(
-    () => buildProspectRecords(combinedBusinesses, config, profile.city_name),
-    [combinedBusinesses, config, profile.city_name],
+    () => buildProspectRecords(combinedBusinesses, settings, profile.city_name),
+    [combinedBusinesses, profile.city_name, settings],
   );
 
   const filteredRecords = useMemo(
@@ -332,6 +334,7 @@ export function MapWorkspace({ profile }: Props) {
       address?: string;
       city?: string;
       category?: string;
+      vertical_override?: VerticalId | "";
       phone?: string;
       email?: string;
       website?: string;
@@ -357,6 +360,7 @@ export function MapWorkspace({ profile }: Props) {
         address: toNullable(payload.address),
         city: toNullable(payload.city),
         category: toNullable(payload.category),
+        vertical_override: payload.vertical_override || null,
         phone: toNullable(payload.phone),
         email: toNullable(payload.email),
         website: toNullable(payload.website),
@@ -420,6 +424,14 @@ export function MapWorkspace({ profile }: Props) {
             onChange={setFilters}
             onReset={() => setFilters(DEFAULT_FILTERS)}
           />
+          <CommercialContextInline
+            ready={ready}
+            vertical={settings.vertical}
+            demoMode={settings.demoMode}
+            saveState={saveState}
+            onVerticalChange={setVertical}
+            onDemoModeChange={setDemoMode}
+          />
           <button
             type="button"
             onClick={() => setShowSweepMode(true)}
@@ -440,14 +452,19 @@ export function MapWorkspace({ profile }: Props) {
         </div>
 
         <div className="flex items-center justify-between gap-2 lg:hidden">
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
-            onClick={() => setShowMobileFilters((value) => !value)}
-          >
-            <Filter className="h-4 w-4" />
-            Filtros
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
+              onClick={() => setShowMobileFilters((value) => !value)}
+            >
+              <Filter className="h-4 w-4" />
+              Filtros
+            </button>
+            <span className="inline-flex rounded-full border border-slate-700 bg-slate-950/90 px-3 py-2 text-[11px] font-medium text-slate-300">
+              {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Cargando..."}
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -476,7 +493,16 @@ export function MapWorkspace({ profile }: Props) {
               onChange={setFilters}
               onReset={() => setFilters(DEFAULT_FILTERS)}
             />
-            <div className="mt-2">
+            <div className="mt-3 space-y-2">
+              <CommercialContextInline
+                ready={ready}
+                vertical={settings.vertical}
+                demoMode={settings.demoMode}
+                saveState={saveState}
+                onVerticalChange={setVertical}
+                onDemoModeChange={setDemoMode}
+                mobile
+              />
               <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
             </div>
           </div>
@@ -523,6 +549,7 @@ export function MapWorkspace({ profile }: Props) {
           key={selectedRecord?.business.key ?? "none-desktop"}
           selected={selectedBusiness}
           insight={selectedInsight}
+          showDemoBadges={settings.demoMode}
           notes={selectedNotes}
           notesLoading={loadingNotes}
           busy={busy}
@@ -544,6 +571,7 @@ export function MapWorkspace({ profile }: Props) {
               key={selectedRecord.business.key}
               selected={selectedBusiness}
               insight={selectedInsight}
+              showDemoBadges={settings.demoMode}
               notes={selectedNotes}
               notesLoading={loadingNotes}
               busy={busy}
@@ -561,6 +589,8 @@ export function MapWorkspace({ profile }: Props) {
         <SweepModeModal
           records={sweepRecords}
           selectedRecord={selectedSweepRecord}
+          activeVerticalLabel={VERTICAL_CONFIGS[settings.vertical].label}
+          showDemoBadges={settings.demoMode}
           onClose={() => setShowSweepMode(false)}
           onSelect={(record) => setSweepSelectedKey(record.business.key)}
           onOpenBusiness={(record) => {
@@ -667,12 +697,16 @@ function FiltersRow({
 function SweepModeModal({
   records,
   selectedRecord,
+  activeVerticalLabel,
+  showDemoBadges,
   onClose,
   onSelect,
   onOpenBusiness,
 }: {
   records: ProspectRecord[];
   selectedRecord: ProspectRecord | null;
+  activeVerticalLabel: string;
+  showDemoBadges: boolean;
   onClose: () => void;
   onSelect: (record: ProspectRecord) => void;
   onOpenBusiness: (record: ProspectRecord) => void;
@@ -688,6 +722,7 @@ function SweepModeModal({
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Modo Barrido</p>
               <h2 className="mt-1 text-lg font-semibold text-slate-100">Mejores negocios de la zona visible</h2>
+              <p className="mt-1 text-sm text-slate-400">Vertical activa: {activeVerticalLabel}</p>
             </div>
             <button
               type="button"
@@ -705,7 +740,13 @@ function SweepModeModal({
               </p>
             ) : null}
             {records.map((record) => (
-              <ProspectCard key={record.business.key} record={record} onSelect={onSelect} actionLabel="Ver detalle" />
+              <ProspectCard
+                key={record.business.key}
+                record={record}
+                onSelect={onSelect}
+                actionLabel="Ver detalle"
+                showDemoBadges={showDemoBadges}
+              />
             ))}
           </div>
         </div>
@@ -713,6 +754,7 @@ function SweepModeModal({
         <div className="min-h-0 space-y-4 overflow-y-auto px-4 py-4">
           <ProspectDetailPanel
             record={selectedRecord}
+            showDemoBadges={showDemoBadges}
             emptyText="Selecciona un negocio del barrido para ver servicio, accion y mensajes."
           />
           {selectedRecord ? (
@@ -726,6 +768,68 @@ function SweepModeModal({
           ) : null}
         </div>
       </div>
+    </div>
+  );
+}
+
+function CommercialContextInline({
+  ready,
+  vertical,
+  demoMode,
+  saveState,
+  onVerticalChange,
+  onDemoModeChange,
+  mobile = false,
+}: {
+  ready: boolean;
+  vertical: VerticalId;
+  demoMode: boolean;
+  saveState: "idle" | "saving" | "saved" | "local_only" | "error";
+  onVerticalChange: (vertical: VerticalId) => void;
+  onDemoModeChange: (demoMode: boolean) => void;
+  mobile?: boolean;
+}) {
+  const saveLabel =
+    saveState === "saving"
+      ? "Guardando"
+      : saveState === "saved"
+        ? "Supabase"
+        : saveState === "local_only"
+          ? "Solo local"
+          : saveState === "error"
+            ? "Error"
+            : "Activo";
+
+  return (
+    <div className={cn("flex flex-wrap items-center gap-2", mobile ? "w-full" : "")}>
+      <select
+        value={vertical}
+        onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
+        disabled={!ready}
+        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 disabled:opacity-60"
+      >
+        {Object.values(VERTICAL_CONFIGS).map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        onClick={() => onDemoModeChange(!demoMode)}
+        disabled={!ready}
+        className={cn(
+          "rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60",
+          demoMode
+            ? "border-amber-500/60 bg-amber-500/15 text-amber-100"
+            : "border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500",
+        )}
+      >
+        Demo {demoMode ? "ON" : "OFF"}
+      </button>
+      <span className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-400">
+        {saveLabel}
+      </span>
     </div>
   );
 }

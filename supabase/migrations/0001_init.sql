@@ -18,6 +18,7 @@ create table if not exists public.businesses (
   user_id uuid not null references public.profiles(id) on delete cascade,
   source text not null check (source in ('overpass', 'csv', 'manual')),
   external_source_id text,
+  vertical_override text check (vertical_override in ('autoescuelas', 'clinicas', 'hoteles', 'general_b2b')),
   name text not null,
   address text,
   city text,
@@ -48,6 +49,16 @@ create table if not exists public.businesses (
   ),
   priority text not null default 'media' check (priority in ('alta', 'media', 'baja')),
   last_contact_at timestamptz,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.account_settings (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  vertical text not null default 'general_b2b' check (vertical in ('autoescuelas', 'clinicas', 'hoteles', 'general_b2b')),
+  demo_mode boolean not null default false,
+  scoring_config jsonb not null default '{}'::jsonb,
+  commercial_preferences jsonb not null default '{"preferred_outreach":"mixto","sales_narrative":"captacion"}'::jsonb,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -90,6 +101,9 @@ create index if not exists businesses_user_category_idx
 create index if not exists businesses_user_updated_idx
   on public.businesses(user_id, updated_at desc);
 
+create index if not exists businesses_user_vertical_override_idx
+  on public.businesses(user_id, vertical_override);
+
 create index if not exists business_notes_user_business_idx
   on public.business_notes(user_id, business_id, created_at desc);
 
@@ -128,6 +142,11 @@ for each row execute function public.set_updated_at();
 drop trigger if exists set_businesses_updated_at on public.businesses;
 create trigger set_businesses_updated_at
 before update on public.businesses
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_account_settings_updated_at on public.account_settings;
+create trigger set_account_settings_updated_at
+before update on public.account_settings
 for each row execute function public.set_updated_at();
 
 drop trigger if exists touch_business_when_note_created on public.business_notes;
@@ -172,6 +191,10 @@ begin
     city_lng = excluded.city_lng,
     updated_at = timezone('utc', now());
 
+  insert into public.account_settings (user_id)
+  values (new.id)
+  on conflict (user_id) do nothing;
+
   return new;
 end;
 $$;
@@ -183,6 +206,7 @@ for each row execute function public.handle_new_user();
 
 alter table public.profiles enable row level security;
 alter table public.businesses enable row level security;
+alter table public.account_settings enable row level security;
 alter table public.business_notes enable row level security;
 alter table public.csv_import_errors enable row level security;
 
@@ -227,6 +251,31 @@ create policy "businesses_update_own"
 drop policy if exists "businesses_delete_own" on public.businesses;
 create policy "businesses_delete_own"
   on public.businesses
+  for delete
+  using (auth.uid() = user_id);
+
+drop policy if exists "account_settings_select_own" on public.account_settings;
+create policy "account_settings_select_own"
+  on public.account_settings
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "account_settings_insert_own" on public.account_settings;
+create policy "account_settings_insert_own"
+  on public.account_settings
+  for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "account_settings_update_own" on public.account_settings;
+create policy "account_settings_update_own"
+  on public.account_settings
+  for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "account_settings_delete_own" on public.account_settings;
+create policy "account_settings_delete_own"
+  on public.account_settings
   for delete
   using (auth.uid() = user_id);
 
