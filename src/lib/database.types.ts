@@ -79,6 +79,7 @@ export type Database = {
             | "bloqueado";
           priority: "alta" | "media" | "baja";
           last_contact_at: string | null;
+          next_follow_up_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -120,6 +121,7 @@ export type Database = {
             | "bloqueado";
           priority?: "alta" | "media" | "baja";
           last_contact_at?: string | null;
+          next_follow_up_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -159,6 +161,7 @@ export type Database = {
             | "bloqueado";
           priority?: "alta" | "media" | "baja";
           last_contact_at?: string | null;
+          next_follow_up_at?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -167,6 +170,113 @@ export type Database = {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      prospect_lists: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          focus: string;
+          city_filter: string | null;
+          sector_filter: string | null;
+          service_focus:
+            | "asistente_multicanal"
+            | "automatizacion_interna"
+            | "avatar_ia"
+            | "saas_a_medida"
+            | null;
+          status: "borrador" | "activa" | "en_curso" | "completada" | "archivada";
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          focus?: string;
+          city_filter?: string | null;
+          sector_filter?: string | null;
+          service_focus?:
+            | "asistente_multicanal"
+            | "automatizacion_interna"
+            | "avatar_ia"
+            | "saas_a_medida"
+            | null;
+          status?: "borrador" | "activa" | "en_curso" | "completada" | "archivada";
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          focus?: string;
+          city_filter?: string | null;
+          sector_filter?: string | null;
+          service_focus?:
+            | "asistente_multicanal"
+            | "automatizacion_interna"
+            | "avatar_ia"
+            | "saas_a_medida"
+            | null;
+          status?: "borrador" | "activa" | "en_curso" | "completada" | "archivada";
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "prospect_lists_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      prospect_list_items: {
+        Row: {
+          id: string;
+          list_id: string;
+          user_id: string;
+          business_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          list_id: string;
+          user_id: string;
+          business_id: string;
+          created_at?: string;
+        };
+        Update: {
+          list_id?: string;
+          user_id?: string;
+          business_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "prospect_list_items_list_id_fkey";
+            columns: ["list_id"];
+            isOneToOne: false;
+            referencedRelation: "prospect_lists";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "prospect_list_items_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "prospect_list_items_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
             referencedColumns: ["id"];
           }
         ];

@@ -34,6 +34,7 @@ type EditableBusiness = {
   prospect_status: ProspectStatus;
   priority: PriorityLevel;
   last_contact_at: string;
+  next_follow_up_at: string;
 };
 
 type Props = {
@@ -68,6 +69,7 @@ const emptyForm: EditableBusiness = {
   prospect_status: "sin_contactar",
   priority: "media",
   last_contact_at: "",
+  next_follow_up_at: "",
 };
 
 function valueToInput(value: string | null) {
@@ -99,6 +101,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
       prospect_status: business.prospect_status,
       priority: business.priority,
       last_contact_at: business.last_contact_at ? business.last_contact_at.slice(0, 16) : "",
+      next_follow_up_at: business.next_follow_up_at ? business.next_follow_up_at.slice(0, 16) : "",
     };
   }
 
@@ -115,6 +118,7 @@ function buildFormState(selected: CombinedBusiness | null): EditableBusiness {
     opening_hours: selected.overpass?.opening_hours ?? "",
     prospect_status: "sin_contactar",
     priority: "media",
+    next_follow_up_at: "",
   };
 }
 
@@ -162,6 +166,7 @@ export function BusinessPanel({
     const payload: Partial<EditableBusiness> = {
       ...formState,
       last_contact_at: formState.last_contact_at,
+      next_follow_up_at: formState.next_follow_up_at,
     };
 
     await onUpdateBusiness(selected.business.id, payload);
@@ -250,7 +255,7 @@ export function BusinessPanel({
           <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.24)]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
-                Score {insight.score}
+                Prioridad comercial {insight.score}
               </span>
               <span
                 className={cn(
@@ -320,20 +325,57 @@ export function BusinessPanel({
                     onClick={() =>
                       handleQuickUpdate(
                         {
-                          prospect_status: "intento_contacto",
+                          prospect_status: selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
+                          priority: "alta",
+                          next_follow_up_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                        },
+                        "notas",
+                      )
+                    }
+                    icon={Flag}
+                    label="Trabajar ahora"
+                  />
+                  <QuickActionButton
+                    onClick={() =>
+                      handleQuickUpdate(
+                        {
+                          prospect_status: "contactado",
                           last_contact_at: new Date().toISOString().slice(0, 16),
                         },
                         "notas",
                       )
                     }
                     icon={Flag}
-                    label="Marcar intento"
+                    label="Marcar llamada hecha"
+                    tone="cyan"
                   />
                   <QuickActionButton
-                    onClick={() => handleQuickUpdate({ priority: "alta" }, "informe")}
+                    onClick={() =>
+                      handleQuickUpdate(
+                        {
+                          next_follow_up_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                        },
+                        "notas",
+                      )
+                    }
                     icon={Flag}
-                    label="Subir prioridad"
+                    label="Programar follow-up"
                     tone="amber"
+                  />
+                  <QuickActionButton
+                    onClick={() =>
+                      handleQuickUpdate(
+                        {
+                          prospect_status:
+                            selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
+                          priority: "alta",
+                        },
+                        "informe",
+                      )
+                    }
+                    icon={Flag}
+                    label="Mover a pipeline"
+                    tone="violet"
                   />
                   <QuickActionButton
                     onClick={() => handleQuickUpdate({ prospect_status: "perdido" }, "informe")}
@@ -361,12 +403,24 @@ export function BusinessPanel({
               <p className="mt-2 text-xs text-slate-500">{insight.ctaSuggestion}</p>
             </InsightBlock>
 
+            <InsightBlock title="Por qué atacarlo">
+              <p className="text-sm font-medium text-slate-100">{insight.attackSummary}</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <MetaBadge label="Valor estimado" value={insight.estimatedValueLabel} />
+                <MetaBadge label="Riesgo dominante" value={insight.riskSummary} />
+                <MetaBadge label="Qué hacer ahora" value={insight.nextAction.action} />
+                <MetaBadge label="Atención" value={insight.attentionLabel} />
+              </div>
+            </InsightBlock>
+
             <InsightBlock title="Siguiente mejor accion">
               <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {insight.nextAction.channel} · {insight.nextAction.reason}
               </p>
-              <p className="mt-2 text-xs text-slate-500">Urgencia: {insight.nextAction.urgency}</p>
+              <p className="mt-2 text-xs text-slate-500">
+                Urgencia: {insight.nextAction.urgency} · Valor: {insight.estimatedValueLabel}
+              </p>
             </InsightBlock>
 
             <InsightBlock title="Servicio Orbita recomendado">
@@ -610,6 +664,15 @@ export function BusinessPanel({
             />
           </Field>
 
+          <Field label="Próximo follow-up">
+            <input
+              type="datetime-local"
+              value={formState.next_follow_up_at}
+              onChange={(event) => setFormState((prev) => ({ ...prev, next_follow_up_at: event.target.value }))}
+              className="field"
+            />
+          </Field>
+
           {isSaved ? (
             <button
               type="submit"
@@ -710,6 +773,15 @@ function MessageBlock({
   );
 }
 
+function MetaBadge({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+      <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">{label}</p>
+      <p className="mt-1 text-sm text-slate-200">{value}</p>
+    </div>
+  );
+}
+
 function Field({
   label,
   children,
@@ -759,7 +831,7 @@ function QuickActionButton({
   onClick: () => void;
   icon: ComponentType<{ className?: string }>;
   label: string;
-  tone?: "cyan" | "amber" | "rose" | "slate";
+  tone?: "cyan" | "amber" | "rose" | "violet" | "slate";
 }) {
   return (
     <button
@@ -771,6 +843,8 @@ function QuickActionButton({
           ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100 hover:border-cyan-400"
           : tone === "amber"
             ? "border-amber-500/60 bg-amber-500/15 text-amber-100 hover:border-amber-400"
+            : tone === "violet"
+              ? "border-violet-500/60 bg-violet-500/15 text-violet-100 hover:border-violet-400"
             : tone === "rose"
               ? "border-rose-500/60 bg-rose-500/15 text-rose-100 hover:border-rose-400"
               : "border-slate-700 bg-slate-950 text-slate-200 hover:border-slate-500",

@@ -10,64 +10,77 @@
 
 :root {
   color-scheme: dark;
+  --pm-bg: #07111f;
+  --pm-bg-secondary: #0d1728;
+  --pm-surface: #122033;
+  --pm-border: #1e3350;
+  --pm-text: #f3f7fb;
+  --pm-text-secondary: #a9b9cc;
+  --pm-text-tertiary: #6e829a;
+  --pm-primary: #3abef9;
+  --pm-primary-hover: #20a9e0;
+  --pm-success: #2ed47a;
+  --pm-warning: #f5b942;
+  --pm-danger: #e35d6a;
+  --pm-premium: #8a7cff;
 }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 42%),
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 38%),
-    linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 1)),
-    #020617;
-  color: #e2e8f0;
+    radial-gradient(circle at top right, rgba(58, 190, 249, 0.14), transparent 34%),
+    radial-gradient(circle at top left, rgba(138, 124, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(13, 23, 40, 0.98), rgba(7, 17, 31, 1)),
+    var(--pm-bg);
+  color: var(--pm-text);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.3);
-  color: #f8fafc;
+  background: rgba(58, 190, 249, 0.26);
+  color: var(--pm-text);
 }
 
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background: #0f172a;
+  background: var(--pm-bg-secondary);
 }
 
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  background: #0f172a;
-  color: #e2e8f0;
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: var(--pm-bg-secondary);
+  color: var(--pm-text);
+  border: 1px solid rgba(30, 51, 80, 0.94);
 }
 
 .leaflet-tooltip {
-  background: rgba(2, 6, 23, 0.93);
-  border: 1px solid rgba(100, 116, 139, 0.8);
-  color: #e2e8f0;
-  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.45);
+  background: rgba(7, 17, 31, 0.95);
+  border: 1px solid rgba(30, 51, 80, 0.95);
+  color: var(--pm-text);
+  box-shadow: 0 16px 40px rgba(3, 9, 18, 0.45);
 }
 
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
-  background: rgba(14, 116, 144, 0.5);
+  background: rgba(32, 169, 224, 0.42);
 }
 
 .marker-cluster div {
-  background: rgba(2, 132, 199, 0.8);
-  color: #e2e8f0;
+  background: rgba(58, 190, 249, 0.86);
+  color: var(--pm-bg);
   font-weight: 700;
 }
 
 .field {
   width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(71, 85, 105, 0.8);
-  background: rgba(2, 6, 23, 0.75);
+  border-radius: 1rem;
+  border: 1px solid rgba(30, 51, 80, 0.92);
+  background: rgba(7, 17, 31, 0.82);
   padding: 0.5rem 0.75rem;
-  color: #f1f5f9;
+  color: var(--pm-text);
   font-size: 0.875rem;
   transition:
     border-color 140ms ease,
@@ -76,16 +89,16 @@ body {
 }
 
 .field::placeholder {
-  color: rgba(148, 163, 184, 0.8);
+  color: rgba(110, 130, 154, 0.88);
 }
 
 .field:hover {
-  border-color: rgba(100, 116, 139, 0.95);
-  background: rgba(2, 6, 23, 0.88);
+  border-color: rgba(58, 190, 249, 0.28);
+  background: rgba(9, 20, 36, 0.92);
 }
 
 .field:focus {
-  outline: 1px solid rgba(34, 211, 238, 0.8);
-  border-color: rgba(34, 211, 238, 0.8);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+  outline: 1px solid rgba(58, 190, 249, 0.76);
+  border-color: rgba(58, 190, 249, 0.7);
+  box-shadow: 0 0 0 3px rgba(58, 190, 249, 0.12);
 }

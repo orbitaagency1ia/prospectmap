@@ -5,6 +5,7 @@ import { buildDefaultAccountCommercialProfile, parseAccountCommercialProfileRow 
 import { parseAccountSettingsRow } from "./account-settings";
 import { buildDemoBadges, buildSuggestedMessages } from "./messaging";
 import { buildObjectionResponses } from "./objections";
+import { resolveAttentionState, buildPipelineSnapshot } from "./pipeline";
 import { buildCommercialFocus, buildNextBestAction, buildServiceRecommendation, detectPainPoint } from "./recommendations";
 import {
   buildAvoidTalkingPoints,
@@ -17,6 +18,7 @@ import {
   buildRiskSignals,
 } from "./report";
 import { calculateScoreLayer, resolveSectorPattern } from "./scoring";
+import { estimateCommercialValue } from "./valuation";
 import { getVerticalLabel, inferMarketVerticalId } from "./verticals";
 import type {
   AccountCommercialProfile,
@@ -24,6 +26,7 @@ import type {
   CommandCenterSummary,
   OpportunityTier,
   OrbitaService,
+  PipelineSnapshot,
   ProspectInsight,
   ProspectRecord,
   TodayBuckets,
@@ -136,6 +139,12 @@ export function buildProspectInsight(input: {
     painPoint,
   });
   const ctaSuggestion = buildCtaSuggestion(accountProfile, nextAction);
+  const valuation = estimateCommercialValue({
+    business,
+    accountProfile,
+    service,
+    score: scoring.score,
+  });
   const executiveSummary = buildExecutiveSummary({
     business,
     service,
@@ -146,6 +155,18 @@ export function buildProspectInsight(input: {
   const fitSummary =
     fitSignals[0] ??
     `Encaje ${service.fitLabel} basado en vertical, oferta y nivel de oportunidad actual.`;
+  const attention = resolveAttentionState({
+    status: business.status,
+    daysSinceTouch: scoring.daysSince,
+    nextFollowUpAt: business.business?.next_follow_up_at,
+    dueToday: scoring.dueToday,
+    needsFollowUp: scoring.needsFollowUp,
+  });
+  const attackSummary = `Motivo principal: ${fitSummary} Valor estimado ${valuation.estimatedValueLabel.toLowerCase()} y entrada por ${service.shortLabel.toLowerCase()}.`;
+  const riskSummary =
+    riskSignals[0] ??
+    missingData[0] ??
+    "Sin riesgo dominante detectado; revisar el negocio antes del primer toque.";
 
   return {
     score: scoring.score,
@@ -172,8 +193,20 @@ export function buildProspectInsight(input: {
     avoidTalkingPoints,
     commercialAngle,
     ctaSuggestion,
+    attackSummary,
+    riskSummary,
     sectorLabel: scoring.sectorLabel,
     cityLabel: scoring.cityLabel,
+    estimatedValue: valuation.estimatedValue,
+    weightedValue: valuation.weightedValue,
+    estimatedValueLabel: valuation.estimatedValueLabel,
+    valueBand: valuation.valueBand,
+    closeProbability: valuation.closeProbability,
+    daysSinceTouch: scoring.daysSince,
+    followUpAt: business.business?.next_follow_up_at ?? null,
+    followUpDue: attention.followUpDue,
+    coolingDown: attention.coolingDown,
+    attentionLabel: attention.attentionLabel,
     isHot: scoring.isHot,
     needsFollowUp: scoring.needsFollowUp,
     dueToday: scoring.dueToday,
@@ -316,10 +349,13 @@ export function buildCommandCenterSummary(records: ProspectRecord[], accountVert
 
   const prioritizedCount = records.filter((record) => record.insight.score >= 72 || record.insight.dueToday).length;
   const hotCount = records.filter((record) => record.insight.isHot).length;
-  const followUpCount = records.filter((record) => record.insight.needsFollowUp).length;
+  const followUpCount = records.filter((record) => record.insight.needsFollowUp || record.insight.followUpDue).length;
   const untouchedCount = records.filter(
     (record) => record.business.status === "sin_contactar" && record.insight.score >= 68,
   ).length;
+  const staleCount = records.filter((record) => record.insight.coolingDown).length;
+  const estimatedValueTotal = records.reduce((sum, record) => sum + record.insight.estimatedValue, 0);
+  const weightedValueTotal = records.reduce((sum, record) => sum + record.insight.weightedValue, 0);
 
   const topService = serviceDistribution[0]?.label ?? "Sin señal dominante";
   const topVertical = marketVerticalDistribution[0]?.label ?? getVerticalLabel(accountVertical);
@@ -330,16 +366,24 @@ export function buildCommandCenterSummary(records: ProspectRecord[], accountVert
     hotCount,
     followUpCount,
     untouchedCount,
+    staleCount,
+    estimatedValueTotal,
+    weightedValueTotal,
     serviceDistribution,
     marketVerticalDistribution,
     sectorDistribution,
     pipelineMoments,
     actionSummary: [
       `${followUpCount} leads piden seguimiento antes de que se enfrien.`,
+      `${staleCount} oportunidades estan perdiendo timing y requieren un toque hoy.`,
       `${serviceDistribution[0]?.value ?? 0} oportunidades apuntan sobre todo a ${topService.toLowerCase()}.`,
       `${marketVerticalDistribution[0]?.value ?? 0} oportunidades fuertes se concentran en ${topVertical.toLowerCase()} / ${topSector.toLowerCase()}.`,
     ],
   };
+}
+
+export function buildPipelineOverview(records: ProspectRecord[]): PipelineSnapshot {
+  return buildPipelineSnapshot(records);
 }
 
 export function normalizeRankingFilters() {

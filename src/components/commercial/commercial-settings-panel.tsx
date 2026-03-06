@@ -11,7 +11,6 @@ type Props = {
   saveState: "idle" | "saving" | "saved" | "local_only" | "error";
   tableAvailable: boolean;
   onVerticalChange: (vertical: VerticalId) => void;
-  onDemoModeChange: (demoMode: boolean) => void;
   onScoringChange: (config: ScoringConfig) => void;
   onPreferencesChange: (preferences: CommercialPreferences) => void;
   onReset: () => void;
@@ -22,7 +21,6 @@ export function CommercialSettingsPanel({
   saveState,
   tableAvailable,
   onVerticalChange,
-  onDemoModeChange,
   onScoringChange,
   onPreferencesChange,
   onReset,
@@ -34,7 +32,6 @@ export function CommercialSettingsPanel({
       <CommercialControlBar
         settings={settings}
         onVerticalChange={onVerticalChange}
-        onDemoModeChange={onDemoModeChange}
         saveState={saveState}
       />
 

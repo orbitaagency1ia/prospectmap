@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Copy } from "lucide-react";
 
 import { STATUS_META } from "@/lib/constants";
 import { OPPORTUNITY_META, type ProspectRecord } from "@/lib/prospect-intelligence";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatCurrency, formatDateTime, formatDaysSince } from "@/lib/utils";
 
 import { ProspectingPrepSheet } from "./prospecting-prep-sheet";
 
@@ -20,6 +21,7 @@ export function ProspectDetailPanel({
   showDemoBadges = false,
 }: Props) {
   const [showPrep, setShowPrep] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   if (!record) {
     return (
@@ -32,6 +34,16 @@ export function ProspectDetailPanel({
   const status = STATUS_META[record.business.status];
   const opportunity = OPPORTUNITY_META[record.insight.tier];
 
+  const handleCopy = async (key: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(key);
+      window.setTimeout(() => setCopied(null), 1400);
+    } catch {
+      setCopied(null);
+    }
+  };
+
   return (
     <>
       <aside className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.28)]">
@@ -43,13 +55,23 @@ export function ProspectDetailPanel({
               {record.insight.sectorLabel} · {record.insight.cityLabel}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowPrep(true)}
-            className="rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-xs font-medium text-cyan-100 transition hover:border-cyan-400"
-          >
-            Preparar prospeccion
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => handleCopy("initial", record.insight.messages.initial)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-500"
+            >
+              <Copy className="h-4 w-4" />
+              {copied === "initial" ? "Mensaje copiado" : "Copiar mensaje"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPrep(true)}
+              className="rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-xs font-medium text-cyan-100 transition hover:border-cyan-400"
+            >
+              Preparar prospeccion
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -58,7 +80,7 @@ export function ProspectDetailPanel({
             {record.insight.tierLabel}
           </span>
           <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
-            Score {record.insight.score}
+            Prioridad comercial {record.insight.score}
           </span>
           <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
             {record.insight.effectiveVerticalLabel}
@@ -96,6 +118,16 @@ export function ProspectDetailPanel({
           <p className="text-sm text-slate-300">{record.insight.fitSummary}</p>
         </InfoBlock>
 
+        <InfoBlock title="Por qué atacarlo" body={record.insight.attackSummary}>
+          <div className="mt-2 grid gap-3 xl:grid-cols-2">
+            <InfoPill label="Valor estimado" value={formatCurrency(record.insight.estimatedValue)} />
+            <InfoPill label="Valor ponderado" value={formatCurrency(record.insight.weightedValue)} />
+            <InfoPill label="Atención" value={record.insight.attentionLabel} />
+            <InfoPill label="Días sin tocar" value={formatDaysSince(record.insight.daysSinceTouch)} />
+          </div>
+          <p className="mt-3 text-sm text-slate-300">{record.insight.riskSummary}</p>
+        </InfoBlock>
+
         <InfoBlock title="Dolor principal detectado" body={record.insight.painPoint}>
           <p className="text-sm text-slate-300">{record.insight.commercialFocus}</p>
         </InfoBlock>
@@ -104,7 +136,10 @@ export function ProspectDetailPanel({
           <p className="text-sm text-slate-300">
             {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
           </p>
-          <p className="mt-2 text-xs text-slate-500">Urgencia: {record.insight.nextAction.urgency}</p>
+          <p className="mt-2 text-xs text-slate-500">
+            Urgencia: {record.insight.nextAction.urgency} · Probabilidad de cierre:{" "}
+            {Math.round(record.insight.closeProbability * 100)}%
+          </p>
         </InfoBlock>
 
         <InfoBlock title="Servicio Orbita recomendado" body={record.insight.service.label}>
@@ -183,7 +218,7 @@ export function ProspectDetailPanel({
             Ultima interaccion: {formatDateTime(record.business.lastInteractionAt)}
           </div>
           <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-500">
-            Vertical detectada: {record.insight.marketVerticalLabel}
+            Próximo follow-up: {formatDateTime(record.insight.followUpAt)}
           </div>
         </div>
       </aside>
@@ -237,5 +272,14 @@ function MessageBlock({ title, content }: { title: string; content: string }) {
       <p className="text-xs uppercase tracking-[0.14em] text-slate-500">{title}</p>
       <p className="mt-1 text-sm text-slate-200">{content}</p>
     </article>
+  );
+}
+
+function InfoPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+      <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">{label}</p>
+      <p className="mt-1 text-sm text-slate-200">{value}</p>
+    </div>
   );
 }

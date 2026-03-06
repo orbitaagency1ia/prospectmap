@@ -4,7 +4,7 @@ import { Flame, RefreshCw, Target } from "lucide-react";
 
 import { STATUS_META } from "@/lib/constants";
 import { OPPORTUNITY_META, type ProspectRecord, type UrgencyLevel } from "@/lib/prospect-intelligence";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatCurrency, formatDateTime, formatDaysSince } from "@/lib/utils";
 
 type ProspectCardProps = {
   record: ProspectRecord;
@@ -51,7 +51,7 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
           <p className="mt-2 max-w-xl text-sm text-slate-300">{record.insight.painPoint}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Score</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Prioridad</p>
           <p className="text-2xl font-semibold text-cyan-100">{record.insight.score}</p>
         </div>
       </div>
@@ -96,7 +96,7 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
           <p className="mt-1 text-sm text-slate-400">{record.insight.service.reason}</p>
         </div>
         <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Siguiente accion</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Qué hacer ahora</p>
           <p className="mt-1 text-sm font-medium text-slate-100">{record.insight.nextAction.action}</p>
           <p className="mt-1 text-sm text-slate-400">
             {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
@@ -104,9 +104,21 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
         </div>
       </div>
 
-      <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-        <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Foco comercial</p>
-        <p className="mt-1 text-sm text-slate-300">{record.insight.commercialFocus}</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Foco comercial</p>
+          <p className="mt-1 text-sm text-slate-300">{record.insight.commercialFocus}</p>
+        </div>
+        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Valor estimado</p>
+          <p className="mt-1 text-sm font-medium text-slate-100">{formatCurrency(record.insight.estimatedValue)}</p>
+          <p className="mt-1 text-sm text-slate-400">{record.insight.estimatedValueLabel}</p>
+        </div>
+        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+          <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Atención</p>
+          <p className="mt-1 text-sm font-medium text-slate-100">{record.insight.attentionLabel}</p>
+          <p className="mt-1 text-sm text-slate-400">{formatDaysSince(record.insight.daysSinceTouch)} sin tocar</p>
+        </div>
       </div>
 
       <div className="mt-4 flex items-center justify-between gap-3">

@@ -12,7 +12,7 @@ import {
   STATUS_META,
   type ProspectStatus,
 } from "@/lib/constants";
-import { formatDateTime } from "@/lib/utils";
+import { formatCurrency, formatDateTime } from "@/lib/utils";
 
 export type MapBounds = {
   south: number;
@@ -32,6 +32,8 @@ export type MapMarker = {
   serviceLabel: string;
   urgency: "alta" | "media" | "baja";
   nextAction: string;
+  estimatedValue: number;
+  attentionLabel: string;
   status: ProspectStatus;
   worked: boolean;
   lastInteractionAt: string | null;
@@ -165,9 +167,12 @@ export function MapCanvas({
                     <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">Urgencia {marker.urgency}</span>
                   </div>
                   <p className="text-slate-300">Servicio: {marker.serviceLabel}</p>
+                  <p className="text-slate-300">Valor estimado: {formatCurrency(marker.estimatedValue)}</p>
                   <p className="text-slate-400">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
                   <p className="line-clamp-2 text-slate-400">
-                    {marker.latestNote ? `Nota: ${marker.latestNote}` : `Última interacción: ${formatDateTime(marker.lastInteractionAt)}`}
+                    {marker.latestNote
+                      ? `Nota: ${marker.latestNote}`
+                      : `${marker.attentionLabel} · ${formatDateTime(marker.lastInteractionAt)}`}
                   </p>
                 </div>
               </Tooltip>
@@ -180,7 +185,7 @@ export function MapCanvas({
                       <p>{marker.category ?? "Sin categoría"}</p>
                     </div>
                     <span className="rounded-full border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-cyan-200">
-                      Score {marker.score}
+                      Prioridad {marker.score}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -188,8 +193,9 @@ export function MapCanvas({
                     <span className="rounded-full border border-slate-700 px-2 py-1">{status.label}</span>
                   </div>
                   <p>{marker.serviceLabel}</p>
+                  <p>{formatCurrency(marker.estimatedValue)}</p>
                   <p>{marker.nextAction}</p>
-                  <p>{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
+                  <p>{marker.attentionLabel}</p>
                   <button
                     type="button"
                     onClick={() => onMarkerSelect(marker.key)}

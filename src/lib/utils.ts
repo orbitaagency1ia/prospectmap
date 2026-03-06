@@ -28,6 +28,34 @@ export function formatDateTime(isoDate?: string | null): string {
   }).format(date);
 }
 
+export function formatCurrency(value?: number | null): string {
+  if (!value || !Number.isFinite(value)) {
+    return "Sin estimar";
+  }
+
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export function formatDaysSince(value?: number | null): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "Sin tocar";
+  }
+
+  if (value < 1) {
+    return "Hoy";
+  }
+
+  if (value < 2) {
+    return "1 día";
+  }
+
+  return `${Math.round(value)} días`;
+}
+
 export function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);

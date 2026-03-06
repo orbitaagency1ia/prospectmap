@@ -13,13 +13,14 @@ import {
   type ProspectRecord,
 } from "@/lib/prospect-intelligence";
 import type { ProfileRow } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
+import { ProspectListsPanel } from "./prospect-lists-panel";
 import { ProspectCard } from "./prospect-ui";
 import { useSavedProspects } from "./use-saved-prospects";
 
@@ -29,7 +30,7 @@ type Props = {
 
 export function TodayClient({ profile }: Props) {
   const { businesses, latestNotes, loading, error } = useSavedProspects();
-  const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { settings, ready, saveState, setVertical } = useCommercialConfig(profile.id);
   const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
@@ -66,20 +67,19 @@ export function TodayClient({ profile }: Props) {
       <CommercialControlBar
         settings={settings}
         onVerticalChange={setVertical}
-        onDemoModeChange={setDemoMode}
         saveState={saveState}
       />
 
       {!commercialProfileComplete ? (
         <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
           Falta completar el perfil comercial de la cuenta. ProspectMap ya funciona, pero el scoring, los mensajes y el
-          informe del negocio seran mucho mejores cuando completes el onboarding comercial en `Cuenta`.
+          informe del negocio seran mucho mejores cuando completes el onboarding comercial en `Configuración`.
         </section>
       ) : null}
 
       {records.length === 0 ? (
         <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-[0_24px_60px_rgba(2,6,23,0.3)]">
-          <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Command Center</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Centro de control</p>
           <h1 className="mt-2 text-2xl font-semibold text-slate-100">Sin pipeline todavía</h1>
           <p className="mt-3 max-w-2xl text-sm text-slate-400">
             Empieza desde el mapa, guarda negocios y vuelve aquí. Esta vista se llena sola con prioridades, seguimiento,
@@ -91,7 +91,7 @@ export function TodayClient({ profile }: Props) {
           <section className="rounded-[28px] border border-slate-800 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_36%),linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.96))] p-6 shadow-[0_28px_80px_rgba(2,6,23,0.42)]">
             <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
-                <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">Command Center</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">Centro de control</p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-100">
                   Hoy sabes exactamente dónde atacar.
                 </h1>
@@ -103,9 +103,9 @@ export function TodayClient({ profile }: Props) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <MetricCard label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" />
-                <MetricCard label="Follow-ups pendientes" value={summary.followUpCount} tone="amber" />
-                <MetricCard label="Leads calientes" value={summary.hotCount} tone="rose" />
-                <MetricCard label="Sin contactar potentes" value={summary.untouchedCount} tone="emerald" />
+                <MetricCard label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" />
+                <MetricCard label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" />
+                <MetricCard label="Leads enfriándose" value={summary.staleCount} tone="emerald" />
               </div>
             </div>
           </section>
@@ -117,10 +117,10 @@ export function TodayClient({ profile }: Props) {
               <div className="grid gap-4 xl:grid-cols-2">
                 <ProspectSection
                   title="Negocios prioritarios de hoy"
-                  description="Score alto o follow-up vencido. El mejor sitio para concentrar energía comercial."
+                  description="Prioridad alta o follow-up vencido. El mejor sitio para concentrar energía comercial."
                   icon={Target}
                   records={buckets.prioritizedToday}
-                  showDemoBadges={settings.demoMode}
+                  showDemoBadges
                   onSelect={(record) => setSelectedKey(record.business.key)}
                 />
                 <ProspectSection
@@ -128,7 +128,7 @@ export function TodayClient({ profile }: Props) {
                   description="Prospectos ya tocados donde insistir hoy todavía tiene sentido."
                   icon={RefreshCw}
                   records={buckets.followUpsPending}
-                  showDemoBadges={settings.demoMode}
+                  showDemoBadges
                   onSelect={(record) => setSelectedKey(record.business.key)}
                 />
                 <ProspectSection
@@ -136,7 +136,7 @@ export function TodayClient({ profile }: Props) {
                   description="Cuentas con mejor temperatura comercial y una narrativa clara."
                   icon={Flame}
                   records={buckets.hotLeads}
-                  showDemoBadges={settings.demoMode}
+                  showDemoBadges
                   onSelect={(record) => setSelectedKey(record.business.key)}
                 />
                 <ProspectSection
@@ -144,7 +144,7 @@ export function TodayClient({ profile }: Props) {
                   description="Pipeline limpio para abrir conversación con buen ángulo."
                   icon={Sparkles}
                   records={buckets.highPotentialUntouched}
-                  showDemoBadges={settings.demoMode}
+                  showDemoBadges
                   onSelect={(record) => setSelectedKey(record.business.key)}
                 />
               </div>
@@ -177,12 +177,19 @@ export function TodayClient({ profile }: Props) {
               </div>
 
               <PipelinePanel summary={summary} />
+              <ProspectListsPanel
+                userId={profile.id}
+                records={records}
+                title="Campañas operativas"
+                description="Guarda focos de ataque reutilizables por vertical, servicio o ciudad."
+                defaultName="Nueva campaña"
+              />
             </div>
 
             <div className="space-y-4">
               <ProspectDetailPanel
                 record={selected}
-                showDemoBadges={settings.demoMode}
+                showDemoBadges
                 emptyText="Selecciona un prospecto para ver el guion comercial completo."
               />
               <RightRailSummary summary={summary} />
@@ -247,7 +254,7 @@ function MetricCard({
   tone,
 }: {
   label: string;
-  value: number;
+  value: number | string;
   tone: "cyan" | "amber" | "rose" | "emerald";
 }) {
   const toneClass =
@@ -273,10 +280,10 @@ function ActionSummaryPanel({ summary }: { summary: CommandCenterSummary }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Resumen accionable</p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-100">Qué hacer con el pipeline hoy</h2>
+          <h2 className="mt-2 text-xl font-semibold text-slate-100">Qué mover hoy para acercarte al cierre</h2>
         </div>
         <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-slate-400">
-          Pipeline operativo
+          Valor ponderado {formatCurrency(summary.weightedValueTotal)}
         </span>
       </div>
 
@@ -337,6 +344,10 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
     <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
       <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Pipeline</p>
       <h2 className="mt-2 text-xl font-semibold text-slate-100">Lectura rápida del momento comercial</h2>
+      <p className="mt-2 text-sm text-slate-400">
+        Valor abierto {formatCurrency(summary.estimatedValueTotal)} · {summary.staleCount} oportunidades perdiendo
+        timing.
+      </p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         {summary.pipelineMoments.map((item) => (
@@ -362,6 +373,16 @@ function RightRailSummary({ summary }: { summary: CommandCenterSummary }) {
   return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
       <p className="text-xs uppercase tracking-[0.16em] text-cyan-300">Foco ejecutivo</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Valor bruto</p>
+          <p className="mt-1 text-base font-semibold text-slate-100">{formatCurrency(summary.estimatedValueTotal)}</p>
+        </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Valor ponderado</p>
+          <p className="mt-1 text-base font-semibold text-slate-100">{formatCurrency(summary.weightedValueTotal)}</p>
+        </div>
+      </div>
       <div className="mt-3 space-y-3">
         {summary.actionSummary.map((item) => (
           <div key={item} className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-3">

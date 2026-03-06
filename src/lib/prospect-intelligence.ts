@@ -1,5 +1,6 @@
 export {
   buildCommandCenterSummary,
+  buildPipelineOverview,
   buildCityOptions,
   buildProspectInsight,
   buildProspectRecords,
@@ -48,6 +49,7 @@ export type {
   OfferProfile,
   OpportunityTier,
   OrbitaService,
+  PipelineSnapshot,
   PricingProfile,
   ProspectInsight,
   ProspectingPreferencesProfile,
@@ -58,5 +60,6 @@ export type {
   TodayBuckets,
   UrgencyLevel,
   VerticalConfig,
+  ValueBand,
   VerticalId,
 } from "@/lib/commercial/types";

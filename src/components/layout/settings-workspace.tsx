@@ -20,7 +20,6 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
     saveState,
     tableAvailable,
     setCommercialPreferences,
-    setDemoMode,
     setScoringConfig,
     setVertical,
     resetScoringToVertical,
@@ -43,8 +42,8 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
           <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Configuracion comercial</p>
           <h1 className="mt-2 text-2xl font-semibold text-slate-100">Motor de prospeccion de Orbita</h1>
           <p className="mt-2 text-sm text-slate-400">
-            Aqui defines la vertical principal, el modo demo y los pesos del scoring que usa la cuenta en mapa, hoy y
-            ranking.
+            Aqui defines la vertical principal, el criterio de scoring y las preferencias que usa la cuenta en
+            territorio, centro de control y prioridades.
           </p>
         </section>
 
@@ -55,7 +54,6 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
               saveState={saveState}
               tableAvailable={tableAvailable}
               onVerticalChange={setVertical}
-              onDemoModeChange={setDemoMode}
               onScoringChange={setScoringConfig}
               onPreferencesChange={setCommercialPreferences}
               onReset={resetScoringToVertical}

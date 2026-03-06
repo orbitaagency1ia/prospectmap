@@ -51,7 +51,7 @@ export function ProspectingPrepSheet({
             <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Preparar prospeccion</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-100">{businessName}</h2>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <Chip label={`Score ${insight.score}`} tone="cyan" />
+              <Chip label={`Prioridad ${insight.score}`} tone="cyan" />
               <Chip label={insight.tierLabel} tone="emerald" />
               <Chip label={insight.service.shortLabel} tone="slate" />
               <Chip label={insight.effectiveVerticalLabel} tone="slate" />

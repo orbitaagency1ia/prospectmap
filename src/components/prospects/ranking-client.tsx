@@ -21,13 +21,14 @@ import {
   sortProspectRecordsByScore,
 } from "@/lib/prospect-intelligence";
 import type { ProfileRow } from "@/lib/types";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatCurrency, formatDaysSince } from "@/lib/utils";
 
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
+import { ProspectListsPanel } from "./prospect-lists-panel";
 import { OpportunityBadge, UrgencyBadge } from "./prospect-ui";
 import { useSavedProspects } from "./use-saved-prospects";
 
@@ -44,7 +45,7 @@ type RankingFilters = {
 
 export function RankingClient({ profile }: Props) {
   const { businesses, latestNotes, loading, error } = useSavedProspects();
-  const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { settings, ready, saveState, setVertical } = useCommercialConfig(profile.id);
   const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
 
   const [filters, setFilters] = useState<RankingFilters>(normalizeRankingFilters());
@@ -109,14 +110,13 @@ export function RankingClient({ profile }: Props) {
       <CommercialControlBar
         settings={settings}
         onVerticalChange={setVertical}
-        onDemoModeChange={setDemoMode}
         saveState={saveState}
       />
 
       {!commercialProfileComplete ? (
         <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
           El perfil comercial de la cuenta sigue incompleto. El ranking actual usa la base vertical, pero puede afinar
-          mucho mas cuando completes ICP, oferta y ticket en `Cuenta`.
+          mucho mas cuando completes ICP, oferta y ticket en `Configuración`.
         </section>
       ) : null}
 
@@ -125,8 +125,8 @@ export function RankingClient({ profile }: Props) {
           <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Ranking</p>
-                <h1 className="mt-2 text-2xl font-semibold text-slate-100">Prospectos ordenados por score</h1>
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Prioridades</p>
+                <h1 className="mt-2 text-2xl font-semibold text-slate-100">Prospectos ordenados por prioridad comercial</h1>
                 <p className="mt-1 text-sm text-slate-400">
                   Lista operativa para decidir a quién atacar primero y con qué propuesta entrar.
                 </p>
@@ -137,7 +137,7 @@ export function RankingClient({ profile }: Props) {
                 className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500"
               >
                 {descending ? <ArrowDownWideNarrow className="h-4 w-4" /> : <ArrowUpWideNarrow className="h-4 w-4" />}
-                Score {descending ? "desc" : "asc"}
+                Prioridad {descending ? "desc" : "asc"}
               </button>
             </div>
 
@@ -182,7 +182,7 @@ export function RankingClient({ profile }: Props) {
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <TopMetric label="Filtrados" value={sortedRecords.length} />
               <TopMetric label="Alta oportunidad" value={sortedRecords.filter((record) => record.insight.score >= 75).length} />
-              <TopMetric label="Seguimiento urgente" value={sortedRecords.filter((record) => record.insight.nextAction.urgency === "alta").length} />
+              <TopMetric label="Valor filtrado" value={formatCurrency(filteredSummary.estimatedValueTotal)} />
             </div>
           </section>
 
@@ -194,15 +194,16 @@ export function RankingClient({ profile }: Props) {
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">Sector</th>
                     <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Score</th>
-                    <th className="px-4 py-3">Siguiente acción</th>
-                    <th className="px-4 py-3">Última interacción</th>
+                    <th className="px-4 py-3">Prioridad comercial</th>
+                    <th className="px-4 py-3">Valor</th>
+                    <th className="px-4 py-3">Qué hacer ahora</th>
+                    <th className="px-4 py-3">Días sin tocar</th>
                   </tr>
                 </thead>
                 <tbody>
                   {sortedRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-6 text-sm text-slate-400">
+                      <td colSpan={7} className="px-4 py-6 text-sm text-slate-400">
                         No hay prospectos que cumplan esos filtros.
                       </td>
                     </tr>
@@ -240,6 +241,10 @@ export function RankingClient({ profile }: Props) {
                         </div>
                       </td>
                       <td className="px-4 py-3 align-top">
+                        <p className="font-medium text-slate-100">{formatCurrency(record.insight.estimatedValue)}</p>
+                        <p className="mt-1 text-xs text-slate-500">{formatCurrency(record.insight.weightedValue)} ponderado</p>
+                      </td>
+                      <td className="px-4 py-3 align-top">
                         <p className="font-medium text-slate-100">{record.insight.nextAction.action}</p>
                         <p className="mt-1 text-xs text-slate-500">{record.insight.service.shortLabel}</p>
                         <div className="mt-2">
@@ -247,7 +252,8 @@ export function RankingClient({ profile }: Props) {
                         </div>
                       </td>
                       <td className="px-4 py-3 align-top text-slate-400">
-                        {formatDateTime(record.business.lastInteractionAt)}
+                        <p>{formatDaysSince(record.insight.daysSinceTouch)}</p>
+                        <p className="mt-1 text-xs text-slate-500">{record.insight.attentionLabel}</p>
                       </td>
                     </tr>
                   ))}
@@ -255,13 +261,20 @@ export function RankingClient({ profile }: Props) {
               </table>
             </div>
           </section>
+          <ProspectListsPanel
+            userId={profile.id}
+            records={sortedRecords}
+            title="Listas de prioridades"
+            description="Convierte el filtro actual en una campaña operativa guardada."
+            defaultName="Nueva lista priorizada"
+          />
         </div>
 
         <div className="space-y-4">
           <ProspectDetailPanel
             record={selected}
-            showDemoBadges={settings.demoMode}
-            emptyText="Selecciona una fila del ranking para ver el guion comercial."
+            showDemoBadges
+            emptyText="Selecciona una fila de prioridades para ver el informe comercial."
           />
           <aside className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
             <p className="text-xs uppercase tracking-[0.16em] text-cyan-300">Lectura del ranking</p>
@@ -311,7 +324,7 @@ function FilterSelect({
   );
 }
 
-function TopMetric({ label, value }: { label: string; value: number }) {
+function TopMetric({ label, value }: { label: string; value: number | string }) {
   return (
     <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
       <p className="text-xs uppercase tracking-[0.12em] text-slate-500">{label}</p>

@@ -18,23 +18,32 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - Mapa principal con clustering de marcadores.
 - Carga real de negocios por zona visible con Overpass.
 - Rediseño UX/UI más premium:
-  - navegación más clara,
-  - mejor jerarquía visual,
+  - navegación con naming más comercial (`Centro de control`, `Territorio`, `Prioridades`, `Pipeline`, `Configuración`),
+  - nueva paleta premium oscura (`#07111F`, `#0D1728`, `#122033`, `#1E3350`, `#3ABEF9`),
+  - mejor jerarquía visual y espaciado,
   - ficha con tabs (`Informe`, `Datos`, `Notas`),
   - mejores previews en mapa,
   - mejor lectura de cards, badges y estados.
 - Onboarding comercial guiado.
 - Configuración comercial desde formulario estructurado + texto/PDF opcional.
 - Perfil comercial de cuenta persistente en Supabase.
-- Vista `Hoy` convertida en **Command Center** con:
+- Vista `Hoy` convertida en **Centro de control** con:
   - negocios prioritarios del dia,
-  - follow-ups pendientes,
+  - follow-ups pendientes o vencidos,
   - negocios calientes,
   - sin contactar con alto potencial,
   - distribucion por servicio recomendado,
   - oportunidades por vertical/sector,
-  - resumen accionable del pipeline.
-- Ranking de prospectos ordenable por score.
+  - resumen accionable del pipeline,
+  - valor bruto y valor ponderado.
+- Vista `Pipeline` de cierre con:
+  - estados claros,
+  - valor estimado por oportunidad,
+  - valor ponderado del pipeline,
+  - días sin tocar,
+  - oportunidades enfriándose,
+  - cierre cercano.
+- Vista `Prioridades` ordenable por score.
 - Sistema de **verticales operativas**:
   - Autoescuelas
   - Clinicas
@@ -53,14 +62,21 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - CTA,
   - que revisar antes de contactar,
   - que no decir,
-  - angulo comercial.
+  - angulo comercial,
+  - bloque `Por qué atacarlo`,
+  - valor estimado.
 - Modo `Preparar prospeccion` para copiar playbook casi listo.
 - Modo Barrido sobre la zona visible del mapa.
-- Demo Mode profesional con badges comerciales y presentacion mas vendible.
+- Señales destacadas integradas:
+  - alta oportunidad,
+  - buen encaje por servicio,
+  - urgencia comercial,
+  - foco de ataque.
 - Ficha lateral (desktop) / bottom sheet (móvil) con:
   - edición de datos comerciales,
   - estado de prospección,
   - prioridad,
+  - siguiente follow-up,
   - datos de decisor,
   - timeline de notas,
   - informe comercial,
@@ -73,6 +89,12 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - objeciones y respuestas,
   - vertical efectiva por negocio,
   - acciones rápidas.
+- Recordatorios y caducidad:
+  - `next_follow_up_at` por negocio,
+  - leads sin tocar,
+  - oportunidades enfriándose.
+- Valor económico estimado por negocio, pipeline y listas.
+- Listas/campañas operativas persistentes con progreso y foco comercial.
 - Filtros combinables por sector, estado y prioridad.
 - Importación CSV + geocodificación Nominatim + registro de errores.
 - Dashboard con métricas y gráficos.
@@ -81,7 +103,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 ## 2) Estructura principal
 
 - `src/app/(auth)` login y registro.
-- `src/app/(protected)` today, ranking, mapa, dashboard, settings, onboarding.
+- `src/app/(protected)` today, ranking, pipeline, mapa, dashboard, settings, onboarding.
 - `src/app/api/overpass` proxy Overpass + normalización + caché.
 - `src/app/api/geocode/*` búsqueda de ciudad y geocodificación de direcciones.
 - `src/components/commercial/*` persistencia de configuracion comercial, selectors y paneles de control.
@@ -93,6 +115,8 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `src/lib/commercial/types.ts` tipos del dominio comercial.
 - `src/lib/commercial/verticals.ts` configuracion centralizada de verticales, presets y librerias.
 - `src/lib/commercial/scoring.ts` capa de scoring.
+- `src/lib/commercial/valuation.ts` valor económico estimado y probabilidad de cierre.
+- `src/lib/commercial/pipeline.ts` recordatorios, caducidad y lectura de pipeline.
 - `src/lib/commercial/recommendations.ts` capa de servicio recomendado, dolor, accion y canal.
 - `src/lib/commercial/messaging.ts` mensajes sugeridos y demo badges.
 - `src/lib/commercial/objections.ts` objeciones probables y respuestas.
@@ -103,6 +127,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `supabase/migrations/0001_init.sql` schema completo + RLS + triggers.
 - `supabase/migrations/0002_phase3_commercial_settings.sql` migracion incremental para Phase 3 sobre proyectos ya creados.
 - `supabase/migrations/0003_phase4_account_profiles.sql` migracion incremental para onboarding comercial y perfil de cuenta.
+- `supabase/migrations/0004_phase5_pipeline_lists.sql` migracion incremental para follow-ups y listas/campañas.
 
 ## 3) Configuración local
 
@@ -134,7 +159,7 @@ La app abrirá directamente en `/today`.
 1. Crea un proyecto en Supabase Free.
 2. Ve a SQL Editor y ejecuta:
    - proyecto nuevo desde cero: `supabase/migrations/0001_init.sql`
-   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql` y despues `supabase/migrations/0003_phase4_account_profiles.sql`
+   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql` y despues `supabase/migrations/0004_phase5_pipeline_lists.sql`
 3. En Authentication > Providers:
    - Email activado.
 4. En Authentication > URL Configuration:
@@ -151,13 +176,16 @@ Tablas implementadas:
 - `csv_import_errors`
 - `account_settings`
 - `account_profiles`
+- `prospect_lists`
+- `prospect_list_items`
 
 RLS:
 - cada operación valida `auth.uid()` contra `id`/`user_id`.
 - una empresa no puede leer ni modificar datos de otra.
 - el estado comercial y notas siempre son privadas por cuenta.
-- la configuracion comercial (vertical, demo mode, pesos y preferencias) tambien es privada por cuenta.
+- la configuracion comercial (vertical, pesos y preferencias; el flag de presentacion sigue interno) tambien es privada por cuenta.
 - el perfil comercial de cuenta (ICP, oferta, ticket, texto base y resumen estructurado) tambien es privado por cuenta.
+- las listas/campañas y sus elementos tambien son privadas por cuenta.
 
 Datos públicos (Overpass/OSM):
 - solo se consumen para mostrar oportunidades.
@@ -170,10 +198,12 @@ La fase actual convierte ProspectMap en un motor comercial determinista por capa
 Capas:
 - `scoring.ts`: calcula score 0-100 y desglose.
 - `recommendations.ts`: detecta dolor principal, servicio recomendado, canal y siguiente accion.
-- `messaging.ts`: construye mensaje inicial, follow-up 1, follow-up 2 y badges de demo.
+- `messaging.ts`: construye mensaje inicial, follow-up 1, follow-up 2 y señales destacadas.
 - `objections.ts`: adjunta objeciones probables y su respuesta corta.
 - `report.ts`: construye resumen ejecutivo, checklist, riesgos, CTA y angulo comercial.
-- `engine.ts`: compone el insight final del negocio y resume el command center.
+- `valuation.ts`: estima valor bruto, valor ponderado y probabilidad de cierre.
+- `pipeline.ts`: decide seguimiento vencido, enfriamiento y foto del pipeline.
+- `engine.ts`: compone el insight final del negocio y resume centro de control + pipeline.
 
 ### Onboarding comercial
 
@@ -276,7 +306,7 @@ La configuracion comercial ya no vive solo en navegador.
 
 Se persiste por cuenta en `account_settings`:
 - `vertical`
-- `demo_mode`
+- `demo_mode` (interno; ya no aparece como control visible principal)
 - `scoring_config`
 - `commercial_preferences`
 
@@ -295,7 +325,10 @@ Cada negocio recibe:
 - acción recomendada,
 - canal sugerido,
 - motivo,
-- urgencia.
+- urgencia,
+- valor económico estimado,
+- probabilidad de cierre,
+- estado de atención (`seguimiento vencido`, `oportunidad enfriándose`, etc.).
 
 La recomendación depende de:
 - estado actual,
@@ -348,13 +381,15 @@ Objetivo:
 La ficha y el panel de detalle ahora muestran un informe comercial mucho mas util:
 - resumen ejecutivo
 - nivel de encaje
-- score y oportunidad
+- prioridad comercial y oportunidad
 - dolor principal
 - servicio recomendado
 - por que encaja
+- por que atacarlo
 - riesgos y objeciones
 - siguiente mejor accion
 - mejor canal
+- valor estimado y ponderado
 - CTA sugerida
 - que revisar antes de contactar
 - que no decir
@@ -369,12 +404,14 @@ Tambien existe `Preparar prospeccion`, que abre un playbook listo para copiar y 
 - Muestra servicio recomendado, siguiente accion, objeciones y guiones sugeridos.
 - En esta fase no hay selección manual de polígono; solo zona visible para mantener simplicidad y coste cero.
 
-### Demo Mode
+### Pipeline, recordatorios y listas
 
-Cuando `demo_mode` esta activo:
-- se muestran badges como `Alta oportunidad`, `Encaja con avatar IA`, `Saturable por WhatsApp`, `Buena opcion para automatizacion` o `Seguimiento urgente`,
-- la ficha, Hoy y Barrido cuentan mejor la historia comercial,
-- no se rompe el funcionamiento real; solo añade capa de presentacion.
+La fase actual añade una capa orientada a cierre y uso diario:
+- `Pipeline` con valor bruto, valor ponderado y oportunidades por estado.
+- `next_follow_up_at` por negocio para seguimiento real.
+- deteccion de leads enfriandose por dias sin tocar y estado actual.
+- listas/campañas guardadas (`prospect_lists`, `prospect_list_items`) para reutilizar focos de prospeccion.
+- progreso por lista basado en leads trabajados.
 
 ## 7) Dashboard y fórmulas usadas
 
@@ -422,9 +459,13 @@ Cambios mas importantes:
   - `src/lib/commercial/verticals.ts`
 - calculo de score:
   - `src/lib/commercial/scoring.ts`
+- valor económico y probabilidad:
+  - `src/lib/commercial/valuation.ts`
+- pipeline, atención y caducidad:
+  - `src/lib/commercial/pipeline.ts`
 - accion, canal y servicio recomendado:
   - `src/lib/commercial/recommendations.ts`
-- mensajes sugeridos y badges demo:
+- mensajes sugeridos y señales destacadas:
   - `src/lib/commercial/messaging.ts`
 - objeciones y respuestas:
   - `src/lib/commercial/objections.ts`
@@ -443,10 +484,12 @@ Cambios mas importantes:
 
 - configuracion comercial por cuenta en tabla propia (`account_settings`)
 - perfil comercial de cuenta en tabla propia (`account_profiles`)
+- listas/campañas por cuenta con RLS (`prospect_lists`, `prospect_list_items`)
 - sistema de verticales centralizado y extensible
 - separacion clara entre dominio comercial y UI
 - override de vertical por negocio sin romper la vertical global
 - motor determinista por capas facil de ampliar
+- capa de valoración y pipeline separada del scoring
 - fallback local si la persistencia remota no esta disponible
 - componentes reutilizables para mapa, ranking, command center y ficha
 - onboarding reutilizable y ampliable

@@ -16,6 +16,7 @@ export type OpportunityTier = "alta_oportunidad" | "media_oportunidad" | "baja_o
 export type UrgencyLevel = "alta" | "media" | "baja";
 export type DemoBadgeTone = "cyan" | "emerald" | "amber" | "violet" | "slate";
 export type MarketVerticalSource = "override" | "account" | "inferred";
+export type ValueBand = "alto" | "medio" | "bajo";
 
 export type ScoringConfig = {
   sectorFit: number;
@@ -190,8 +191,20 @@ export type ProspectInsight = {
   avoidTalkingPoints: string[];
   commercialAngle: string;
   ctaSuggestion: string;
+  attackSummary: string;
+  riskSummary: string;
   sectorLabel: string;
   cityLabel: string;
+  estimatedValue: number;
+  weightedValue: number;
+  estimatedValueLabel: string;
+  valueBand: ValueBand;
+  closeProbability: number;
+  daysSinceTouch: number | null;
+  followUpAt: string | null;
+  followUpDue: boolean;
+  coolingDown: boolean;
+  attentionLabel: string;
   isHot: boolean;
   needsFollowUp: boolean;
   dueToday: boolean;
@@ -215,11 +228,34 @@ export type CommandCenterSummary = {
   hotCount: number;
   followUpCount: number;
   untouchedCount: number;
+  staleCount: number;
+  estimatedValueTotal: number;
+  weightedValueTotal: number;
   serviceDistribution: Array<{ service: OrbitaService; label: string; value: number }>;
   marketVerticalDistribution: Array<{ vertical: VerticalId; label: string; value: number }>;
   sectorDistribution: Array<{ label: string; value: number }>;
   pipelineMoments: Array<{ label: string; value: number }>;
   actionSummary: string[];
+};
+
+export type PipelineStageSummary = {
+  status: ProspectStatus;
+  label: string;
+  count: number;
+  estimatedValue: number;
+  weightedValue: number;
+  averageScore: number;
+  records: ProspectRecord[];
+};
+
+export type PipelineSnapshot = {
+  stages: PipelineStageSummary[];
+  openValue: number;
+  weightedOpenValue: number;
+  staleCount: number;
+  followUpDueCount: number;
+  closingSoon: ProspectRecord[];
+  neglected: ProspectRecord[];
 };
 
 export type ProspectComputationInput = {

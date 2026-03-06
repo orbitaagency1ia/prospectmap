@@ -54,7 +54,7 @@ type InfoMessage = {
 
 export function MapWorkspace({ profile }: Props) {
   const supabase = createClient();
-  const { settings, ready, saveState, setDemoMode, setVertical } = useCommercialConfig(profile.id);
+  const { settings, ready, saveState, setVertical } = useCommercialConfig(profile.id);
   const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
 
   const [savedBusinesses, setSavedBusinesses] = useState<BusinessRow[]>([]);
@@ -222,6 +222,8 @@ export function MapWorkspace({ profile }: Props) {
         serviceLabel: record.insight.service.shortLabel,
         urgency: record.insight.nextAction.urgency,
         nextAction: record.insight.nextAction.action,
+        estimatedValue: record.insight.estimatedValue,
+        attentionLabel: record.insight.attentionLabel,
         status: record.business.status,
         worked: record.business.worked,
         lastInteractionAt: record.business.lastInteractionAt,
@@ -351,6 +353,7 @@ export function MapWorkspace({ profile }: Props) {
       prospect_status?: ProspectStatus;
       priority?: PriorityLevel;
       last_contact_at?: string;
+      next_follow_up_at?: string;
     },
   ) => {
     const toNullable = (value?: string) => (value && value.trim() ? value.trim() : null);
@@ -377,6 +380,7 @@ export function MapWorkspace({ profile }: Props) {
         prospect_status: payload.prospect_status,
         priority: payload.priority,
         last_contact_at: payload.last_contact_at ? new Date(payload.last_contact_at).toISOString() : null,
+        next_follow_up_at: payload.next_follow_up_at ? new Date(payload.next_follow_up_at).toISOString() : null,
       })
       .eq("id", businessId);
 
@@ -419,9 +423,9 @@ export function MapWorkspace({ profile }: Props) {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-78px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:rounded-2xl lg:border lg:border-slate-800">
+    <div className="relative flex h-[calc(100vh-78px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:rounded-[32px] lg:border lg:border-[rgba(30,51,80,0.92)]">
       <div className="absolute left-3 right-3 top-3 z-[450]">
-        <div className="hidden flex-wrap items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/90 p-2 shadow-lg backdrop-blur lg:flex">
+        <div className="hidden flex-wrap items-center gap-2 rounded-[24px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] p-2 shadow-lg backdrop-blur lg:flex">
           <FiltersRow
             filters={filters}
             categories={categoryOptions}
@@ -431,23 +435,21 @@ export function MapWorkspace({ profile }: Props) {
           <CommercialContextInline
             ready={ready && profileReady}
             vertical={settings.vertical}
-            demoMode={settings.demoMode}
             saveState={saveState}
             onVerticalChange={setVertical}
-            onDemoModeChange={setDemoMode}
           />
           <button
             type="button"
             onClick={() => setShowSweepMode(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-xs font-medium text-cyan-100 transition hover:border-cyan-500"
+            className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(58,190,249,0.42)] bg-[rgba(58,190,249,0.1)] px-3 py-2 text-xs font-medium text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.7)]"
           >
             <ScanSearch className="h-4 w-4" />
-            Modo Barrido
+            Barrido de zona
           </button>
           <button
             type="button"
             onClick={() => setShowCsvImport(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-500"
+            className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs font-medium text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.4)]"
           >
             <Upload className="h-4 w-4" />
             Importar CSV
@@ -459,13 +461,13 @@ export function MapWorkspace({ profile }: Props) {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
+              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
               onClick={() => setShowMobileFilters((value) => !value)}
             >
               <Filter className="h-4 w-4" />
               Filtros
             </button>
-            <span className="inline-flex rounded-full border border-slate-700 bg-slate-950/90 px-3 py-2 text-[11px] font-medium text-slate-300">
+            <span className="inline-flex rounded-full border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-[11px] font-medium text-[var(--pm-text-secondary)]">
               {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Cargando..."}
             </span>
           </div>
@@ -473,7 +475,7 @@ export function MapWorkspace({ profile }: Props) {
             <button
               type="button"
               onClick={() => setShowSweepMode(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-cyan-700/50 bg-slate-950/90 px-3 py-2 text-xs text-cyan-100"
+              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(58,190,249,0.42)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
             >
               <ScanSearch className="h-4 w-4" />
               Barrido
@@ -481,7 +483,7 @@ export function MapWorkspace({ profile }: Props) {
             <button
               type="button"
               onClick={() => setShowCsvImport(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-200"
+              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
             >
               <Upload className="h-4 w-4" />
               CSV
@@ -490,7 +492,7 @@ export function MapWorkspace({ profile }: Props) {
         </div>
 
         {showMobileFilters ? (
-          <div className="mt-2 rounded-xl border border-slate-800 bg-slate-950/95 p-3 shadow-lg lg:hidden">
+          <div className="mt-2 rounded-[24px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.95)] p-3 shadow-lg lg:hidden">
             <FiltersRow
               filters={filters}
               categories={categoryOptions}
@@ -501,10 +503,8 @@ export function MapWorkspace({ profile }: Props) {
               <CommercialContextInline
                 ready={ready && profileReady}
                 vertical={settings.vertical}
-                demoMode={settings.demoMode}
                 saveState={saveState}
                 onVerticalChange={setVertical}
-                onDemoModeChange={setDemoMode}
                 mobile
               />
               <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
@@ -517,8 +517,8 @@ export function MapWorkspace({ profile }: Props) {
             className={cn(
               "mt-2 rounded-lg border px-3 py-2 text-xs",
               message.type === "success"
-                ? "border-emerald-700/70 bg-emerald-900/30 text-emerald-200"
-                : "border-rose-700/70 bg-rose-900/30 text-rose-200",
+                ? "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(220,255,234,0.98)]"
+                : "border-[rgba(227,93,106,0.4)] bg-[rgba(227,93,106,0.12)] text-[rgba(255,224,229,0.98)]",
             )}
           >
             {message.text}
@@ -528,7 +528,7 @@ export function MapWorkspace({ profile }: Props) {
 
       <div className="relative flex-1">
         {(loadingSaved || loadingOverpass) && (
-          <div className="pointer-events-none absolute right-3 top-3 z-[450] rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-300">
+          <div className="pointer-events-none absolute right-3 top-3 z-[450] rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               {loadingSaved ? "Cargando datos guardados" : "Cargando negocios reales"}
@@ -553,7 +553,7 @@ export function MapWorkspace({ profile }: Props) {
           key={selectedRecord?.business.key ?? "none-desktop"}
           selected={selectedBusiness}
           insight={selectedInsight}
-          showDemoBadges={settings.demoMode}
+          showDemoBadges
           notes={selectedNotes}
           notesLoading={loadingNotes}
           busy={busy}
@@ -568,14 +568,14 @@ export function MapWorkspace({ profile }: Props) {
       {showMobilePanel && selectedRecord ? (
         <div className="fixed inset-0 z-[500] bg-slate-950/55 backdrop-blur-sm lg:hidden" onClick={() => setShowMobilePanel(false)}>
           <div
-            className="absolute inset-x-0 bottom-0 top-[16%] overflow-hidden rounded-t-2xl border-t border-slate-700 bg-slate-950"
+            className="absolute inset-x-0 bottom-0 top-[16%] overflow-hidden rounded-t-[28px] border-t border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)]"
             onClick={(event) => event.stopPropagation()}
           >
             <BusinessPanel
               key={selectedRecord.business.key}
               selected={selectedBusiness}
               insight={selectedInsight}
-              showDemoBadges={settings.demoMode}
+              showDemoBadges
               notes={selectedNotes}
               notesLoading={loadingNotes}
               busy={busy}
@@ -594,7 +594,7 @@ export function MapWorkspace({ profile }: Props) {
           records={sweepRecords}
           selectedRecord={selectedSweepRecord}
           activeVerticalLabel={VERTICAL_CONFIGS[settings.vertical].label}
-          showDemoBadges={settings.demoMode}
+          showDemoBadges
           onClose={() => setShowSweepMode(false)}
           onSelect={(record) => setSweepSelectedKey(record.business.key)}
           onOpenBusiness={(record) => {
@@ -617,9 +617,9 @@ export function MapWorkspace({ profile }: Props) {
 
 function SummaryTag({ total, filtered }: { total: number; filtered: number }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300">
+    <div className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
       <span>{filtered}</span>
-      <span className="text-slate-500">/</span>
+      <span className="text-[var(--pm-text-tertiary)]">/</span>
       <span>{total} negocios</span>
     </div>
   );
@@ -641,7 +641,7 @@ function FiltersRow({
       <select
         value={filters.category}
         onChange={(event) => onChange({ ...filters, category: event.target.value })}
-        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200"
+        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
       >
         <option value="all">Sector: todos</option>
         {categories.map((category) => (
@@ -659,7 +659,7 @@ function FiltersRow({
             status: event.target.value as ProspectStatus | "all",
           })
         }
-        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200"
+        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
       >
         <option value="all">Estado: todos</option>
         {PROSPECT_STATUS_ORDER.map((status) => (
@@ -677,7 +677,7 @@ function FiltersRow({
             priority: event.target.value as PriorityLevel | "all",
           })
         }
-        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200"
+        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
       >
         <option value="all">Prioridad: todas</option>
         {PRIORITY_OPTIONS.map((priority) => (
@@ -690,7 +690,7 @@ function FiltersRow({
       <button
         type="button"
         onClick={onReset}
-        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 hover:border-slate-500"
+        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text-secondary)] hover:border-[rgba(58,190,249,0.42)]"
       >
         Limpiar
       </button>
@@ -779,18 +779,14 @@ function SweepModeModal({
 function CommercialContextInline({
   ready,
   vertical,
-  demoMode,
   saveState,
   onVerticalChange,
-  onDemoModeChange,
   mobile = false,
 }: {
   ready: boolean;
   vertical: VerticalId;
-  demoMode: boolean;
   saveState: "idle" | "saving" | "saved" | "local_only" | "error";
   onVerticalChange: (vertical: VerticalId) => void;
-  onDemoModeChange: (demoMode: boolean) => void;
   mobile?: boolean;
 }) {
   const saveLabel =
@@ -810,7 +806,7 @@ function CommercialContextInline({
         value={vertical}
         onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
         disabled={!ready}
-        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 disabled:opacity-60"
+        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.82)] px-3 py-2 text-xs text-[var(--pm-text)] disabled:opacity-60"
       >
         {Object.values(VERTICAL_CONFIGS).map((item) => (
           <option key={item.id} value={item.id}>
@@ -818,20 +814,7 @@ function CommercialContextInline({
           </option>
         ))}
       </select>
-      <button
-        type="button"
-        onClick={() => onDemoModeChange(!demoMode)}
-        disabled={!ready}
-        className={cn(
-          "rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60",
-          demoMode
-            ? "border-amber-500/60 bg-amber-500/15 text-amber-100"
-            : "border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500",
-        )}
-      >
-        Demo {demoMode ? "ON" : "OFF"}
-      </button>
-      <span className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-400">
+      <span className="inline-flex items-center rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.82)] px-3 py-2 text-[11px] text-[var(--pm-text-secondary)]">
         {saveLabel}
       </span>
     </div>

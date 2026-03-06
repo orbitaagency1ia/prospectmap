@@ -5,6 +5,8 @@ export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 export type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
 export type AccountSettingsRow = Database["public"]["Tables"]["account_settings"]["Row"];
 export type AccountCommercialProfileRow = Database["public"]["Tables"]["account_profiles"]["Row"];
+export type ProspectListRow = Database["public"]["Tables"]["prospect_lists"]["Row"];
+export type ProspectListItemRow = Database["public"]["Tables"]["prospect_list_items"]["Row"];
 export type NoteRow = Database["public"]["Tables"]["business_notes"]["Row"];
 
 export type OverpassBusiness = {
