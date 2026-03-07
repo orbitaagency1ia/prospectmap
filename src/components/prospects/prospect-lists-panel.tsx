@@ -6,6 +6,8 @@ import { FolderPlus, Layers3, Plus, Target } from "lucide-react";
 import type { ProspectRecord } from "@/lib/prospect-intelligence";
 import { cn, formatCurrency } from "@/lib/utils";
 
+import { PmEmpty, PmPanel } from "../ui/pm";
+
 import { useProspectLists } from "./use-prospect-lists";
 
 type Props = {
@@ -94,15 +96,15 @@ export function ProspectListsPanel({
   };
 
   return (
-    <section className="rounded-[28px] border border-[rgba(30,51,80,0.9)] bg-[rgba(13,23,40,0.92)] p-5 shadow-[0_22px_60px_rgba(3,9,18,0.36)]">
+    <PmPanel className="p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-[rgba(58,190,249,0.8)]">Campañas</p>
-          <h2 className="mt-2 text-xl font-semibold text-[var(--pm-text)]">{title}</h2>
-          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{description}</p>
+          <p className="pm-kicker">Campañas</p>
+          <h2 className="pm-title mt-2 text-xl">{title}</h2>
+          <p className="pm-muted mt-1 text-sm">{description}</p>
         </div>
-        <div className="rounded-2xl border border-[rgba(30,51,80,0.9)] bg-[rgba(18,32,51,0.88)] px-3 py-2 text-right">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">Selección</p>
+        <div className="pm-card-soft text-right">
+          <p className="pm-caption uppercase tracking-[0.16em]">Selección</p>
           <p className="mt-1 text-lg font-semibold text-[var(--pm-text)]">{selectedBusinessIds.length}</p>
         </div>
       </div>
@@ -140,7 +142,7 @@ export function ProspectListsPanel({
         <button
           type="submit"
           disabled={busy || selectedBusinessIds.length === 0 || !tableAvailable}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[rgba(58,190,249,0.45)] bg-[rgba(58,190,249,0.12)] px-4 py-3 text-sm font-medium text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.72)] hover:bg-[rgba(58,190,249,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="pm-btn pm-btn-primary"
         >
           <FolderPlus className="h-4 w-4" />
           Guardar selección
@@ -158,9 +160,7 @@ export function ProspectListsPanel({
         ) : null}
 
         {!loading && lists.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[rgba(30,51,80,0.95)] bg-[rgba(7,17,31,0.66)] px-4 py-5 text-sm text-[var(--pm-text-secondary)]">
-            Crea tu primera lista con la selección actual y úsala como campaña operativa reutilizable.
-          </div>
+          <PmEmpty body="Crea tu primera lista con la selección actual y úsala como campaña operativa reutilizable." />
         ) : null}
 
         {lists.map((list) => {
@@ -179,7 +179,7 @@ export function ProspectListsPanel({
           return (
             <article
               key={list.id}
-              className="rounded-2xl border border-[rgba(30,51,80,0.9)] bg-[rgba(18,32,51,0.74)] p-4"
+              className="pm-card"
             >
               <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                 <div>
@@ -231,7 +231,7 @@ export function ProspectListsPanel({
                     setBusy(false);
                     setInfo(result.ok ? "Selección añadida a la lista." : result.error ?? "No pude actualizar la lista.");
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl border border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] px-3 py-2 text-sm text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.5)] disabled:opacity-60"
+                  className="pm-btn pm-btn-secondary"
                 >
                   <Plus className="h-4 w-4" />
                   Añadir selección
@@ -255,14 +255,14 @@ export function ProspectListsPanel({
           );
         })}
       </div>
-    </section>
+    </PmPanel>
   );
 }
 
 function Metric({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.76)] px-3 py-3">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">{label}</p>
+    <div className="pm-card-soft px-3 py-3">
+      <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
       <p className="mt-1 text-base font-semibold text-[var(--pm-text)]">{value}</p>
     </div>
   );

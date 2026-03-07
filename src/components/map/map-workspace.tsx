@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
+import { PmEmpty } from "../ui/pm";
 import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
 import { ProspectCard } from "../prospects/prospect-ui";
 
@@ -423,7 +424,7 @@ export function MapWorkspace({ profile }: Props) {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-78px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:rounded-[32px] lg:border lg:border-[rgba(30,51,80,0.92)]">
+    <div className="relative flex h-[calc(100vh-140px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:h-[calc(100vh-112px)] lg:rounded-[32px] lg:border lg:border-[rgba(30,51,80,0.92)]">
       <div className="absolute left-3 right-3 top-3 z-[450]">
         <div className="hidden flex-wrap items-center gap-2 rounded-[24px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] p-2 shadow-lg backdrop-blur lg:flex">
           <FiltersRow
@@ -441,7 +442,7 @@ export function MapWorkspace({ profile }: Props) {
           <button
             type="button"
             onClick={() => setShowSweepMode(true)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(58,190,249,0.42)] bg-[rgba(58,190,249,0.1)] px-3 py-2 text-xs font-medium text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.7)]"
+            className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
           >
             <ScanSearch className="h-4 w-4" />
             Barrido de zona
@@ -449,7 +450,7 @@ export function MapWorkspace({ profile }: Props) {
           <button
             type="button"
             onClick={() => setShowCsvImport(true)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs font-medium text-[var(--pm-text)] transition hover:border-[rgba(58,190,249,0.4)]"
+            className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
           >
             <Upload className="h-4 w-4" />
             Importar CSV
@@ -461,13 +462,13 @@ export function MapWorkspace({ profile }: Props) {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
+              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
               onClick={() => setShowMobileFilters((value) => !value)}
             >
               <Filter className="h-4 w-4" />
               Filtros
             </button>
-            <span className="inline-flex rounded-full border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-[11px] font-medium text-[var(--pm-text-secondary)]">
+            <span className="pm-badge text-[11px]">
               {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Cargando..."}
             </span>
           </div>
@@ -475,7 +476,7 @@ export function MapWorkspace({ profile }: Props) {
             <button
               type="button"
               onClick={() => setShowSweepMode(true)}
-              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(58,190,249,0.42)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
+              className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
             >
               <ScanSearch className="h-4 w-4" />
               Barrido
@@ -483,7 +484,7 @@ export function MapWorkspace({ profile }: Props) {
             <button
               type="button"
               onClick={() => setShowCsvImport(true)}
-              className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text)]"
+              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
             >
               <Upload className="h-4 w-4" />
               CSV
@@ -528,7 +529,7 @@ export function MapWorkspace({ profile }: Props) {
 
       <div className="relative flex-1">
         {(loadingSaved || loadingOverpass) && (
-          <div className="pointer-events-none absolute right-3 top-3 z-[450] rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
+          <div className="pointer-events-none absolute right-3 top-3 z-[450] rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text-secondary)] shadow-[0_16px_40px_rgba(3,9,18,0.32)]">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               {loadingSaved ? "Cargando datos guardados" : "Cargando negocios reales"}
@@ -568,7 +569,7 @@ export function MapWorkspace({ profile }: Props) {
       {showMobilePanel && selectedRecord ? (
         <div className="fixed inset-0 z-[500] bg-slate-950/55 backdrop-blur-sm lg:hidden" onClick={() => setShowMobilePanel(false)}>
           <div
-            className="absolute inset-x-0 bottom-0 top-[16%] overflow-hidden rounded-t-[28px] border-t border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)]"
+            className="absolute inset-x-0 bottom-0 top-[14%] overflow-hidden rounded-t-[28px] border-t border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)] shadow-[0_-24px_60px_rgba(3,9,18,0.4)]"
             onClick={(event) => event.stopPropagation()}
           >
             <BusinessPanel
@@ -617,7 +618,7 @@ export function MapWorkspace({ profile }: Props) {
 
 function SummaryTag({ total, filtered }: { total: number; filtered: number }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
+    <div className="pm-badge rounded-2xl px-3 py-2 text-xs">
       <span>{filtered}</span>
       <span className="text-[var(--pm-text-tertiary)]">/</span>
       <span>{total} negocios</span>
@@ -641,7 +642,7 @@ function FiltersRow({
       <select
         value={filters.category}
         onChange={(event) => onChange({ ...filters, category: event.target.value })}
-        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
+        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
       >
         <option value="all">Sector: todos</option>
         {categories.map((category) => (
@@ -659,7 +660,7 @@ function FiltersRow({
             status: event.target.value as ProspectStatus | "all",
           })
         }
-        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
+        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
       >
         <option value="all">Estado: todos</option>
         {PROSPECT_STATUS_ORDER.map((status) => (
@@ -677,7 +678,7 @@ function FiltersRow({
             priority: event.target.value as PriorityLevel | "all",
           })
         }
-        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text)]"
+        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
       >
         <option value="all">Prioridad: todas</option>
         {PRIORITY_OPTIONS.map((priority) => (
@@ -690,7 +691,7 @@ function FiltersRow({
       <button
         type="button"
         onClick={onReset}
-        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.92)] px-3 py-2 text-xs text-[var(--pm-text-secondary)] hover:border-[rgba(58,190,249,0.42)]"
+        className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
       >
         Limpiar
       </button>
@@ -718,31 +719,23 @@ function SweepModeModal({
   return (
     <div className="fixed inset-0 z-[520] bg-slate-950/70 p-3 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl xl:grid xl:grid-cols-[1.2fr_0.8fr]"
+        className="mx-auto flex h-full max-w-7xl flex-col overflow-hidden rounded-[28px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)] shadow-2xl xl:grid xl:grid-cols-[1.2fr_0.8fr]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex min-h-0 flex-col border-b border-slate-800 xl:border-b-0 xl:border-r">
-          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+        <div className="flex min-h-0 flex-col border-b border-[rgba(30,51,80,0.72)] xl:border-b-0 xl:border-r">
+          <div className="flex items-center justify-between border-b border-[rgba(30,51,80,0.72)] px-4 py-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Modo Barrido</p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-100">Mejores negocios de la zona visible</h2>
-              <p className="mt-1 text-sm text-slate-400">Vertical activa: {activeVerticalLabel}</p>
+              <p className="pm-kicker">Barrido de zona</p>
+              <h2 className="pm-title mt-1 text-lg">Mejores negocios de la zona visible</h2>
+              <p className="pm-muted mt-1 text-sm">Vertical activa: {activeVerticalLabel}</p>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200"
-            >
+            <button type="button" onClick={onClose} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
               Cerrar
             </button>
           </div>
 
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-            {records.length === 0 ? (
-              <p className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm text-slate-400">
-                No hay suficientes negocios visibles para generar barrido. Mueve el mapa o baja el zoom.
-              </p>
-            ) : null}
+            {records.length === 0 ? <PmEmpty body="No hay suficientes negocios visibles para generar barrido. Mueve el mapa o baja el zoom." /> : null}
             {records.map((record) => (
               <ProspectCard
                 key={record.business.key}
@@ -765,7 +758,7 @@ function SweepModeModal({
             <button
               type="button"
               onClick={() => onOpenBusiness(selectedRecord)}
-              className="w-full rounded-lg bg-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+              className="pm-btn pm-btn-primary w-full"
             >
               Abrir ficha del negocio
             </button>
@@ -806,7 +799,7 @@ function CommercialContextInline({
         value={vertical}
         onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
         disabled={!ready}
-        className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.82)] px-3 py-2 text-xs text-[var(--pm-text)] disabled:opacity-60"
+        className="field min-h-0 rounded-2xl px-3 py-2 text-xs disabled:opacity-60"
       >
         {Object.values(VERTICAL_CONFIGS).map((item) => (
           <option key={item.id} value={item.id}>
@@ -814,9 +807,7 @@ function CommercialContextInline({
           </option>
         ))}
       </select>
-      <span className="inline-flex items-center rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.82)] px-3 py-2 text-[11px] text-[var(--pm-text-secondary)]">
-        {saveLabel}
-      </span>
+      <span className="pm-badge px-3 py-2 text-[11px]">{saveLabel}</span>
     </div>
   );
 }

@@ -13,11 +13,12 @@ import {
   type ProspectRecord,
 } from "@/lib/prospect-intelligence";
 import type { ProfileRow } from "@/lib/types";
-import { cn, formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
+import { PmEmpty, PmHero, PmMetric, PmNotice, PmPanel, PmSectionHeader } from "../ui/pm";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
 import { ProspectListsPanel } from "./prospect-lists-panel";
@@ -63,7 +64,7 @@ export function TodayClient({ profile }: Props) {
   }
 
   return (
-    <div className="space-y-4 px-4 py-4 lg:px-0">
+    <div className="pm-page">
       <CommercialControlBar
         settings={settings}
         onVerticalChange={setVertical}
@@ -71,44 +72,38 @@ export function TodayClient({ profile }: Props) {
       />
 
       {!commercialProfileComplete ? (
-        <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+        <PmNotice tone="amber">
           Falta completar el perfil comercial de la cuenta. ProspectMap ya funciona, pero el scoring, los mensajes y el
-          informe del negocio seran mucho mejores cuando completes el onboarding comercial en `Configuración`.
-        </section>
+          informe del negocio serán mucho mejores cuando completes el onboarding comercial en `Configuración`.
+        </PmNotice>
       ) : null}
 
       {records.length === 0 ? (
-        <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-[0_24px_60px_rgba(2,6,23,0.3)]">
-          <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Centro de control</p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-100">Sin pipeline todavía</h1>
-          <p className="mt-3 max-w-2xl text-sm text-slate-400">
+        <PmHero
+          eyebrow="Centro de control"
+          title="Sin pipeline todavía"
+          description="Empieza desde el mapa, guarda negocios y vuelve aquí. Esta vista se llena sola con prioridades, seguimiento, encaje de servicio y narrativa comercial por vertical."
+        >
+          <p className="pm-muted max-w-2xl text-sm leading-6">
             Empieza desde el mapa, guarda negocios y vuelve aquí. Esta vista se llena sola con prioridades, seguimiento,
             encaje de servicio y narrativa comercial por vertical.
           </p>
-        </section>
+        </PmHero>
       ) : (
         <>
-          <section className="rounded-[28px] border border-slate-800 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_36%),linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.96))] p-6 shadow-[0_28px_80px_rgba(2,6,23,0.42)]">
-            <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-              <div className="max-w-3xl">
-                <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">Centro de control</p>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-100">
-                  Hoy sabes exactamente dónde atacar.
-                </h1>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  ProspectMap ya no es solo mapa y pipeline: esta vista resume qué leads merecen foco inmediato, qué
-                  servicio de Órbita entra mejor y dónde se concentra la oportunidad real de la cuenta.
-                </p>
-              </div>
-
+          <PmHero
+            eyebrow="Centro de control"
+            title="Hoy sabes exactamente dónde atacar."
+            description="ProspectMap resume qué leads merecen foco inmediato, qué servicio de Órbita entra mejor y dónde se concentra la oportunidad real de la cuenta."
+            actions={
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <MetricCard label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" />
-                <MetricCard label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" />
-                <MetricCard label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" />
-                <MetricCard label="Leads enfriándose" value={summary.staleCount} tone="emerald" />
+                <PmMetric label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" className="min-w-[170px]" />
+                <PmMetric label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" className="min-w-[170px]" />
+                <PmMetric label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" className="min-w-[170px]" />
+                <PmMetric label="Leads enfriándose" value={summary.staleCount} tone="emerald" className="min-w-[170px]" />
               </div>
-            </div>
-          </section>
+            }
+          />
 
           <div className="grid gap-4 2xl:grid-cols-[1.45fr_0.95fr]">
             <div className="space-y-4">
@@ -217,23 +212,19 @@ function ProspectSection({
   onSelect: (record: ProspectRecord) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
+    <PmPanel className="p-4">
       <div className="flex items-start gap-3">
         <div className="rounded-xl border border-cyan-800/50 bg-cyan-500/10 p-2 text-cyan-200">
           <Icon className="h-4 w-4" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-200">{title}</h2>
-          <p className="mt-1 text-sm text-slate-400">{description}</p>
+          <h2 className="pm-title text-sm uppercase tracking-[0.1em]">{title}</h2>
+          <p className="pm-muted mt-1 text-sm">{description}</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-3">
-        {records.length === 0 ? (
-          <p className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-3 text-sm text-slate-500">
-            Nada que mostrar en este bloque todavía.
-          </p>
-        ) : null}
+        {records.length === 0 ? <PmEmpty body="Nada que mover en este bloque todavía." /> : null}
         {records.map((record) => (
           <ProspectCard
             key={record.business.key}
@@ -244,57 +235,27 @@ function ProspectSection({
           />
         ))}
       </div>
-    </section>
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number | string;
-  tone: "cyan" | "amber" | "rose" | "emerald";
-}) {
-  const toneClass =
-    tone === "amber"
-      ? "border-amber-500/30 bg-amber-500/10 text-amber-100"
-      : tone === "rose"
-        ? "border-rose-500/30 bg-rose-500/10 text-rose-100"
-        : tone === "emerald"
-          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
-          : "border-cyan-500/30 bg-cyan-500/10 text-cyan-100";
-
-  return (
-    <article className={cn("min-w-[170px] rounded-2xl border p-4", toneClass)}>
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-400">{label}</p>
-      <p className="mt-3 text-3xl font-semibold">{value}</p>
-    </article>
+    </PmPanel>
   );
 }
 
 function ActionSummaryPanel({ summary }: { summary: CommandCenterSummary }) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Resumen accionable</p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-100">Qué mover hoy para acercarte al cierre</h2>
-        </div>
-        <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-slate-400">
-          Valor ponderado {formatCurrency(summary.weightedValueTotal)}
-        </span>
-      </div>
+    <PmPanel className="p-5">
+      <PmSectionHeader
+        eyebrow="Resumen accionable"
+        title="Qué mover hoy para acercarte al cierre"
+        action={<span className="pm-badge">Valor ponderado {formatCurrency(summary.weightedValueTotal)}</span>}
+      />
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         {summary.actionSummary.map((item) => (
-          <article key={item} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-            <p className="text-sm leading-6 text-slate-300">{item}</p>
+          <article key={item} className="pm-card-soft">
+            <p className="pm-muted text-sm leading-6">{item}</p>
           </article>
         ))}
       </div>
-    </section>
+    </PmPanel>
   );
 }
 
@@ -312,19 +273,19 @@ function DistributionPanel({
   const max = Math.max(...items.map((item) => item.value), 1);
 
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-200">{title}</h2>
-      <p className="mt-1 text-sm text-slate-400">{description}</p>
+    <PmPanel className="p-4">
+      <h2 className="pm-title text-sm uppercase tracking-[0.1em]">{title}</h2>
+      <p className="pm-muted mt-1 text-sm">{description}</p>
 
       <div className="mt-4 space-y-3">
-        {items.length === 0 ? <p className="text-sm text-slate-500">{emptyText}</p> : null}
+        {items.length === 0 ? <PmEmpty body={emptyText} /> : null}
         {items.map((item) => (
           <div key={item.label} className="space-y-2">
             <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="text-slate-200">{item.label}</span>
-              <span className="text-slate-500">{item.value}</span>
+              <span className="text-[var(--pm-text)]">{item.label}</span>
+              <span className="pm-caption">{item.value}</span>
             </div>
-            <div className="h-2 rounded-full bg-slate-800">
+            <div className="h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
               <div
                 className="h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-200"
                 style={{ width: `${(item.value / max) * 100}%` }}
@@ -333,7 +294,7 @@ function DistributionPanel({
           </div>
         ))}
       </div>
-    </section>
+    </PmPanel>
   );
 }
 
@@ -341,22 +302,22 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
   const max = Math.max(...summary.pipelineMoments.map((item) => item.value), 1);
 
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Pipeline</p>
-      <h2 className="mt-2 text-xl font-semibold text-slate-100">Lectura rápida del momento comercial</h2>
-      <p className="mt-2 text-sm text-slate-400">
+    <PmPanel className="p-5">
+      <p className="pm-kicker">Pipeline</p>
+      <h2 className="pm-title mt-2 text-xl">Lectura rápida del momento comercial</h2>
+      <p className="pm-muted mt-2 text-sm">
         Valor abierto {formatCurrency(summary.estimatedValueTotal)} · {summary.staleCount} oportunidades perdiendo
         timing.
       </p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         {summary.pipelineMoments.map((item) => (
-          <article key={item.label} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+          <article key={item.label} className="pm-card-soft">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-slate-300">{item.label}</p>
-              <span className="text-lg font-semibold text-slate-100">{item.value}</span>
+              <p className="pm-muted text-sm">{item.label}</p>
+              <span className="pm-title text-lg">{item.value}</span>
             </div>
-            <div className="mt-3 h-2 rounded-full bg-slate-800">
+            <div className="mt-3 h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
               <div
                 className="h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-200"
                 style={{ width: `${(item.value / max) * 100}%` }}
@@ -365,40 +326,40 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
           </article>
         ))}
       </div>
-    </section>
+    </PmPanel>
   );
 }
 
 function RightRailSummary({ summary }: { summary: CommandCenterSummary }) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <p className="text-xs uppercase tracking-[0.16em] text-cyan-300">Foco ejecutivo</p>
+    <PmPanel className="p-4">
+      <p className="pm-kicker">Foco ejecutivo</p>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Valor bruto</p>
-          <p className="mt-1 text-base font-semibold text-slate-100">{formatCurrency(summary.estimatedValueTotal)}</p>
+        <div className="pm-card-soft">
+          <p className="pm-caption uppercase tracking-[0.14em]">Valor bruto</p>
+          <p className="pm-title mt-1 text-base">{formatCurrency(summary.estimatedValueTotal)}</p>
         </div>
-        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Valor ponderado</p>
-          <p className="mt-1 text-base font-semibold text-slate-100">{formatCurrency(summary.weightedValueTotal)}</p>
+        <div className="pm-card-soft">
+          <p className="pm-caption uppercase tracking-[0.14em]">Valor ponderado</p>
+          <p className="pm-title mt-1 text-base">{formatCurrency(summary.weightedValueTotal)}</p>
         </div>
       </div>
       <div className="mt-3 space-y-3">
         {summary.actionSummary.map((item) => (
-          <div key={item} className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+          <div key={item} className="pm-card-soft flex gap-3">
             <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
-            <p className="text-sm text-slate-300">{item}</p>
+            <p className="pm-muted text-sm">{item}</p>
           </div>
         ))}
       </div>
-    </section>
+    </PmPanel>
   );
 }
 
 function PageState({ text }: { text: string }) {
   return (
-    <div className="px-4 py-4 lg:px-0">
-      <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-5 text-sm text-slate-400">{text}</section>
+    <div className="pm-page">
+      <section className="pm-panel text-sm text-[var(--pm-text-secondary)]">{text}</section>
     </div>
   );
 }

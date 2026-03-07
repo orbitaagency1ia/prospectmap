@@ -26,9 +26,11 @@ import { cn, formatCurrency, formatDaysSince } from "@/lib/utils";
 import { CommercialControlBar } from "../commercial/commercial-control-bar";
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
+import { PmEmpty, PmHero, PmMetric, PmNotice, PmPanel, PmSectionHeader } from "../ui/pm";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
 import { ProspectListsPanel } from "./prospect-lists-panel";
+import { ProspectCard } from "./prospect-ui";
 import { OpportunityBadge, UrgencyBadge } from "./prospect-ui";
 import { useSavedProspects } from "./use-saved-prospects";
 
@@ -106,7 +108,7 @@ export function RankingClient({ profile }: Props) {
   }
 
   return (
-    <div className="space-y-4 px-4 py-4 lg:px-0">
+    <div className="pm-page">
       <CommercialControlBar
         settings={settings}
         onVerticalChange={setVertical}
@@ -114,32 +116,31 @@ export function RankingClient({ profile }: Props) {
       />
 
       {!commercialProfileComplete ? (
-        <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+        <PmNotice tone="amber">
           El perfil comercial de la cuenta sigue incompleto. El ranking actual usa la base vertical, pero puede afinar
-          mucho mas cuando completes ICP, oferta y ticket en `Configuración`.
-        </section>
+          mucho más cuando completes ICP, oferta y ticket en `Configuración`.
+        </PmNotice>
       ) : null}
 
       <div className="grid gap-4 2xl:grid-cols-[1.55fr_0.92fr]">
         <div className="space-y-4">
-          <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">Prioridades</p>
-                <h1 className="mt-2 text-2xl font-semibold text-slate-100">Prospectos ordenados por prioridad comercial</h1>
-                <p className="mt-1 text-sm text-slate-400">
-                  Lista operativa para decidir a quién atacar primero y con qué propuesta entrar.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setDescending((value) => !value)}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500"
-              >
+          <PmHero
+            eyebrow="Prioridades"
+            title="Prospectos ordenados por prioridad comercial"
+            description="Lista operativa para decidir a quién atacar primero, con qué servicio entrar y cuánto valor puede mover."
+            actions={
+              <button type="button" onClick={() => setDescending((value) => !value)} className="pm-btn pm-btn-secondary">
                 {descending ? <ArrowDownWideNarrow className="h-4 w-4" /> : <ArrowUpWideNarrow className="h-4 w-4" />}
                 Prioridad {descending ? "desc" : "asc"}
               </button>
-            </div>
+            }
+          />
+
+          <PmPanel className="p-4">
+            <PmSectionHeader
+              title="Filtros de trabajo"
+              description="Recorta la lista por ciudad, sector, estado y prioridad sin perder el informe comercial."
+            />
 
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
               <FilterSelect
@@ -169,11 +170,7 @@ export function RankingClient({ profile }: Props) {
                 values={["all", ...PRIORITY_OPTIONS]}
               />
               <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => setFilters(normalizeRankingFilters())}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition hover:border-slate-500"
-                >
+                <button type="button" onClick={() => setFilters(normalizeRankingFilters())} className="pm-btn pm-btn-secondary w-full">
                   Limpiar filtros
                 </button>
               </div>
@@ -184,12 +181,34 @@ export function RankingClient({ profile }: Props) {
               <TopMetric label="Alta oportunidad" value={sortedRecords.filter((record) => record.insight.score >= 75).length} />
               <TopMetric label="Valor filtrado" value={formatCurrency(filteredSummary.estimatedValueTotal)} />
             </div>
-          </section>
+          </PmPanel>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-            <div className="overflow-x-auto">
+          <PmPanel className="overflow-hidden p-0">
+            <div className="space-y-3 p-3 lg:hidden">
+              {sortedRecords.length === 0 ? <PmEmpty body="No hay prospectos que cumplan esos filtros." /> : null}
+              {sortedRecords.map((record) => (
+                <div
+                  key={record.business.key}
+                  className={cn(
+                    "rounded-[24px] border transition",
+                    selected?.business.key === record.business.key
+                      ? "border-[rgba(58,190,249,0.45)] bg-[rgba(18,32,51,0.94)]"
+                      : "border-[rgba(30,51,80,0.9)] bg-[rgba(13,23,40,0.82)]",
+                  )}
+                >
+                  <ProspectCard
+                    record={record}
+                    onSelect={(next) => setSelectedKey(next.business.key)}
+                    actionLabel="Ver informe"
+                    showDemoBadges
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="pm-table-wrap hidden lg:block">
               <table className="min-w-full text-left">
-                <thead className="border-b border-slate-800 bg-slate-950/70 text-xs uppercase tracking-[0.12em] text-slate-500">
+                <thead className="border-b border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.78)] text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">
                   <tr>
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">Sector</th>
@@ -203,7 +222,7 @@ export function RankingClient({ profile }: Props) {
                 <tbody>
                   {sortedRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-6 text-sm text-slate-400">
+                      <td colSpan={7} className="px-4 py-6 text-sm text-[var(--pm-text-secondary)]">
                         No hay prospectos que cumplan esos filtros.
                       </td>
                     </tr>
@@ -213,17 +232,17 @@ export function RankingClient({ profile }: Props) {
                       key={record.business.key}
                       onClick={() => setSelectedKey(record.business.key)}
                       className={cn(
-                        "cursor-pointer border-b border-slate-800/80 text-sm transition hover:bg-slate-950/60",
-                        selected?.business.key === record.business.key ? "bg-slate-950/70" : "",
+                        "cursor-pointer border-b border-[rgba(30,51,80,0.64)] text-sm transition hover:bg-[rgba(7,17,31,0.68)]",
+                        selected?.business.key === record.business.key ? "bg-[rgba(7,17,31,0.82)]" : "",
                       )}
                     >
                       <td className="px-4 py-3 align-top">
-                        <p className="font-medium text-slate-100">{record.business.name}</p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="font-medium text-[var(--pm-text)]">{record.business.name}</p>
+                        <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">
                           {record.insight.cityLabel} · {record.insight.effectiveVerticalLabel}
                         </p>
                       </td>
-                      <td className="px-4 py-3 align-top text-slate-300">{record.insight.sectorLabel}</td>
+                      <td className="px-4 py-3 align-top text-[var(--pm-text-secondary)]">{record.insight.sectorLabel}</td>
                       <td className="px-4 py-3 align-top">
                         <span
                           className={cn(
@@ -236,31 +255,31 @@ export function RankingClient({ profile }: Props) {
                       </td>
                       <td className="px-4 py-3 align-top">
                         <div className="space-y-2">
-                          <p className="text-lg font-semibold text-cyan-100">{record.insight.score}</p>
+                          <p className="text-lg font-semibold text-[rgba(184,235,255,0.98)]">{record.insight.score}</p>
                           <OpportunityBadge record={record} />
                         </div>
                       </td>
                       <td className="px-4 py-3 align-top">
-                        <p className="font-medium text-slate-100">{formatCurrency(record.insight.estimatedValue)}</p>
-                        <p className="mt-1 text-xs text-slate-500">{formatCurrency(record.insight.weightedValue)} ponderado</p>
+                        <p className="font-medium text-[var(--pm-text)]">{formatCurrency(record.insight.estimatedValue)}</p>
+                        <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">{formatCurrency(record.insight.weightedValue)} ponderado</p>
                       </td>
                       <td className="px-4 py-3 align-top">
-                        <p className="font-medium text-slate-100">{record.insight.nextAction.action}</p>
-                        <p className="mt-1 text-xs text-slate-500">{record.insight.service.shortLabel}</p>
+                        <p className="font-medium text-[var(--pm-text)]">{record.insight.nextAction.action}</p>
+                        <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">{record.insight.service.shortLabel}</p>
                         <div className="mt-2">
                           <UrgencyBadge urgency={record.insight.nextAction.urgency} />
                         </div>
                       </td>
-                      <td className="px-4 py-3 align-top text-slate-400">
+                      <td className="px-4 py-3 align-top text-[var(--pm-text-secondary)]">
                         <p>{formatDaysSince(record.insight.daysSinceTouch)}</p>
-                        <p className="mt-1 text-xs text-slate-500">{record.insight.attentionLabel}</p>
+                        <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">{record.insight.attentionLabel}</p>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </section>
+          </PmPanel>
           <ProspectListsPanel
             userId={profile.id}
             records={sortedRecords}
@@ -276,14 +295,14 @@ export function RankingClient({ profile }: Props) {
             showDemoBadges
             emptyText="Selecciona una fila de prioridades para ver el informe comercial."
           />
-          <aside className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-            <p className="text-xs uppercase tracking-[0.16em] text-cyan-300">Lectura del ranking</p>
+          <PmPanel className="p-4">
+            <p className="pm-kicker">Lectura del ranking</p>
             <div className="mt-3 space-y-3">
               <SidebarStat label="Servicios dominantes" value={filteredSummary.serviceDistribution[0]?.label ?? "Sin señal"} />
               <SidebarStat label="Vertical dominante" value={filteredSummary.marketVerticalDistribution[0]?.label ?? "Sin señal"} />
               <SidebarStat label="Sector dominante" value={filteredSummary.sectorDistribution[0]?.label ?? "Sin señal"} />
             </div>
-          </aside>
+          </PmPanel>
         </div>
       </div>
     </div>
@@ -308,11 +327,11 @@ function FilterSelect({
 
   return (
     <label className="space-y-1">
-      <span className="block text-xs uppercase tracking-[0.12em] text-slate-500">{label}</span>
+      <span className="pm-caption block uppercase tracking-[0.12em]">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200"
+        className="field"
       >
         {optionValues.map((optionValue, index) => (
           <option key={`${label}-${optionValue}`} value={optionValue}>
@@ -325,27 +344,22 @@ function FilterSelect({
 }
 
 function TopMetric({ label, value }: { label: string; value: number | string }) {
-  return (
-    <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs uppercase tracking-[0.12em] text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-100">{value}</p>
-    </article>
-  );
+  return <PmMetric label={label} value={value} />;
 }
 
 function SidebarStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs uppercase tracking-[0.12em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm text-slate-200">{value}</p>
+    <div className="pm-card-soft">
+      <p className="pm-caption uppercase tracking-[0.12em]">{label}</p>
+      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }
 
 function PageState({ text }: { text: string }) {
   return (
-    <div className="px-4 py-4 lg:px-0">
-      <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-5 text-sm text-slate-400">{text}</section>
+    <div className="pm-page">
+      <section className="pm-panel text-sm text-[var(--pm-text-secondary)]">{text}</section>
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CitySuggestion } from "@/lib/types";
 
+import { PmNotice, PmPanel, PmSectionHeader } from "../ui/pm";
+
 type Props = {
   mode: "onboarding" | "settings";
   userId: string;
@@ -137,44 +139,40 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
   };
 
   return (
-    <div className="space-y-6 px-4 py-4 lg:px-0">
-      <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-        <h1 className="text-lg font-semibold text-slate-100">
-          {mode === "onboarding" ? "Completa tu empresa" : "Configuración de cuenta"}
-        </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          {mode === "onboarding"
-            ? "Necesitamos estos datos para centrar el mapa y cargar negocios reales desde tu ciudad."
-            : "Actualiza tu empresa y ciudad principal."}
-        </p>
+    <div className="space-y-6">
+      <PmPanel className="p-4 sm:p-5">
+        <PmSectionHeader
+          title={mode === "onboarding" ? "Completa tu empresa" : "Perfil de cuenta"}
+          description={
+            mode === "onboarding"
+              ? "Necesitamos estos datos para centrar el mapa y cargar negocios reales desde tu ciudad."
+              : "Actualiza empresa, ciudad principal y credenciales básicas."
+          }
+        />
 
-        {message ? (
-          <p className="mt-3 rounded-lg border border-emerald-700/70 bg-emerald-900/30 px-3 py-2 text-sm text-emerald-200">{message}</p>
-        ) : null}
+        {message ? <PmNotice tone="emerald" className="mt-4">{message}</PmNotice> : null}
 
-        {error ? (
-          <p className="mt-3 rounded-lg border border-rose-700/70 bg-rose-900/30 px-3 py-2 text-sm text-rose-200">{error}</p>
-        ) : null}
+        {error ? <PmNotice tone="rose" className="mt-4">{error}</PmNotice> : null}
 
-        <form className="mt-4 space-y-3" onSubmit={handleSaveProfile}>
-          <label className="block space-y-1">
-            <span className="text-sm text-slate-300">Empresa</span>
+        <form className="mt-5 space-y-4" onSubmit={handleSaveProfile}>
+          <label className="block space-y-2">
+            <span className="pm-caption block uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Empresa</span>
             <input
               value={company}
               onChange={(event) => setCompany(event.target.value)}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+              className="field"
             />
           </label>
 
-          <label className="block space-y-1">
-            <span className="text-sm text-slate-300">Ciudad principal</span>
+          <label className="block space-y-2">
+            <span className="pm-caption block uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Ciudad principal</span>
             <input
               value={city}
               list="settings-city-list"
               onChange={(event) => setCity(event.target.value)}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+              className="field"
             />
             <datalist id="settings-city-list">
               {cityOptions.map((option) => (
@@ -183,45 +181,38 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
                 </option>
               ))}
             </datalist>
-            <p className="text-xs text-slate-500">{cityLoading ? "Buscando ciudad..." : "España por defecto"}</p>
+            <p className="pm-caption">{cityLoading ? "Buscando ciudad..." : "España por defecto"}</p>
           </label>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading ? "Guardando..." : mode === "onboarding" ? "Guardar y entrar" : "Guardar perfil"}
+          <button type="submit" disabled={loading} className="pm-btn pm-btn-primary w-full sm:w-auto">
+            {loading ? "Guardando..." : mode === "onboarding" ? "Guardar y continuar" : "Guardar perfil"}
           </button>
         </form>
-      </section>
+      </PmPanel>
 
       {mode === "settings" ? (
-        <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-          <h2 className="text-base font-semibold text-slate-100">Cambiar contraseña</h2>
-          <form className="mt-3 space-y-3" onSubmit={handleChangePassword}>
-            <label className="block space-y-1">
-              <span className="text-sm text-slate-300">Nueva contraseña</span>
+        <PmPanel className="p-4 sm:p-5">
+          <PmSectionHeader title="Cambiar contraseña" description="Actualiza la contraseña de acceso de esta cuenta." />
+
+          <form className="mt-4 space-y-4" onSubmit={handleChangePassword}>
+            <label className="block space-y-2">
+              <span className="pm-caption block uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Nueva contraseña</span>
               <input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+                className="field"
                 placeholder="Mínimo 8 caracteres"
               />
             </label>
 
-            <button
-              type="submit"
-              disabled={passwordLoading}
-              className="rounded-lg border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <button type="submit" disabled={passwordLoading} className="pm-btn pm-btn-secondary w-full sm:w-auto">
               {passwordLoading ? "Actualizando..." : "Actualizar contraseña"}
             </button>
           </form>
-        </section>
+        </PmPanel>
       ) : null}
     </div>
   );

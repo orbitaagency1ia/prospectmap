@@ -7,6 +7,8 @@ import { STATUS_META } from "@/lib/constants";
 import { OPPORTUNITY_META, type ProspectRecord } from "@/lib/prospect-intelligence";
 import { cn, formatCurrency, formatDateTime, formatDaysSince } from "@/lib/utils";
 
+import { PmBadge, PmEmpty, PmPanel } from "../ui/pm";
+
 import { ProspectingPrepSheet } from "./prospecting-prep-sheet";
 
 type Props = {
@@ -24,11 +26,7 @@ export function ProspectDetailPanel({
   const [copied, setCopied] = useState<string | null>(null);
 
   if (!record) {
-    return (
-      <aside className="rounded-xl border border-slate-800 bg-slate-900/65 p-4 text-sm text-slate-400">
-        {emptyText}
-      </aside>
-    );
+    return <PmEmpty body={emptyText} />;
   }
 
   const status = STATUS_META[record.business.status];
@@ -46,20 +44,20 @@ export function ProspectDetailPanel({
 
   return (
     <>
-      <aside className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.28)]">
-        <div className="flex items-start justify-between gap-3">
+      <PmPanel className="space-y-4 p-4">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Informe comercial</p>
-            <h2 className="mt-2 text-lg font-semibold text-slate-100">{record.business.name}</h2>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="pm-kicker">Informe comercial</p>
+            <h2 className="pm-title mt-2 text-lg">{record.business.name}</h2>
+            <p className="pm-muted mt-1 text-sm">
               {record.insight.sectorLabel} · {record.insight.cityLabel}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={() => handleCopy("initial", record.insight.messages.initial)}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-500"
+              className="pm-btn pm-btn-secondary w-full sm:w-auto"
             >
               <Copy className="h-4 w-4" />
               {copied === "initial" ? "Mensaje copiado" : "Copiar mensaje"}
@@ -67,9 +65,9 @@ export function ProspectDetailPanel({
             <button
               type="button"
               onClick={() => setShowPrep(true)}
-              className="rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-xs font-medium text-cyan-100 transition hover:border-cyan-400"
+              className="pm-btn pm-btn-primary w-full sm:w-auto"
             >
-              Preparar prospeccion
+              Preparar prospección
             </button>
           </div>
         </div>
@@ -79,15 +77,9 @@ export function ProspectDetailPanel({
           <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", opportunity.badgeClass)}>
             {record.insight.tierLabel}
           </span>
-          <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
-            Prioridad comercial {record.insight.score}
-          </span>
-          <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
-            {record.insight.effectiveVerticalLabel}
-          </span>
-          <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
-            {record.insight.service.fitLabel}
-          </span>
+          <PmBadge tone="cyan">Prioridad comercial {record.insight.score}</PmBadge>
+          <span className="pm-badge">{record.insight.effectiveVerticalLabel}</span>
+          <span className="pm-badge">{record.insight.service.fitLabel}</span>
         </div>
 
         {showDemoBadges && record.insight.demoBadges.length > 0 ? (
@@ -165,7 +157,7 @@ export function ProspectDetailPanel({
         </div>
 
         <section className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Mensajes sugeridos</p>
+          <p className="pm-caption uppercase tracking-[0.14em]">Mensajes sugeridos</p>
           <MessageBlock title="Mensaje inicial" content={record.insight.messages.initial} />
           <MessageBlock title="Follow-up 1" content={record.insight.messages.followUp1} />
           <MessageBlock title="Follow-up 2" content={record.insight.messages.followUp2} />
@@ -173,31 +165,31 @@ export function ProspectDetailPanel({
 
         <div className="grid gap-4 xl:grid-cols-2">
           <section className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Que lo hace encajar</p>
+            <p className="pm-caption uppercase tracking-[0.14em]">Qué lo hace encajar</p>
             <Checklist items={record.insight.fitSignals} />
           </section>
           <section className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Riesgos / que falta revisar</p>
+            <p className="pm-caption uppercase tracking-[0.14em]">Riesgos / qué falta revisar</p>
             <Checklist items={[...record.insight.riskSignals, ...record.insight.missingData]} />
           </section>
         </div>
 
         <section className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Objeciones probables</p>
+          <p className="pm-caption uppercase tracking-[0.14em]">Objeciones probables</p>
           {record.insight.objections.map((item) => (
-            <article key={item.objection} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-              <p className="text-sm font-medium text-slate-100">{item.objection}</p>
-              <p className="mt-1 text-sm text-slate-300">{item.response}</p>
+            <article key={item.objection} className="pm-card-soft">
+              <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.response}</p>
             </article>
           ))}
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Logica del score</p>
+          <p className="pm-caption uppercase tracking-[0.14em]">Lógica del score</p>
           {record.insight.breakdown.map((item) => (
-            <div key={item.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+            <div key={item.key} className="pm-card-soft">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-slate-100">{item.label}</p>
+                <p className="text-sm font-medium text-[var(--pm-text)]">{item.label}</p>
                 <p
                   className={cn(
                     "font-mono text-sm",
@@ -208,20 +200,20 @@ export function ProspectDetailPanel({
                   {item.value.toFixed(1)} / {item.max}
                 </p>
               </div>
-              <p className="mt-1 text-xs text-slate-500">{item.reason}</p>
+              <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">{item.reason}</p>
             </div>
           ))}
         </section>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-500">
-            Ultima interaccion: {formatDateTime(record.business.lastInteractionAt)}
+          <div className="pm-card-soft text-xs text-[var(--pm-text-tertiary)]">
+            Última interacción: {formatDateTime(record.business.lastInteractionAt)}
           </div>
-          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-500">
+          <div className="pm-card-soft text-xs text-[var(--pm-text-tertiary)]">
             Próximo follow-up: {formatDateTime(record.insight.followUpAt)}
           </div>
         </div>
-      </aside>
+      </PmPanel>
 
       <ProspectingPrepSheet
         open={showPrep}
@@ -238,9 +230,9 @@ export function ProspectDetailPanel({
 function Checklist({ items }: { items: string[] }) {
   return (
     <div className="space-y-2">
-      {items.length === 0 ? <p className="text-sm text-slate-500">Sin señales adicionales.</p> : null}
+      {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">Sin señales adicionales.</p> : null}
       {items.map((item) => (
-        <p key={item} className="rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-300">
+        <p key={item} className="pm-card-soft px-3 py-2 text-sm text-[var(--pm-text-secondary)]">
           {item}
         </p>
       ))}
@@ -258,9 +250,9 @@ function InfoBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-500">{title}</p>
-      <p className="mt-1 text-sm font-medium text-slate-100">{body}</p>
+    <section className="pm-card-soft p-3">
+      <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
+      <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{body}</p>
       <div className="mt-1">{children}</div>
     </section>
   );
@@ -268,18 +260,18 @@ function InfoBlock({
 
 function MessageBlock({ title, content }: { title: string; content: string }) {
   return (
-    <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-500">{title}</p>
-      <p className="mt-1 text-sm text-slate-200">{content}</p>
+    <article className="pm-card-soft p-3">
+      <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
+      <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{content}</p>
     </article>
   );
 }
 
 function InfoPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm text-slate-200">{value}</p>
+    <div className="pm-card-soft p-3">
+      <p className="pm-caption uppercase tracking-[0.14em]">{label}</p>
+      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }

@@ -19,13 +19,23 @@ import { STATUS_META } from "@/lib/constants";
 import type { DashboardData } from "@/lib/dashboard";
 import { formatDateTime, formatPercent } from "@/lib/utils";
 
+import { PmMetric, PmPanel, PmSectionHeader } from "../ui/pm";
+
 type Props = {
   data: DashboardData;
 };
 
 export function DashboardClient({ data }: Props) {
   return (
-    <div className="space-y-4 px-4 py-4 lg:px-0">
+    <div className="pm-page">
+      <PmPanel elevated>
+        <PmSectionHeader
+          eyebrow="Analítica"
+          title="Lectura clara del pipeline y la actividad comercial"
+          description="Mide cuánto estás avanzando, dónde se acumulan los negocios y qué parte del embudo necesita atención."
+        />
+      </PmPanel>
+
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard title="Total prospectados" value={`${data.cards.totalProspected}`} helper="Estado distinto de sin contactar" />
         <MetricCard title="Tasa de contacto" value={formatPercent(data.cards.contactRate)} helper={data.formulaNotes.contactRate} />
@@ -159,20 +169,14 @@ function MetricCard({
   value: string;
   helper: string;
 }) {
-  return (
-    <article className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-      <p className="text-sm text-slate-400">{title}</p>
-      <p className="mt-2 text-2xl font-semibold text-cyan-100">{value}</p>
-      <p className="mt-2 text-xs text-slate-500">{helper}</p>
-    </article>
-  );
+  return <PmMetric label={title} value={value} helper={helper} />;
 }
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-300">{title}</h2>
+    <PmPanel className="p-4">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--pm-text)]">{title}</h2>
       {children}
-    </section>
+    </PmPanel>
   );
 }

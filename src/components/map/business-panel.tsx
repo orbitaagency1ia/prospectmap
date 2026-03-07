@@ -14,6 +14,8 @@ import { OPPORTUNITY_META, VERTICAL_CONFIGS, type ProspectInsight, type Vertical
 import type { CombinedBusiness, NoteRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
+import { PmBadge, PmEmpty } from "../ui/pm";
+
 import { ProspectingPrepSheet } from "../prospects/prospecting-prep-sheet";
 
 type EditableBusiness = {
@@ -211,24 +213,24 @@ export function BusinessPanel({
 
   if (!selected) {
     return (
-      <aside className="flex h-full items-center justify-center border-l border-slate-800 bg-slate-950/80 p-6 text-center text-sm text-slate-400">
-        Selecciona un negocio en el mapa para abrir su ficha.
+      <aside className="flex h-full items-center justify-center border-l border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.92)] p-6">
+        <PmEmpty body="Selecciona un negocio para abrir su informe comercial, editar datos y registrar actividad." />
       </aside>
     );
   }
 
   return (
-    <aside className="flex h-full flex-col border-l border-slate-800 bg-slate-950/95">
-      <header className="flex items-start justify-between gap-3 border-b border-slate-800 px-4 py-3">
+    <aside className="flex h-full flex-col border-l border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.96)]">
+      <header className="flex items-start justify-between gap-3 border-b border-[rgba(30,51,80,0.72)] px-4 py-4">
         <div className="space-y-1">
-          <h2 className="text-sm font-semibold text-slate-100">{panelTitle}</h2>
-          <p className="text-xs text-slate-400">{selected.category ?? "Sin categoría"}</p>
+          <h2 className="text-sm font-semibold text-[var(--pm-text)]">{panelTitle}</h2>
+          <p className="text-xs text-[var(--pm-text-secondary)]">{selected.category ?? "Sin categoría"}</p>
           <div className="flex items-center gap-2">{headerStatus}</div>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md border border-slate-700 p-1.5 text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
+          className="pm-btn pm-btn-secondary min-h-0 rounded-xl px-2.5 py-2 text-xs"
           aria-label="Cerrar ficha"
         >
           <X className="h-4 w-4" />
@@ -237,12 +239,12 @@ export function BusinessPanel({
 
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {selected.mode === "overpass" ? (
-          <div className="space-y-3 rounded-xl border border-cyan-700/40 bg-cyan-900/15 p-3 text-sm">
-            <p className="text-slate-200">Negocio detectado en OpenStreetMap. Aún no está guardado en tu cuenta.</p>
+          <div className="space-y-3 rounded-[22px] border border-[rgba(58,190,249,0.35)] bg-[rgba(58,190,249,0.12)] p-4 text-sm">
+            <p className="text-[var(--pm-text)]">Negocio detectado en OpenStreetMap. Aún no está guardado en tu cuenta.</p>
             <button
               type="button"
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="pm-btn pm-btn-primary"
               onClick={() => onSaveOverpass(selected)}
             >
               <Save className="h-4 w-4" />
@@ -252,11 +254,9 @@ export function BusinessPanel({
         ) : null}
 
         {insight ? (
-          <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_45px_rgba(2,6,23,0.24)]">
+          <section className="space-y-4 rounded-[24px] border border-[rgba(30,51,80,0.88)] bg-[rgba(13,23,40,0.88)] p-4 shadow-[0_18px_45px_rgba(2,6,23,0.24)]">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex rounded-full border border-cyan-700/70 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-100">
-                Prioridad comercial {insight.score}
-              </span>
+              <PmBadge tone="cyan">Prioridad comercial {insight.score}</PmBadge>
               <span
                 className={cn(
                   "inline-flex rounded-full px-2 py-1 text-xs font-medium",
@@ -265,22 +265,18 @@ export function BusinessPanel({
               >
                 {insight.tierLabel}
               </span>
-              <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
-                {insight.service.label}
-              </span>
-              <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-200">
-                {insight.effectiveVerticalLabel}
-              </span>
+              <span className="pm-badge">{insight.service.label}</span>
+              <span className="pm-badge">{insight.effectiveVerticalLabel}</span>
               {insight.marketVertical !== insight.effectiveVertical ? (
-                <span className="inline-flex rounded-full border border-slate-700 bg-slate-950 px-2 py-1 text-xs font-medium text-slate-400">
+                <span className="pm-badge">
                   Mercado detectado: {insight.marketVerticalLabel}
                 </span>
               ) : null}
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-              <p className="text-xs uppercase tracking-[0.14em] text-cyan-300">Resumen ejecutivo</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">{insight.executiveSummary}</p>
+            <div className="pm-card-soft p-4">
+              <p className="pm-kicker">Resumen ejecutivo</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--pm-text)]">{insight.executiveSummary}</p>
             </div>
 
             {showDemoBadges && insight.demoBadges.length > 0 ? (
@@ -311,7 +307,7 @@ export function BusinessPanel({
               <QuickActionButton
                 onClick={() => setShowPrep(true)}
                 icon={Sparkles}
-                label="Preparar prospeccion"
+                label="Preparar prospección"
                 tone="cyan"
               />
               <QuickActionButton
@@ -686,8 +682,8 @@ export function BusinessPanel({
         ) : null}
 
         {activeTab === "notas" && isSaved ? (
-          <section className="space-y-3 border-t border-slate-800 pt-4">
-            <h3 className="text-sm font-semibold text-slate-200">Notas e interacciones</h3>
+          <section className="space-y-3 border-t border-[rgba(30,51,80,0.72)] pt-4">
+            <h3 className="text-sm font-semibold text-[var(--pm-text)]">Notas e interacciones</h3>
 
             <div className="space-y-2">
               <textarea
@@ -701,7 +697,7 @@ export function BusinessPanel({
                 type="button"
                 onClick={handleAddNote}
                 disabled={savingNote || !noteText.trim()}
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="pm-btn pm-btn-secondary w-full"
               >
                 {savingNote ? "Guardando nota..." : "Añadir nota"}
               </button>
@@ -710,14 +706,14 @@ export function BusinessPanel({
             <div className="space-y-2">
               {notesLoading ? <p className="text-xs text-slate-400">Cargando notas...</p> : null}
               {!notesLoading && notes.length === 0 ? (
-                <p className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-400">
+                <p className="pm-card-soft px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
                   Todavía no hay notas para este negocio.
                 </p>
               ) : null}
               {notes.map((note) => (
-                <article key={note.id} className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500">{formatDateTime(note.created_at)}</p>
-                  <p className="mt-1 text-sm text-slate-200">{note.note_text}</p>
+                <article key={note.id} className="pm-card-soft px-3 py-2">
+                  <p className="text-[11px] uppercase tracking-wide text-[var(--pm-text-tertiary)]">{formatDateTime(note.created_at)}</p>
+                  <p className="mt-1 text-sm text-[var(--pm-text)]">{note.note_text}</p>
                 </article>
               ))}
             </div>
@@ -726,7 +722,7 @@ export function BusinessPanel({
       </div>
 
       {panelStatus?.isNonViable ? (
-        <div className="border-t border-slate-800 px-4 py-2 text-xs text-rose-300">
+        <div className="border-t border-[rgba(30,51,80,0.72)] px-4 py-2 text-xs text-rose-300">
           Estado no viable. Se recomienda excluir de campañas activas.
         </div>
       ) : null}
@@ -751,8 +747,8 @@ function InsightBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+    <section className="pm-card-soft p-3">
+      <p className="pm-caption font-medium uppercase tracking-wide">{title}</p>
       <div className="mt-1">{children}</div>
     </section>
   );
@@ -766,18 +762,18 @@ function MessageBlock({
   content: string;
 }) {
   return (
-    <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-sm text-slate-200">{content}</p>
+    <article className="pm-card-soft p-3">
+      <p className="pm-caption font-medium uppercase tracking-wide">{label}</p>
+      <p className="mt-1 text-sm leading-6 text-[var(--pm-text)]">{content}</p>
     </article>
   );
 }
 
 function MetaBadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm text-slate-200">{value}</p>
+    <div className="pm-card-soft p-3">
+      <p className="pm-caption uppercase tracking-[0.14em]">{label}</p>
+      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }
@@ -791,7 +787,7 @@ function Field({
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</span>
+      <span className="pm-caption font-medium uppercase tracking-wide">{label}</span>
       {children}
     </label>
   );
@@ -811,10 +807,10 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-lg border px-3 py-2 text-xs font-medium transition",
+        "rounded-2xl border px-3 py-2 text-xs font-medium transition",
         active
           ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100"
-          : "border-slate-700 bg-slate-950 text-slate-300 hover:border-slate-500",
+          : "border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] text-[var(--pm-text-secondary)] hover:border-[rgba(58,190,249,0.35)] hover:text-[var(--pm-text)]",
       )}
     >
       {label}
@@ -838,7 +834,7 @@ function QuickActionButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition",
+        "inline-flex min-h-[42px] items-center justify-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition",
         tone === "cyan"
           ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100 hover:border-cyan-400"
           : tone === "amber"
@@ -860,9 +856,9 @@ function ListInsightBlock({ title, items }: { title: string; items: string[] }) 
   return (
     <InsightBlock title={title}>
       <div className="space-y-2">
-        {items.length === 0 ? <p className="text-sm text-slate-500">Nada relevante todavia.</p> : null}
+        {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">Nada relevante todavía.</p> : null}
         {items.map((item) => (
-          <p key={item} className="text-sm text-slate-300">
+          <p key={item} className="text-sm text-[var(--pm-text-secondary)]">
             • {item}
           </p>
         ))}

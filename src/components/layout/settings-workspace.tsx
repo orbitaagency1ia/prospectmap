@@ -5,6 +5,7 @@ import { AccountProfileForm } from "@/components/layout/account-profile-form";
 import { AccountCommercialProfileForm } from "../commercial/account-commercial-profile-form";
 import { CommercialSettingsPanel } from "../commercial/commercial-settings-panel";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
+import { PmPanel, PmSectionHeader } from "../ui/pm";
 
 type Props = {
   userId: string;
@@ -26,7 +27,16 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
   } = useCommercialConfig(userId);
 
   return (
-    <div className="grid gap-4 px-4 py-4 2xl:grid-cols-[0.9fr_1.1fr] lg:px-0">
+    <div className="pm-page">
+      <PmPanel elevated>
+        <PmSectionHeader
+          eyebrow="Configuración"
+          title="Cuenta, territorio y criterio comercial"
+          description="Ajusta la información base de la cuenta y el motor de prospección sin salir del flujo operativo."
+        />
+      </PmPanel>
+
+      <div className="grid gap-4 2xl:grid-cols-[0.9fr_1.1fr]">
       <div>
         <AccountProfileForm
           mode="settings"
@@ -38,14 +48,14 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
       </div>
 
       <div className="space-y-4">
-        <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-          <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Configuracion comercial</p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-100">Motor de prospeccion de Orbita</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Aqui defines la vertical principal, el criterio de scoring y las preferencias que usa la cuenta en
+        <PmPanel className="p-5">
+          <p className="pm-kicker">Configuración comercial</p>
+          <h1 className="pm-title mt-2 text-2xl">Motor de prospección de Órbita</h1>
+          <p className="pm-muted mt-2 text-sm">
+            Aquí defines la vertical principal, el criterio de scoring y las preferencias que usa la cuenta en
             territorio, centro de control y prioridades.
           </p>
-        </section>
+        </PmPanel>
 
         {ready ? (
           <>
@@ -61,10 +71,9 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
             <AccountCommercialProfileForm mode="settings" userId={userId} />
           </>
         ) : (
-          <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-5 text-sm text-slate-400">
-            Cargando configuracion comercial...
-          </section>
+          <section className="pm-panel text-sm text-[var(--pm-text-secondary)]">Cargando configuración comercial...</section>
         )}
+      </div>
       </div>
     </div>
   );

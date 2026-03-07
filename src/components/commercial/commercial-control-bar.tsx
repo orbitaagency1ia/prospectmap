@@ -5,6 +5,8 @@ import { Network } from "lucide-react";
 import { VERTICAL_CONFIGS } from "@/lib/prospect-intelligence";
 import type { AccountCommercialSettings, VerticalId } from "@/lib/prospect-intelligence";
 
+import { PmBadge, PmPanel } from "../ui/pm";
+
 type Props = {
   settings: AccountCommercialSettings;
   onVerticalChange: (vertical: VerticalId) => void;
@@ -28,21 +30,21 @@ export function CommercialControlBar({
             : "Configuracion activa";
 
   return (
-    <section className="rounded-[28px] border border-[rgba(30,51,80,0.9)] bg-[rgba(13,23,40,0.88)] p-4 shadow-[0_20px_70px_rgba(3,9,18,0.36)]">
+    <PmPanel className="p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[rgba(58,190,249,0.82)]">Contexto comercial</p>
-          <h2 className="mt-2 text-xl font-semibold text-[var(--pm-text)]">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
-          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
+          <p className="pm-kicker">Contexto comercial</p>
+          <h2 className="pm-title mt-2 text-xl">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
+          <p className="pm-muted mt-1 text-sm">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="space-y-1">
-            <span className="block text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Vertical</span>
+            <span className="pm-caption block uppercase tracking-[0.12em]">Vertical</span>
             <select
               value={settings.vertical}
               onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
-              className="rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.78)] px-3 py-2 text-sm text-[var(--pm-text)]"
+              className="field min-w-[220px]"
             >
               {Object.values(VERTICAL_CONFIGS).map((vertical) => (
                 <option key={vertical.id} value={vertical.id}>
@@ -52,12 +54,12 @@ export function CommercialControlBar({
             </select>
           </label>
 
-          <div className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.78)] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
+          <PmBadge tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"} className="min-h-[48px] px-3 py-2">
             <Network className="h-4 w-4" />
             {saveLabel}
-          </div>
+          </PmBadge>
         </div>
       </div>
-    </section>
+    </PmPanel>
   );
 }

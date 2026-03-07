@@ -12,7 +12,8 @@ import {
   type AccountCommercialProfile,
   type AccountKnowledgeSummary,
 } from "@/lib/prospect-intelligence";
-import { cn } from "@/lib/utils";
+
+import { PmBadge, PmHero, PmNotice, PmPanel } from "../ui/pm";
 
 import { useAccountCommercialProfile } from "./use-account-commercial-profile";
 
@@ -201,9 +202,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
 
   if (!ready) {
     return (
-      <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 text-sm text-slate-400">
-        Cargando perfil comercial...
-      </section>
+      <section className="pm-panel text-sm text-[var(--pm-text-secondary)]">Cargando perfil comercial...</section>
     );
   }
 
@@ -284,25 +283,17 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
 
   return (
     <div className="space-y-4">
-      <section className="rounded-[28px] border border-slate-800 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.14),_transparent_35%),linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.94))] p-6 shadow-[0_28px_80px_rgba(2,6,23,0.38)]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">Perfil comercial</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-100">
-              {mode === "onboarding" ? "Enséñale a ProspectMap cómo vende tu empresa" : "Conocimiento de cuenta"}
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Este bloque alimenta el scoring, las recomendaciones, los mensajes y el informe de cada negocio. No usa
-              IA externa: todo se guarda en Supabase y se procesa con reglas deterministas.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
+      <PmHero
+        eyebrow="Perfil comercial"
+        title={mode === "onboarding" ? "Enséñale a ProspectMap cómo vende tu empresa" : "Conocimiento de cuenta"}
+        description="Este bloque alimenta el scoring, las recomendaciones, los mensajes y el informe de cada negocio. No usa IA externa: todo se guarda en Supabase y se procesa con reglas deterministas."
+        actions={
+          <>
             <StatusPill label={saveLabel} tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"} />
             <StatusPill label={tableAvailable ? "Persistencia remota activa" : "Solo local"} tone={tableAvailable ? "emerald" : "amber"} />
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       <section className="grid gap-3 md:grid-cols-3">
         <StepCard title="1. ICP" body="Define a quién quieres venderle de verdad." />
@@ -311,14 +302,8 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
       </section>
 
       <form className="space-y-4" onSubmit={handleSave}>
-        {message ? (
-          <p className="rounded-xl border border-emerald-700/70 bg-emerald-900/30 px-4 py-3 text-sm text-emerald-200">
-            {message}
-          </p>
-        ) : null}
-        {error ? (
-          <p className="rounded-xl border border-rose-700/70 bg-rose-900/30 px-4 py-3 text-sm text-rose-200">{error}</p>
-        ) : null}
+        {message ? <PmNotice tone="emerald">{message}</PmNotice> : null}
+        {error ? <PmNotice tone="rose">{error}</PmNotice> : null}
 
         <div className="grid gap-4 2xl:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-4">
@@ -572,21 +557,11 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
               </Field>
 
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={handleProcessKnowledge}
-                  disabled={processingFile}
-                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-                >
+                <button type="button" onClick={handleProcessKnowledge} disabled={processingFile} className="pm-btn pm-btn-primary">
                   <Upload className="h-4 w-4" />
                   {processingFile ? "Procesando..." : "Procesar conocimiento"}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleApplySuggestions}
-                  disabled={!summaryHasData}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-60"
-                >
+                <button type="button" onClick={handleApplySuggestions} disabled={!summaryHasData} className="pm-btn pm-btn-secondary">
                   <Sparkles className="h-4 w-4" />
                   Aplicar sugerencias
                 </button>
@@ -608,36 +583,32 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
               {summary.sourceNote ? <p className="text-xs text-slate-500">{summary.sourceNote}</p> : null}
             </FormSection>
 
-            <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-200">Impacto en ProspectMap</h2>
-              <ul className="mt-3 space-y-2 text-sm text-slate-400">
+            <PmPanel className="p-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--pm-text)]">Impacto en ProspectMap</h2>
+              <ul className="mt-3 space-y-2 text-sm text-[var(--pm-text-secondary)]">
                 <li>• refina el scoring con ICP, oferta y ticket deseado</li>
                 <li>• mejora mensajes, CTA, objeciones y angulo comercial</li>
                 <li>• alimenta el informe detallado del negocio</li>
                 <li>• deja una base clara para futuras fases de inteligencia comercial</li>
               </ul>
-            </section>
+            </PmPanel>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-          <p className="text-sm text-slate-400">
+        <PmPanel className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <p className="text-sm text-[var(--pm-text-secondary)]">
             {mode === "onboarding"
-              ? "Guarda este perfil para que ProspectMap empiece a priorizar mejor desde el primer dia."
-              : "Los cambios se aplican al mapa, ranking, command center y al informe detallado."}
+              ? "Guarda este perfil para que ProspectMap empiece a priorizar mejor desde el primer día."
+              : "Los cambios se aplican a territorio, prioridades, centro de control e informe detallado."}
           </p>
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={saving} className="pm-btn pm-btn-primary w-full sm:w-auto">
             {saving
               ? "Guardando..."
               : mode === "onboarding"
                 ? "Guardar perfil comercial y entrar"
                 : "Guardar perfil comercial"}
           </button>
-        </div>
+        </PmPanel>
       </form>
     </div>
   );
@@ -653,11 +624,11 @@ function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <h2 className="text-base font-semibold text-slate-100">{title}</h2>
-      <p className="mt-1 text-sm text-slate-400">{description}</p>
+    <PmPanel className="p-5">
+      <h2 className="text-base font-semibold text-[var(--pm-text)]">{title}</h2>
+      <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{description}</p>
       <div className="mt-4 space-y-3">{children}</div>
-    </section>
+    </PmPanel>
   );
 }
 
@@ -670,7 +641,7 @@ function Field({
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">{label}</span>
+      <span className="pm-caption font-medium uppercase tracking-[0.12em]">{label}</span>
       {children}
     </label>
   );
@@ -678,9 +649,9 @@ function Field({
 
 function StepCard({ title, body }: { title: string; body: string }) {
   return (
-    <article className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.24)]">
-      <p className="text-xs uppercase tracking-[0.16em] text-cyan-300">{title}</p>
-      <p className="mt-2 text-sm text-slate-300">{body}</p>
+    <article className="pm-card">
+      <p className="pm-kicker">{title}</p>
+      <p className="mt-2 text-sm text-[var(--pm-text-secondary)]">{body}</p>
     </article>
   );
 }
@@ -697,15 +668,15 @@ function SummaryList({
   emptyText: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+    <div className="pm-card-soft">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-cyan-300" />
-        <p className="text-sm font-medium text-slate-100">{title}</p>
+        <p className="text-sm font-medium text-[var(--pm-text)]">{title}</p>
       </div>
       <div className="mt-3 space-y-2">
-        {items.length === 0 ? <p className="text-sm text-slate-500">{emptyText}</p> : null}
+        {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">{emptyText}</p> : null}
         {items.map((item) => (
-          <p key={item} className="text-sm text-slate-300">
+          <p key={item} className="text-sm text-[var(--pm-text-secondary)]">
             {item}
           </p>
         ))}
@@ -721,20 +692,5 @@ function StatusPill({
   label: string;
   tone: "cyan" | "emerald" | "amber" | "rose";
 }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex rounded-full border px-3 py-1 text-xs font-medium",
-        tone === "emerald"
-          ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
-          : tone === "amber"
-            ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
-            : tone === "rose"
-              ? "border-rose-500/60 bg-rose-500/15 text-rose-200"
-              : "border-cyan-500/60 bg-cyan-500/15 text-cyan-200",
-      )}
-    >
-      {label}
-    </span>
-  );
+  return <PmBadge tone={tone === "emerald" ? "emerald" : tone === "amber" ? "amber" : tone === "rose" ? "rose" : "cyan"}>{label}</PmBadge>;
 }
