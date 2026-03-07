@@ -154,22 +154,22 @@ export function MapCanvas({
                 <div className="min-w-[220px] space-y-2 text-xs">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold text-slate-50">{marker.name}</p>
-                      <p className="text-slate-300">{marker.category ?? "Sin categoría"}</p>
+                      <p className="font-semibold text-[var(--pm-text)]">{marker.name}</p>
+                      <p className="text-[var(--pm-text-secondary)]">{marker.category ?? "Sin categoría"}</p>
                     </div>
                     <span className="rounded-full border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 text-[rgba(255,214,179,0.98)]">
                       {marker.score}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">{marker.opportunityLabel}</span>
-                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">{status.label}</span>
-                    <span className="rounded-full border border-slate-700 px-2 py-1 text-slate-300">Urgencia {marker.urgency}</span>
+                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">{marker.opportunityLabel}</span>
+                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">{status.label}</span>
+                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">Urgencia {marker.urgency}</span>
                   </div>
-                  <p className="text-slate-300">Servicio: {marker.serviceLabel}</p>
-                  <p className="text-slate-300">Valor estimado: {formatCurrency(marker.estimatedValue)}</p>
-                  <p className="text-slate-400">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
-                  <p className="line-clamp-2 text-slate-400">
+                  <p className="text-[var(--pm-text-secondary)]">Servicio: {marker.serviceLabel}</p>
+                  <p className="text-[var(--pm-text-secondary)]">Valor estimado: {formatCurrency(marker.estimatedValue)}</p>
+                  <p className="text-[var(--pm-text-tertiary)]">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
+                  <p className="line-clamp-2 text-[var(--pm-text-tertiary)]">
                     {marker.latestNote
                       ? `Nota: ${marker.latestNote}`
                       : `${marker.attentionLabel} · ${formatDateTime(marker.lastInteractionAt)}`}
@@ -189,8 +189,8 @@ export function MapCanvas({
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full border border-slate-700 px-2 py-1">{marker.opportunityLabel}</span>
-                    <span className="rounded-full border border-slate-700 px-2 py-1">{status.label}</span>
+                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1">{marker.opportunityLabel}</span>
+                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1">{status.label}</span>
                   </div>
                   <p>{marker.serviceLabel}</p>
                   <p>{formatCurrency(marker.estimatedValue)}</p>

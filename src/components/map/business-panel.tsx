@@ -147,6 +147,14 @@ export function BusinessPanel({
 
   const panelTitle = selected?.name ?? "Negocio";
   const panelStatus = selected ? STATUS_META[selected.status] : null;
+  const demoBadgeToneMap = {
+    emerald: "emerald",
+    amber: "amber",
+    violet: "violet",
+    cyan: "cyan",
+    slate: "neutral",
+    neutral: "neutral",
+  } as const;
 
   const headerStatus = useMemo(() => {
     if (!selected) return null;
@@ -213,38 +221,49 @@ export function BusinessPanel({
 
   if (!selected) {
     return (
-      <aside className="flex h-full items-center justify-center border-l border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.92)] p-6">
+      <aside className="flex h-full items-center justify-center border-l border-[var(--pm-border)] bg-[rgba(14,17,22,0.84)] p-6 backdrop-blur-xl">
         <PmEmpty body="Selecciona un negocio para abrir su informe comercial, editar datos y registrar actividad." />
       </aside>
     );
   }
 
   return (
-    <aside className="flex h-full flex-col border-l border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.96)]">
-      <header className="flex items-start justify-between gap-3 border-b border-[rgba(30,51,80,0.72)] px-4 py-4">
-        <div className="space-y-1">
-          <h2 className="text-sm font-semibold text-[var(--pm-text)]">{panelTitle}</h2>
-          <p className="text-xs text-[var(--pm-text-secondary)]">{selected.category ?? "Sin categoría"}</p>
-          <div className="flex items-center gap-2">{headerStatus}</div>
+    <aside className="flex h-full flex-col border-l border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(23,27,34,0.94),rgba(11,12,16,0.98))] backdrop-blur-xl">
+      <header className="border-b border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))] px-4 py-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="pm-kicker">Ficha del negocio</p>
+            <h2 className="text-lg font-semibold tracking-[-0.02em] text-[var(--pm-text)]">{panelTitle}</h2>
+            <p className="text-xs text-[var(--pm-text-secondary)]">{selected.category ?? "Sin categoría"}</p>
+            <div className="flex flex-wrap items-center gap-2">{headerStatus}</div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="pm-btn pm-btn-secondary min-h-0 rounded-[1rem] px-2.5 py-2 text-xs"
+            aria-label="Cerrar ficha"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="pm-btn pm-btn-secondary min-h-0 rounded-xl px-2.5 py-2 text-xs"
-          aria-label="Cerrar ficha"
-        >
-          <X className="h-4 w-4" />
-        </button>
+
+        {insight ? (
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            <MetaBadge label="Prioridad comercial" value={String(insight.score)} />
+            <MetaBadge label="Valor estimado" value={insight.estimatedValueLabel} />
+            <MetaBadge label="Urgencia" value={insight.nextAction.urgency} />
+          </div>
+        ) : null}
       </header>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div className="flex-1 space-y-5 overflow-y-auto px-4 py-4">
         {selected.mode === "overpass" ? (
-          <div className="space-y-3 rounded-[22px] border border-[rgba(242,138,46,0.35)] bg-[rgba(242,138,46,0.12)] p-4 text-sm">
+          <div className="rounded-[1.55rem] border border-[rgba(239,139,53,0.18)] bg-[linear-gradient(180deg,rgba(239,139,53,0.09),rgba(29,34,43,0.7))] p-4 text-sm shadow-[0_20px_40px_rgba(239,139,53,0.08)]">
             <p className="text-[var(--pm-text)]">Negocio detectado en OpenStreetMap. Aún no está guardado en tu cuenta.</p>
             <button
               type="button"
               disabled={busy}
-              className="pm-btn pm-btn-primary"
+              className="pm-btn pm-btn-primary mt-3"
               onClick={() => onSaveOverpass(selected)}
             >
               <Save className="h-4 w-4" />
@@ -254,7 +273,7 @@ export function BusinessPanel({
         ) : null}
 
         {insight ? (
-          <section className="space-y-4 rounded-[24px] border border-[rgba(30,51,80,0.88)] bg-[rgba(13,23,40,0.88)] p-4 shadow-[0_18px_45px_rgba(2,6,23,0.24)]">
+          <section className="space-y-4 rounded-[1.75rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(29,34,43,0.96),rgba(16,18,23,0.98))] p-4 shadow-[var(--pm-shadow-card)]">
             <div className="flex flex-wrap items-center gap-2">
               <PmBadge tone="cyan">Prioridad comercial {insight.score}</PmBadge>
               <span
@@ -265,12 +284,10 @@ export function BusinessPanel({
               >
                 {insight.tierLabel}
               </span>
-              <span className="pm-badge">{insight.service.label}</span>
-              <span className="pm-badge">{insight.effectiveVerticalLabel}</span>
+              <PmBadge>{insight.service.label}</PmBadge>
+              <PmBadge>{insight.effectiveVerticalLabel}</PmBadge>
               {insight.marketVertical !== insight.effectiveVertical ? (
-                <span className="pm-badge">
-                  Mercado detectado: {insight.marketVerticalLabel}
-                </span>
+                <PmBadge>Mercado detectado: {insight.marketVerticalLabel}</PmBadge>
               ) : null}
             </div>
 
@@ -282,23 +299,12 @@ export function BusinessPanel({
             {showDemoBadges && insight.demoBadges.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {insight.demoBadges.map((badge) => (
-                  <span
+                  <PmBadge
                     key={badge.label}
-                    className={cn(
-                      "inline-flex rounded-full border px-2 py-1 text-xs font-medium",
-                      badge.tone === "emerald"
-                        ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
-                        : badge.tone === "amber"
-                          ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
-                          : badge.tone === "violet"
-                            ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
-                            : badge.tone === "cyan"
-                              ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
-                              : "border-slate-600 bg-slate-700/50 text-slate-200",
-                    )}
+                    tone={demoBadgeToneMap[badge.tone] ?? "neutral"}
                   >
                     {badge.label}
-                  </span>
+                  </PmBadge>
                 ))}
               </div>
             ) : null}
@@ -383,7 +389,7 @@ export function BusinessPanel({
               ) : null}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="pm-tabs">
               <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Informe" />
               <TabButton active={activeTab === "datos"} onClick={() => setActiveTab("datos")} label="Datos" />
               {isSaved ? <TabButton active={activeTab === "notas"} onClick={() => setActiveTab("notas")} label="Notas" /> : null}
@@ -394,13 +400,13 @@ export function BusinessPanel({
         {activeTab === "informe" && insight ? (
           <section className="space-y-3">
             <InsightBlock title="Nivel de encaje y ángulo">
-              <p className="text-sm font-medium text-slate-100">{insight.fitSummary}</p>
-              <p className="mt-1 text-sm text-slate-300">{insight.commercialAngle}</p>
-              <p className="mt-2 text-xs text-slate-500">{insight.ctaSuggestion}</p>
+              <p className="text-sm font-medium text-[var(--pm-text)]">{insight.fitSummary}</p>
+              <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{insight.commercialAngle}</p>
+              <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">{insight.ctaSuggestion}</p>
             </InsightBlock>
 
             <InsightBlock title="Por qué atacarlo">
-              <p className="text-sm font-medium text-slate-100">{insight.attackSummary}</p>
+              <p className="text-sm font-medium text-[var(--pm-text)]">{insight.attackSummary}</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <MetaBadge label="Valor estimado" value={insight.estimatedValueLabel} />
                 <MetaBadge label="Riesgo dominante" value={insight.riskSummary} />
@@ -410,21 +416,21 @@ export function BusinessPanel({
             </InsightBlock>
 
             <InsightBlock title="Siguiente mejor acción">
-              <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
-              <p className="mt-1 text-sm text-slate-300">
+              <p className="text-sm font-medium text-[var(--pm-text)]">{insight.nextAction.action}</p>
+              <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">
                 {insight.nextAction.channel} · {insight.nextAction.reason}
               </p>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">
                 Urgencia: {insight.nextAction.urgency} · Valor: {insight.estimatedValueLabel}
               </p>
             </InsightBlock>
 
             <InsightBlock title="Servicio Órbita recomendado">
-              <p className="text-sm font-medium text-slate-100">{insight.service.label}</p>
-              <p className="mt-1 text-sm text-slate-300">{insight.service.reason}</p>
+              <p className="text-sm font-medium text-[var(--pm-text)]">{insight.service.label}</p>
+              <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{insight.service.reason}</p>
               <div className="mt-2 space-y-1">
                 {insight.service.reasons.map((reason) => (
-                  <p key={reason} className="text-xs text-slate-500">
+                  <p key={reason} className="text-xs text-[var(--pm-text-tertiary)]">
                     • {reason}
                   </p>
                 ))}
@@ -439,28 +445,28 @@ export function BusinessPanel({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Mensajes sugeridos</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--pm-text-tertiary)]">Mensajes sugeridos</p>
               <MessageBlock label="Mensaje inicial" content={insight.messages.initial} />
               <MessageBlock label="Follow-up 1" content={insight.messages.followUp1} />
               <MessageBlock label="Follow-up 2" content={insight.messages.followUp2} />
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Objeciones probables</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--pm-text-tertiary)]">Objeciones probables</p>
               {insight.objections.map((item) => (
-                <div key={item.objection} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-                  <p className="text-sm font-medium text-slate-100">{item.objection}</p>
-                  <p className="mt-1 text-sm text-slate-300">{item.response}</p>
+                <div key={item.objection} className="pm-card-soft p-3">
+                  <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
+                  <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{item.response}</p>
                 </div>
               ))}
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Lógica del score</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--pm-text-tertiary)]">Lógica del score</p>
               {insight.breakdown.map((item) => (
-                <div key={item.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-2">
+                <div key={item.key} className="pm-card-soft p-2.5">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-medium text-slate-200">{item.label}</p>
+                    <p className="text-xs font-medium text-[var(--pm-text)]">{item.label}</p>
                     <p
                       className={cn(
                         "font-mono text-xs",
@@ -471,7 +477,7 @@ export function BusinessPanel({
                       {item.value.toFixed(1)} / {item.max}
                     </p>
                   </div>
-                  <p className="mt-1 text-[11px] text-slate-500">{item.reason}</p>
+                  <p className="mt-1 text-[11px] text-[var(--pm-text-tertiary)]">{item.reason}</p>
                 </div>
               ))}
             </div>
@@ -479,7 +485,7 @@ export function BusinessPanel({
         ) : null}
 
         {activeTab === "datos" ? (
-          <form className="space-y-3" onSubmit={handleSave}>
+          <form className="space-y-4 rounded-[1.5rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] p-4" onSubmit={handleSave}>
           <Field label="Nombre">
             <input
               value={formState.name}
@@ -682,7 +688,7 @@ export function BusinessPanel({
         ) : null}
 
         {activeTab === "notas" && isSaved ? (
-          <section className="space-y-3 border-t border-[rgba(30,51,80,0.72)] pt-4">
+          <section className="space-y-3 rounded-[1.5rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] p-4">
             <h3 className="text-sm font-semibold text-[var(--pm-text)]">Notas e interacciones</h3>
 
             <div className="space-y-2">
@@ -704,7 +710,7 @@ export function BusinessPanel({
             </div>
 
             <div className="space-y-2">
-              {notesLoading ? <p className="text-xs text-slate-400">Cargando notas...</p> : null}
+              {notesLoading ? <p className="text-xs text-[var(--pm-text-tertiary)]">Cargando notas...</p> : null}
               {!notesLoading && notes.length === 0 ? (
                 <p className="pm-card-soft px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
                   Todavía no hay notas para este negocio.
@@ -722,7 +728,7 @@ export function BusinessPanel({
       </div>
 
       {panelStatus?.isNonViable ? (
-        <div className="border-t border-[rgba(30,51,80,0.72)] px-4 py-2 text-xs text-rose-300">
+        <div className="border-t border-[var(--pm-border)] bg-[rgba(215,111,123,0.08)] px-4 py-3 text-xs text-[rgba(255,230,234,0.98)]">
           Estado no viable. Se recomienda excluir de campañas activas.
         </div>
       ) : null}
@@ -747,9 +753,9 @@ function InsightBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="pm-card-soft p-3">
+    <section className="pm-card-soft p-4">
       <p className="pm-caption font-medium uppercase tracking-wide">{title}</p>
-      <div className="mt-1">{children}</div>
+      <div className="mt-2">{children}</div>
     </section>
   );
 }
@@ -807,10 +813,10 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-2xl border px-3 py-2 text-xs font-medium transition",
+        "pm-tab",
         active
-          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,223,199,0.98)]"
-          : "border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] text-[var(--pm-text-secondary)] hover:border-[rgba(242,138,46,0.3)] hover:text-[var(--pm-text)]",
+          ? "pm-tab-active"
+          : "",
       )}
     >
       {label}
@@ -834,16 +840,16 @@ function QuickActionButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-[42px] items-center justify-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition",
+        "pm-btn min-h-[44px] justify-start rounded-[1.15rem] px-3 py-2.5 text-xs",
         tone === "cyan"
-          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,223,199,0.98)] hover:border-[rgba(242,138,46,0.72)]"
+          ? "pm-btn-primary"
           : tone === "amber"
-            ? "border-amber-500/60 bg-amber-500/15 text-amber-100 hover:border-amber-400"
+            ? "border-[rgba(221,174,85,0.25)] bg-[linear-gradient(180deg,rgba(221,174,85,0.12),rgba(31,34,41,0.74))] text-[rgba(255,243,214,0.98)]"
             : tone === "violet"
-              ? "border-violet-500/60 bg-violet-500/15 text-violet-100 hover:border-violet-400"
-            : tone === "rose"
-              ? "border-rose-500/60 bg-rose-500/15 text-rose-100 hover:border-rose-400"
-              : "border-slate-700 bg-slate-950 text-slate-200 hover:border-slate-500",
+              ? "border-[rgba(155,140,242,0.26)] bg-[linear-gradient(180deg,rgba(155,140,242,0.11),rgba(31,34,41,0.74))] text-[rgba(239,236,255,0.98)]"
+              : tone === "rose"
+                ? "border-[rgba(215,111,123,0.26)] bg-[linear-gradient(180deg,rgba(215,111,123,0.1),rgba(31,34,41,0.74))] text-[rgba(255,230,234,0.98)]"
+                : "pm-btn-secondary",
       )}
     >
       <Icon className="h-4 w-4" />

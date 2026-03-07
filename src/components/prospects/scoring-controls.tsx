@@ -58,7 +58,7 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
                   [rule.key]: Number(event.target.value),
                 })
               }
-              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-800"
+              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[rgba(255,255,255,0.08)] accent-[var(--pm-primary)]"
             />
           </div>
         ))}

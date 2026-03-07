@@ -14,6 +14,19 @@ export {
 } from "@/lib/commercial/engine";
 export { buildConquestSnapshot } from "@/lib/commercial/territory";
 export { buildOpportunityAlerts } from "@/lib/commercial/alerts";
+export {
+  ATTACK_RESULT_OPTIONS,
+  DEFAULT_ATTACK_FILTERS,
+  DEFAULT_ATTACK_RESULT_DRAFT,
+  buildAttackNextStepSuggestion,
+  buildAttackQueue,
+  buildAttackSessionFiltersSnapshot,
+  buildAttackSessionKpis,
+  buildAttackSessionProgress,
+  buildBusinessUpdateFromAttackResult,
+  buildDefaultAttackSessionName,
+  getCurrentAttackLead,
+} from "@/lib/commercial/attack";
 
 export {
   buildDefaultCommercialSettings,
@@ -40,6 +53,18 @@ export {
 } from "@/lib/commercial/account-profile";
 
 export type {
+  AttackItemStatus,
+  AttackNextStepSuggestion,
+  AttackQueueEntry,
+  AttackQueueFilters,
+  AttackResultDraft,
+  AttackResultKind,
+  AttackResultOption,
+  AttackSessionFiltersSnapshot,
+  AttackSessionKpis,
+  AttackSessionProgress,
+  AttackSessionSource,
+  AttackSessionStatus,
   AccountCommercialProfile,
   AccountCommercialSettings,
   AccountKnowledgeSummary,

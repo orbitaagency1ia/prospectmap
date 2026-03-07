@@ -7,21 +7,21 @@ import { cn } from "@/lib/utils";
 export type PmTone = "neutral" | "cyan" | "amber" | "emerald" | "rose" | "violet";
 
 const badgeToneClass: Record<PmTone, string> = {
-  neutral: "border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.68)] text-[var(--pm-text-secondary)]",
-  cyan: "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.12)] text-[var(--pm-text)]",
-  amber: "border-[rgba(227,167,55,0.4)] bg-[rgba(227,167,55,0.12)] text-[rgba(255,239,204,0.98)]",
-  emerald: "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(221,255,235,0.98)]",
-  rose: "border-[rgba(227,93,106,0.4)] bg-[rgba(227,93,106,0.12)] text-[rgba(255,230,234,0.98)]",
-  violet: "border-[rgba(138,124,255,0.4)] bg-[rgba(138,124,255,0.12)] text-[rgba(235,233,255,0.98)]",
+  neutral: "border-[rgba(247,236,220,0.08)] bg-[rgba(28,33,41,0.74)] text-[var(--pm-text-secondary)]",
+  cyan: "border-[rgba(239,139,53,0.28)] bg-[rgba(239,139,53,0.11)] text-[var(--pm-text)]",
+  amber: "border-[rgba(221,174,85,0.3)] bg-[rgba(221,174,85,0.11)] text-[rgba(255,243,214,0.98)]",
+  emerald: "border-[rgba(78,192,134,0.28)] bg-[rgba(78,192,134,0.11)] text-[rgba(223,255,238,0.98)]",
+  rose: "border-[rgba(215,111,123,0.3)] bg-[rgba(215,111,123,0.1)] text-[rgba(255,230,234,0.98)]",
+  violet: "border-[rgba(155,140,242,0.28)] bg-[rgba(155,140,242,0.12)] text-[rgba(239,236,255,0.98)]",
 };
 
 const metricToneClass: Record<PmTone, string> = {
-  neutral: "border-[rgba(30,51,80,0.92)] bg-[rgba(18,32,51,0.78)]",
-  cyan: "border-[rgba(242,138,46,0.34)] bg-[rgba(242,138,46,0.1)]",
-  amber: "border-[rgba(227,167,55,0.3)] bg-[rgba(227,167,55,0.1)]",
-  emerald: "border-[rgba(46,212,122,0.3)] bg-[rgba(46,212,122,0.1)]",
-  rose: "border-[rgba(227,93,106,0.3)] bg-[rgba(227,93,106,0.1)]",
-  violet: "border-[rgba(138,124,255,0.3)] bg-[rgba(138,124,255,0.1)]",
+  neutral: "bg-[linear-gradient(180deg,rgba(30,35,44,0.8),rgba(19,22,28,0.82))]",
+  cyan: "bg-[linear-gradient(180deg,rgba(239,139,53,0.14),rgba(23,28,36,0.86))]",
+  amber: "bg-[linear-gradient(180deg,rgba(221,174,85,0.14),rgba(23,28,36,0.86))]",
+  emerald: "bg-[linear-gradient(180deg,rgba(78,192,134,0.14),rgba(23,28,36,0.86))]",
+  rose: "bg-[linear-gradient(180deg,rgba(215,111,123,0.14),rgba(23,28,36,0.86))]",
+  violet: "bg-[linear-gradient(180deg,rgba(155,140,242,0.14),rgba(23,28,36,0.86))]",
 };
 
 export function PmPanel({
@@ -53,14 +53,14 @@ export function PmHero({
 }) {
   return (
     <PmPanel elevated className={className}>
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-        <div className="max-w-3xl">
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+        <div className="max-w-4xl">
           {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-          <h1 className="pm-title mt-3 text-2xl sm:text-3xl">{title}</h1>
-          {description ? <p className="pm-muted mt-3 text-sm leading-6">{description}</p> : null}
-          {children ? <div className="mt-4">{children}</div> : null}
+          <h1 className="pm-title mt-3 text-[1.85rem] leading-tight sm:text-[2.4rem]">{title}</h1>
+          {description ? <p className="pm-muted mt-3 max-w-3xl text-sm leading-6 sm:text-[0.96rem]">{description}</p> : null}
+          {children ? <div className="mt-5">{children}</div> : null}
         </div>
-        {actions ? <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">{actions}</div> : null}
+        {actions ? <div className="flex w-full flex-col gap-3 xl:w-auto xl:min-w-[320px] xl:items-end">{actions}</div> : null}
       </div>
     </PmPanel>
   );
@@ -83,14 +83,14 @@ export function PmMetric({
 }) {
   return (
     <article className={cn("pm-card", metricToneClass[tone], className)}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
-          <p className="pm-title mt-3 text-2xl sm:text-[1.9rem]">{value}</p>
-          {helper ? <p className="pm-muted mt-2 text-sm">{helper}</p> : null}
+          <p className="pm-caption uppercase tracking-[0.18em]">{label}</p>
+          <p className="pm-title mt-3 text-[1.8rem] leading-none sm:text-[2rem]">{value}</p>
+          {helper ? <p className="pm-muted mt-2 text-sm leading-6">{helper}</p> : null}
         </div>
         {Icon ? (
-          <div className="rounded-2xl border border-[rgba(242,138,46,0.24)] bg-[rgba(242,138,46,0.08)] p-2.5 text-[var(--pm-primary)]">
+          <div className="rounded-[1.1rem] border border-[rgba(247,236,220,0.08)] bg-[rgba(255,255,255,0.03)] p-2.5 text-[var(--pm-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
             <Icon className="h-4 w-4" />
           </div>
         ) : null}
@@ -157,10 +157,10 @@ export function PmSectionHeader({
     <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", className)}>
       <div>
         {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-        <h2 className="pm-title mt-2 text-lg">{title}</h2>
-        {description ? <p className="pm-muted mt-2 text-sm leading-6">{description}</p> : null}
+        <h2 className="pm-title mt-2 text-[1.15rem]">{title}</h2>
+        {description ? <p className="pm-muted mt-2 max-w-3xl text-sm leading-6">{description}</p> : null}
       </div>
-      {action ? <div className="sm:shrink-0">{action}</div> : null}
+      {action ? <div className="sm:shrink-0 sm:self-start">{action}</div> : null}
     </div>
   );
 }

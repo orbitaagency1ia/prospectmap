@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { AlertTriangle, Compass, Flame, Radar, TimerReset } from "lucide-react";
 
 import type { ConquestSnapshot, ConquestZoneSummary, OpportunityAlert } from "@/lib/prospect-intelligence";
@@ -16,9 +17,11 @@ const alertToneClass = {
 export function OpportunityAlertsPanel({
   alerts,
   onOpenBusiness,
+  action,
 }: {
   alerts: OpportunityAlert[];
   onOpenBusiness?: (businessKey: string) => void;
+  action?: ReactNode;
 }) {
   return (
     <PmPanel className="p-5">
@@ -26,6 +29,7 @@ export function OpportunityAlertsPanel({
         eyebrow="Alertas de oportunidad"
         title="Lo que no deberías dejar para más tarde"
         description="Señales automáticas basadas en valor, urgencia, seguimiento y territorio para darte una razón real para abrir la app cada día."
+        action={action}
       />
 
       <div className="mt-4 space-y-3">

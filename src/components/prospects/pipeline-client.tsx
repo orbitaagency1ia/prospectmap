@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, type ComponentType } from "react";
 import { Clock3, Euro, Radar, TrendingUp } from "lucide-react";
 
@@ -80,11 +81,16 @@ export function PipelineClient({ profile }: Props) {
         title="Qué está más cerca de convertirse en dinero."
         description="Esta vista concentra oportunidades activas, valor estimado, días sin tocar y siguiente movimiento para empujar cierres sin perder timing."
         actions={
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard icon={Euro} label="Valor abierto" value={formatCurrency(snapshot.openValue)} />
-            <MetricCard icon={TrendingUp} label="Valor ponderado" value={formatCurrency(snapshot.weightedOpenValue)} />
-            <MetricCard icon={Clock3} label="Seguimientos vencidos" value={`${snapshot.followUpDueCount}`} />
-            <MetricCard icon={Radar} label="Oportunidades enfriándose" value={`${snapshot.staleCount}`} />
+          <div className="space-y-3">
+            <Link href="/attack?source=pipeline" className="pm-btn pm-btn-primary w-full sm:w-auto">
+              Abrir sesión desde pipeline
+            </Link>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <MetricCard icon={Euro} label="Valor abierto" value={formatCurrency(snapshot.openValue)} />
+              <MetricCard icon={TrendingUp} label="Valor ponderado" value={formatCurrency(snapshot.weightedOpenValue)} />
+              <MetricCard icon={Clock3} label="Seguimientos vencidos" value={`${snapshot.followUpDueCount}`} />
+              <MetricCard icon={Radar} label="Oportunidades enfriándose" value={`${snapshot.staleCount}`} />
+            </div>
           </div>
         }
       />
@@ -223,8 +229,8 @@ function PipelineStageColumn({
             className={cn(
               "w-full rounded-2xl border p-3 text-left transition",
               selectedKey === record.business.key
-                ? "border-[rgba(242,138,46,0.46)] bg-[rgba(18,32,51,0.95)]"
-                : "border-[rgba(30,51,80,0.9)] bg-[rgba(18,32,51,0.74)] hover:border-[rgba(242,138,46,0.35)]",
+                ? "border-[rgba(239,139,53,0.3)] bg-[rgba(31,36,45,0.9)] shadow-[0_18px_40px_rgba(239,139,53,0.08)]"
+                : "border-[var(--pm-border)] bg-[rgba(23,28,36,0.74)] hover:border-[rgba(239,139,53,0.18)]",
             )}
           >
             <div className="flex items-start justify-between gap-3">

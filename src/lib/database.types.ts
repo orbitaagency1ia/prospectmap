@@ -281,6 +281,235 @@ export type Database = {
           }
         ];
       };
+      attack_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          source: "daily_queue" | "list" | "territory" | "priorities" | "pipeline" | "alerts" | "manual";
+          source_ref: string | null;
+          status: "draft" | "active" | "paused" | "completed" | "archived";
+          queue_filters: Json;
+          started_at: string;
+          ended_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name?: string;
+          source?: "daily_queue" | "list" | "territory" | "priorities" | "pipeline" | "alerts" | "manual";
+          source_ref?: string | null;
+          status?: "draft" | "active" | "paused" | "completed" | "archived";
+          queue_filters?: Json;
+          started_at?: string;
+          ended_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          source?: "daily_queue" | "list" | "territory" | "priorities" | "pipeline" | "alerts" | "manual";
+          source_ref?: string | null;
+          status?: "draft" | "active" | "paused" | "completed" | "archived";
+          queue_filters?: Json;
+          started_at?: string;
+          ended_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attack_sessions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      attack_session_items: {
+        Row: {
+          id: string;
+          session_id: string;
+          user_id: string;
+          business_id: string;
+          position: number;
+          queue_reason: string;
+          why_today: string[];
+          zone_key: string | null;
+          zone_label: string | null;
+          pinned_for_today: boolean;
+          status: "pending" | "in_progress" | "worked" | "skipped" | "dismissed";
+          last_worked_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          user_id: string;
+          business_id: string;
+          position?: number;
+          queue_reason?: string;
+          why_today?: string[];
+          zone_key?: string | null;
+          zone_label?: string | null;
+          pinned_for_today?: boolean;
+          status?: "pending" | "in_progress" | "worked" | "skipped" | "dismissed";
+          last_worked_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          session_id?: string;
+          user_id?: string;
+          business_id?: string;
+          position?: number;
+          queue_reason?: string;
+          why_today?: string[];
+          zone_key?: string | null;
+          zone_label?: string | null;
+          pinned_for_today?: boolean;
+          status?: "pending" | "in_progress" | "worked" | "skipped" | "dismissed";
+          last_worked_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attack_session_items_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "attack_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_session_items_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_session_items_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      attack_results: {
+        Row: {
+          id: string;
+          user_id: string;
+          session_id: string | null;
+          session_item_id: string | null;
+          business_id: string;
+          result:
+            | "no_contactado"
+            | "contacto_intentado"
+            | "hablo_con_alguien"
+            | "interesado"
+            | "reunion_conseguida"
+            | "propuesta_pendiente"
+            | "no_encaja"
+            | "perdido"
+            | "volver_mas_tarde";
+          note_text: string | null;
+          follow_up_at: string | null;
+          priority_after: "alta" | "media" | "baja" | null;
+          suggested_next_step: string | null;
+          suggested_due_at: string | null;
+          moved_to_pipeline: boolean;
+          added_to_list_id: string | null;
+          discarded: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          session_id?: string | null;
+          session_item_id?: string | null;
+          business_id: string;
+          result:
+            | "no_contactado"
+            | "contacto_intentado"
+            | "hablo_con_alguien"
+            | "interesado"
+            | "reunion_conseguida"
+            | "propuesta_pendiente"
+            | "no_encaja"
+            | "perdido"
+            | "volver_mas_tarde";
+          note_text?: string | null;
+          follow_up_at?: string | null;
+          priority_after?: "alta" | "media" | "baja" | null;
+          suggested_next_step?: string | null;
+          suggested_due_at?: string | null;
+          moved_to_pipeline?: boolean;
+          added_to_list_id?: string | null;
+          discarded?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          result?:
+            | "no_contactado"
+            | "contacto_intentado"
+            | "hablo_con_alguien"
+            | "interesado"
+            | "reunion_conseguida"
+            | "propuesta_pendiente"
+            | "no_encaja"
+            | "perdido"
+            | "volver_mas_tarde";
+          note_text?: string | null;
+          follow_up_at?: string | null;
+          priority_after?: "alta" | "media" | "baja" | null;
+          suggested_next_step?: string | null;
+          suggested_due_at?: string | null;
+          moved_to_pipeline?: boolean;
+          added_to_list_id?: string | null;
+          discarded?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attack_results_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_results_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "attack_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_results_session_item_id_fkey";
+            columns: ["session_item_id"];
+            isOneToOne: false;
+            referencedRelation: "attack_session_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_results_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attack_results_added_to_list_id_fkey";
+            columns: ["added_to_list_id"];
+            isOneToOne: false;
+            referencedRelation: "prospect_lists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       account_profiles: {
         Row: {
           user_id: string;

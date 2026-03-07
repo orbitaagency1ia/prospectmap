@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
 
@@ -129,10 +130,15 @@ export function RankingClient({ profile }: Props) {
             title="Prospectos ordenados por prioridad comercial"
             description="Lista operativa para decidir a quién atacar primero, con qué servicio entrar y cuánto valor puede mover."
             actions={
-              <button type="button" onClick={() => setDescending((value) => !value)} className="pm-btn pm-btn-secondary">
-                {descending ? <ArrowDownWideNarrow className="h-4 w-4" /> : <ArrowUpWideNarrow className="h-4 w-4" />}
-                Prioridad {descending ? "desc" : "asc"}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/attack?source=priorities" className="pm-btn pm-btn-primary">
+                  Ir a Ataque
+                </Link>
+                <button type="button" onClick={() => setDescending((value) => !value)} className="pm-btn pm-btn-secondary">
+                  {descending ? <ArrowDownWideNarrow className="h-4 w-4" /> : <ArrowUpWideNarrow className="h-4 w-4" />}
+                  Prioridad {descending ? "desc" : "asc"}
+                </button>
+              </div>
             }
           />
 
@@ -192,8 +198,8 @@ export function RankingClient({ profile }: Props) {
                     className={cn(
                       "rounded-[24px] border transition",
                       selected?.business.key === record.business.key
-                      ? "border-[rgba(242,138,46,0.45)] bg-[rgba(18,32,51,0.94)]"
-                      : "border-[rgba(30,51,80,0.9)] bg-[rgba(13,23,40,0.82)]",
+                      ? "border-[rgba(239,139,53,0.3)] bg-[rgba(30,35,44,0.86)] shadow-[0_18px_40px_rgba(239,139,53,0.08)]"
+                      : "border-[var(--pm-border)] bg-[rgba(23,28,36,0.74)]",
                     )}
                   >
                   <ProspectCard
@@ -208,7 +214,7 @@ export function RankingClient({ profile }: Props) {
 
             <div className="pm-table-wrap hidden lg:block">
               <table className="min-w-full text-left">
-                <thead className="border-b border-[rgba(30,51,80,0.72)] bg-[rgba(7,17,31,0.78)] text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">
+                <thead className="border-b border-[var(--pm-border)] bg-[rgba(255,255,255,0.025)] text-xs uppercase tracking-[0.14em] text-[var(--pm-text-tertiary)]">
                   <tr>
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">Sector</th>
@@ -232,8 +238,8 @@ export function RankingClient({ profile }: Props) {
                       key={record.business.key}
                       onClick={() => setSelectedKey(record.business.key)}
                       className={cn(
-                        "cursor-pointer border-b border-[rgba(30,51,80,0.64)] text-sm transition hover:bg-[rgba(7,17,31,0.68)]",
-                        selected?.business.key === record.business.key ? "bg-[rgba(7,17,31,0.82)]" : "",
+                        "cursor-pointer border-b border-[var(--pm-border)] text-sm transition hover:bg-[rgba(255,255,255,0.025)]",
+                        selected?.business.key === record.business.key ? "bg-[rgba(255,255,255,0.04)]" : "",
                       )}
                     >
                       <td className="px-4 py-3 align-top">

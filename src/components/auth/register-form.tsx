@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CitySuggestion } from "@/lib/types";
 
+import { PmNotice } from "../ui/pm";
+
 function getRegisterErrorMessage(message: string) {
   const normalized = message.toLowerCase();
 
@@ -131,13 +133,11 @@ export function RegisterForm() {
         <h1 className="text-2xl font-semibold text-white">Crear empresa</h1>
       </div>
 
-      {error ? (
-        <div className="rounded-lg border border-rose-700/60 bg-rose-900/30 px-3 py-2 text-sm text-rose-200">{error}</div>
-      ) : null}
+      {error ? <PmNotice tone="rose">{error}</PmNotice> : null}
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Nombre de empresa</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Nombre de empresa</span>
           <input
             type="text"
             required
@@ -149,7 +149,7 @@ export function RegisterForm() {
         </label>
 
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Ciudad principal</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Ciudad principal</span>
           <input
             type="text"
             required
@@ -166,11 +166,11 @@ export function RegisterForm() {
               </option>
             ))}
           </datalist>
-          <p className="text-xs text-slate-500">{cityLoading ? "Buscando ciudades..." : "España por defecto"}</p>
+          <p className="pm-caption text-xs">{cityLoading ? "Buscando ciudades..." : "España por defecto"}</p>
         </label>
 
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Email</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Email</span>
           <input
             type="email"
             required
@@ -182,7 +182,7 @@ export function RegisterForm() {
         </label>
 
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Contraseña</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Contraseña</span>
           <input
             type="password"
             required
@@ -199,7 +199,7 @@ export function RegisterForm() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-400">
+      <p className="text-center text-sm text-[var(--pm-text-tertiary)]">
         ¿Ya tienes cuenta?{" "}
         <Link className="text-[var(--pm-primary)] hover:text-[var(--pm-primary-hover)]" href="/login">
           Inicia sesión

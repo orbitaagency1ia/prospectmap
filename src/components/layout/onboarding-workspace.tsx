@@ -42,10 +42,10 @@ export function OnboardingWorkspace({
 }: Props) {
   return (
     <div className="pm-page">
-      <PmPanel elevated className="p-6">
+      <PmPanel elevated className="p-6 sm:p-7">
         <p className="pm-kicker">Onboarding</p>
-        <h1 className="pm-title mt-3 text-3xl">Configura ProspectMap como sistema operativo comercial.</h1>
-        <p className="pm-muted mt-3 max-w-3xl text-sm leading-6">
+        <h1 className="pm-title mt-3 max-w-4xl text-[2rem] leading-tight sm:text-[2.7rem]">Configura ProspectMap como sistema operativo comercial.</h1>
+        <p className="pm-muted mt-4 max-w-3xl text-sm leading-6">
           En dos pasos queda ajustado: primero contexto de empresa y territorio; luego perfil comercial para afinar
           scoring, mensajes, recomendaciones e informe por negocio.
         </p>
@@ -62,9 +62,9 @@ export function OnboardingWorkspace({
               className={cn(
                 "pm-card",
                 active
-                  ? "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.12)]"
+                  ? "border-[rgba(239,139,53,0.22)] bg-[linear-gradient(180deg,rgba(239,139,53,0.12),rgba(30,35,44,0.84))]"
                   : done
-                    ? "border-emerald-500/40 bg-emerald-500/10"
+                    ? "border-[rgba(78,192,134,0.24)] bg-[linear-gradient(180deg,rgba(78,192,134,0.12),rgba(30,35,44,0.84))]"
                     : "",
               )}
             >

@@ -30,6 +30,14 @@ export function UrgencyBadge({ urgency }: { urgency: UrgencyLevel }) {
 export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemoBadges = false }: ProspectCardProps) {
   const status = STATUS_META[record.business.status];
   const Icon = record.insight.isHot ? Flame : record.insight.needsFollowUp ? RefreshCw : Target;
+  const badgeToneMap = {
+    emerald: "emerald",
+    amber: "amber",
+    violet: "violet",
+    cyan: "cyan",
+    slate: "neutral",
+    neutral: "neutral",
+  } as const;
 
   return (
     <article className="pm-card p-4">
@@ -41,9 +49,9 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
           </p>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.painPoint}</p>
         </div>
-        <div className="rounded-2xl border border-[rgba(30,51,80,0.86)] bg-[rgba(7,17,31,0.62)] px-3 py-2 text-left sm:min-w-[88px] sm:text-right">
+        <div className="rounded-[1.2rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] px-3 py-2 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:min-w-[88px] sm:text-right">
           <p className="text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Prioridad</p>
-          <p className="text-2xl font-semibold text-[rgba(255,223,199,0.98)]">{record.insight.score}</p>
+          <p className="text-2xl font-semibold text-[var(--pm-text)]">{record.insight.score}</p>
         </div>
       </div>
 
@@ -59,23 +67,12 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
         </span>
         {showDemoBadges
           ? record.insight.demoBadges.slice(0, 2).map((badge) => (
-              <span
+              <PmBadge
                 key={`${record.business.key}-${badge.label}`}
-                className={cn(
-                  "inline-flex rounded-full border px-2 py-1 text-xs font-medium",
-                  badge.tone === "emerald"
-                    ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
-                    : badge.tone === "amber"
-                      ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
-                      : badge.tone === "violet"
-                        ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
-                        : badge.tone === "cyan"
-                          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
-                          : "border-slate-600 bg-slate-700/50 text-slate-200",
-                )}
+                tone={badgeToneMap[badge.tone] ?? "neutral"}
               >
                 {badge.label}
-              </span>
+              </PmBadge>
             ))
           : null}
       </div>

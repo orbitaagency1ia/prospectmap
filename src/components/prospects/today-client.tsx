@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, type ComponentType } from "react";
 import { ArrowRight, Flame, RefreshCw, Sparkles, Target } from "lucide-react";
 
@@ -143,11 +144,17 @@ export function TodayClient({ profile }: Props) {
             title="Hoy sabes exactamente dónde atacar."
             description="ProspectMap resume qué leads merecen foco inmediato, qué servicio de Órbita entra mejor y dónde se concentra la oportunidad real de la cuenta."
             actions={
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <PmMetric label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" className="min-w-[170px]" />
-                <PmMetric label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" className="min-w-[170px]" />
-                <PmMetric label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" className="min-w-[170px]" />
-                <PmMetric label="Leads enfriándose" value={summary.staleCount} tone="emerald" className="min-w-[170px]" />
+              <div className="space-y-3">
+                <Link href="/attack?source=alerts" className="pm-btn pm-btn-primary w-full sm:w-auto">
+                  <ArrowRight className="h-4 w-4" />
+                  Abrir Ataque del día
+                </Link>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <PmMetric label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" className="min-w-[170px]" />
+                  <PmMetric label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" className="min-w-[170px]" />
+                  <PmMetric label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" className="min-w-[170px]" />
+                  <PmMetric label="Leads enfriándose" value={summary.staleCount} tone="emerald" className="min-w-[170px]" />
+                </div>
               </div>
             }
           />
@@ -155,7 +162,16 @@ export function TodayClient({ profile }: Props) {
           <div className="grid gap-4 2xl:grid-cols-[1.45fr_0.95fr]">
             <div className="space-y-4">
               <ActionSummaryPanel summary={summary} />
-              <OpportunityAlertsPanel alerts={alertFeed} onOpenBusiness={setSelectedKey} />
+              <OpportunityAlertsPanel
+                alerts={alertFeed}
+                onOpenBusiness={setSelectedKey}
+                action={
+                  <Link href="/attack?source=alerts" className="pm-btn pm-btn-secondary">
+                    <ArrowRight className="h-4 w-4" />
+                    Trabajar alertas
+                  </Link>
+                }
+              />
               <ConquestPanel
                 snapshot={summary.conquest}
                 title="Cómo va la conquista del territorio"
@@ -268,7 +284,7 @@ function ProspectSection({
   return (
     <PmPanel className="p-4">
       <div className="flex items-start gap-3">
-        <div className="rounded-xl border border-[rgba(242,138,46,0.38)] bg-[rgba(242,138,46,0.12)] p-2 text-[rgba(255,214,179,0.98)]">
+        <div className="rounded-[1rem] border border-[rgba(239,139,53,0.2)] bg-[rgba(239,139,53,0.1)] p-2 text-[var(--pm-primary)] shadow-[0_12px_24px_rgba(239,139,53,0.1)]">
           <Icon className="h-4 w-4" />
         </div>
         <div>
@@ -339,9 +355,9 @@ function DistributionPanel({
               <span className="text-[var(--pm-text)]">{item.label}</span>
               <span className="pm-caption">{item.value}</span>
             </div>
-            <div className="h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
+            <div className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(242,138,46,0.96)] to-[rgba(255,186,110,0.96)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.96)] via-[rgba(246,162,76,0.96)] to-[rgba(155,140,242,0.82)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -371,9 +387,9 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
               <p className="pm-muted text-sm">{item.label}</p>
               <span className="pm-title text-lg">{item.value}</span>
             </div>
-            <div className="mt-3 h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
+            <div className="mt-3 h-2 rounded-full bg-[rgba(255,255,255,0.05)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(242,138,46,0.96)] to-[rgba(255,186,110,0.96)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.96)] via-[rgba(246,162,76,0.96)] to-[rgba(155,140,242,0.82)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>

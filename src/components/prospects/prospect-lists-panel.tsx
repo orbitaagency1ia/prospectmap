@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { FolderPlus, Layers3, Plus, Target } from "lucide-react";
 
 import type { ProspectRecord } from "@/lib/prospect-intelligence";
 import { cn, formatCurrency } from "@/lib/utils";
 
-import { PmEmpty, PmPanel } from "../ui/pm";
+import { PmBadge, PmEmpty, PmNotice, PmPanel } from "../ui/pm";
 
 import { useProspectLists } from "./use-prospect-lists";
 
@@ -110,9 +111,9 @@ export function ProspectListsPanel({
       </div>
 
       {!tableAvailable ? (
-        <div className="mt-4 rounded-2xl border border-[rgba(245,185,66,0.35)] bg-[rgba(245,185,66,0.1)] px-4 py-3 text-sm text-[rgba(245,233,190,0.98)]">
+        <PmNotice tone="amber" className="mt-4">
           Las campañas todavía no están disponibles en esta instalación. Puedes seguir trabajando con el resto del flujo comercial mientras se termina la activación.
-        </div>
+        </PmNotice>
       ) : null}
 
       <form className="mt-4 grid gap-3 xl:grid-cols-[1.2fr_1fr_0.8fr_auto]" onSubmit={handleCreate}>
@@ -150,11 +151,11 @@ export function ProspectListsPanel({
       </form>
 
       {info ? <p className="mt-3 text-sm text-[var(--pm-text-secondary)]">{info}</p> : null}
-      {error ? <p className="mt-3 text-sm text-[rgba(227,93,106,0.96)]">{error}</p> : null}
+      {error ? <PmNotice tone="rose" className="mt-3">{error}</PmNotice> : null}
 
       <div className="mt-5 space-y-3">
         {loading ? (
-          <p className="rounded-2xl border border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] px-4 py-4 text-sm text-[var(--pm-text-secondary)]">
+          <p className="pm-card-soft px-4 py-4 text-sm text-[var(--pm-text-secondary)]">
             Cargando campañas guardadas...
           </p>
         ) : null}
@@ -189,10 +190,10 @@ export function ProspectListsPanel({
                       className={cn(
                         "inline-flex rounded-full border px-2 py-1 text-[11px] font-medium",
                         list.status === "completada"
-                          ? "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(209,250,223,0.98)]"
+                          ? "border-[rgba(78,192,134,0.32)] bg-[rgba(78,192,134,0.12)] text-[rgba(223,255,238,0.98)]"
                           : list.status === "archivada"
-                            ? "border-[rgba(110,130,154,0.45)] bg-[rgba(110,130,154,0.12)] text-[var(--pm-text-secondary)]"
-                            : "border-[rgba(242,138,46,0.35)] bg-[rgba(242,138,46,0.1)] text-[var(--pm-text)]",
+                            ? "border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] text-[var(--pm-text-secondary)]"
+                            : "border-[rgba(239,139,53,0.28)] bg-[rgba(239,139,53,0.1)] text-[var(--pm-text)]",
                       )}
                     >
                       {LIST_STATUS_LABELS[list.status]}
@@ -200,17 +201,17 @@ export function ProspectListsPanel({
                   </div>
                   <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{list.focus || "Sin foco definido"}</p>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--pm-text-secondary)]">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(30,51,80,0.9)] px-2 py-1">
+                    <PmBadge className="items-center gap-1 px-2 py-1">
                       <Target className="h-3.5 w-3.5" />
                       {linkedRecords.length} leads
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(30,51,80,0.9)] px-2 py-1">
+                    </PmBadge>
+                    <PmBadge className="items-center gap-1 px-2 py-1">
                       <Layers3 className="h-3.5 w-3.5" />
                       {topService}
-                    </span>
-                    <span className="inline-flex rounded-full border border-[rgba(30,51,80,0.9)] px-2 py-1">
+                    </PmBadge>
+                    <PmBadge className="px-2 py-1">
                       {urgent} con urgencia
-                    </span>
+                    </PmBadge>
                   </div>
                 </div>
 
@@ -222,6 +223,9 @@ export function ProspectListsPanel({
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
+                <Link href={`/attack?source=list&listId=${list.id}`} className="pm-btn pm-btn-primary">
+                  Trabajar campaña
+                </Link>
                 <button
                   type="button"
                   disabled={selectedBusinessIds.length === 0}

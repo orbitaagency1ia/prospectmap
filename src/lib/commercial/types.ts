@@ -1,4 +1,4 @@
-import type { ProspectStatus } from "@/lib/constants";
+import type { PriorityLevel, ProspectStatus } from "@/lib/constants";
 import type { CombinedBusiness } from "@/lib/types";
 
 export const VERTICAL_IDS = ["autoescuelas", "clinicas", "hoteles", "general_b2b"] as const;
@@ -292,6 +292,112 @@ export type CommandCenterSummary = {
   actionSummary: string[];
   alerts: OpportunityAlert[];
   conquest: ConquestSnapshot;
+};
+
+export type AttackSessionSource =
+  | "daily_queue"
+  | "list"
+  | "territory"
+  | "priorities"
+  | "pipeline"
+  | "alerts"
+  | "manual";
+
+export type AttackSessionStatus = "draft" | "active" | "paused" | "completed" | "archived";
+export type AttackItemStatus = "pending" | "in_progress" | "worked" | "skipped" | "dismissed";
+
+export type AttackResultKind =
+  | "no_contactado"
+  | "contacto_intentado"
+  | "hablo_con_alguien"
+  | "interesado"
+  | "reunion_conseguida"
+  | "propuesta_pendiente"
+  | "no_encaja"
+  | "perdido"
+  | "volver_mas_tarde";
+
+export type AttackQueueFilters = {
+  city: string;
+  vertical: VerticalId | "all";
+  listId: string;
+  service: OrbitaService | "all";
+  urgency: UrgencyLevel | "all";
+  zone: string;
+  territoryOnly: boolean;
+  followUpOnly: boolean;
+};
+
+export type AttackSessionFiltersSnapshot = {
+  city: string;
+  vertical: VerticalId | "all";
+  listId: string;
+  service: OrbitaService | "all";
+  urgency: UrgencyLevel | "all";
+  zone: string;
+  territoryLabel?: string;
+  sourceBusinessKey?: string;
+};
+
+export type AttackQueueEntry = ProspectRecord & {
+  businessId: string;
+  zoneKey: string;
+  zoneLabel: string;
+  queueReason: string;
+  whyToday: string[];
+  sessionItemId?: string;
+  sessionItemStatus?: AttackItemStatus;
+  pinnedForToday?: boolean;
+  queuePosition?: number;
+  listIds: string[];
+  listNames: string[];
+};
+
+export type AttackResultOption = {
+  id: AttackResultKind;
+  label: string;
+  description: string;
+  tone: "neutral" | "amber" | "emerald" | "rose" | "violet";
+};
+
+export type AttackNextStepSuggestion = {
+  label: string;
+  reason: string;
+  dueAt: string | null;
+  nextStatus?: ProspectStatus;
+  nextPriority?: PriorityLevel;
+  moveToPipeline?: boolean;
+  archive?: boolean;
+};
+
+export type AttackResultDraft = {
+  result: AttackResultKind;
+  noteText: string;
+  followUpAt: string;
+  priority: PriorityLevel | "";
+  listId: string;
+  moveToPipeline: boolean;
+  discard: boolean;
+  applySuggestion: boolean;
+};
+
+export type AttackSessionProgress = {
+  total: number;
+  worked: number;
+  skipped: number;
+  dismissed: number;
+  pending: number;
+  percent: number;
+};
+
+export type AttackSessionKpis = {
+  workedToday: number;
+  followUpsScheduled: number;
+  meetingsUnlocked: number;
+  discardedToday: number;
+  workedValue: number;
+  sessionAdvance: number;
+  averagePaceMinutes: number | null;
 };
 
 export type PipelineStageSummary = {

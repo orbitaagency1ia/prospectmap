@@ -30,21 +30,21 @@ export function CommercialControlBar({
             : "Todo al día";
 
   return (
-    <PmPanel className="p-4">
+    <PmPanel className="p-4 sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="pm-kicker">Contexto comercial</p>
-          <h2 className="pm-title mt-2 text-xl">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
-          <p className="pm-muted mt-1 text-sm">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
+          <h2 className="pm-title mt-2 text-[1.35rem]">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
+          <p className="pm-muted mt-2 max-w-2xl text-sm leading-6">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <label className="space-y-1">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end">
+          <label className="space-y-1.5">
             <span className="pm-caption block uppercase tracking-[0.12em]">Vertical</span>
             <select
               value={settings.vertical}
               onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
-              className="field min-w-[220px]"
+              className="field min-w-[220px] lg:min-w-[250px]"
             >
               {Object.values(VERTICAL_CONFIGS).map((vertical) => (
                 <option key={vertical.id} value={vertical.id}>
@@ -54,7 +54,10 @@ export function CommercialControlBar({
             </select>
           </label>
 
-          <PmBadge tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"} className="min-h-[48px] px-3 py-2">
+          <PmBadge
+            tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"}
+            className="min-h-[48px] self-start px-3 py-2 sm:self-auto"
+          >
             <Network className="h-4 w-4" />
             {saveLabel}
           </PmBadge>

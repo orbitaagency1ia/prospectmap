@@ -44,15 +44,15 @@ export const OPPORTUNITY_META: Record<
 > = {
   alta_oportunidad: {
     label: "Alta oportunidad",
-    badgeClass: "border border-emerald-500/70 bg-emerald-500/15 text-emerald-200",
+    badgeClass: "border border-[rgba(78,192,134,0.34)] bg-[rgba(78,192,134,0.13)] text-[rgba(223,255,238,0.98)]",
   },
   media_oportunidad: {
     label: "Media oportunidad",
-    badgeClass: "border border-amber-500/70 bg-amber-500/15 text-amber-200",
+    badgeClass: "border border-[rgba(221,174,85,0.36)] bg-[rgba(221,174,85,0.12)] text-[rgba(255,243,214,0.98)]",
   },
   baja_oportunidad: {
     label: "Baja oportunidad",
-    badgeClass: "border border-slate-600 bg-slate-700/50 text-slate-200",
+    badgeClass: "border border-[var(--pm-border-strong)] bg-[rgba(255,255,255,0.04)] text-[var(--pm-text-secondary)]",
   },
 };
 

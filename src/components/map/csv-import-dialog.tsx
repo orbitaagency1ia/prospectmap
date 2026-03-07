@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/client";
 import type { ProfileRow } from "@/lib/types";
 import { normalizeText, sleep } from "@/lib/utils";
 
+import { PmNotice } from "../ui/pm";
+
 type ImportRow = {
   rawName: string | null;
   rawAddress: string | null;
@@ -212,26 +214,26 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 p-3 backdrop-blur sm:items-center">
-      <div className="w-full max-w-2xl rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] p-4 shadow-2xl sm:p-6">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md sm:items-center">
+      <div className="w-full max-w-2xl rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] p-4 shadow-[var(--pm-shadow-float)] sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-100">Importar negocios desde CSV</h3>
+          <h3 className="text-lg font-semibold text-[var(--pm-text)]">Importar negocios desde CSV</h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-slate-700 px-2 py-1 text-sm text-slate-300 hover:border-slate-500 hover:text-slate-100"
+            className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-sm"
           >
             Cerrar
           </button>
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-[var(--pm-text-secondary)]">
             Campos obligatorios: <strong>nombre</strong> y <strong>dirección</strong>. Opcionales: teléfono, email,
             sector, contacto, notas, ciudad.
           </p>
 
-          <label className="block space-y-1 text-sm text-slate-300">
+          <label className="block space-y-1 text-sm text-[var(--pm-text-secondary)]">
             Archivo CSV
             <input
               type="file"
@@ -241,14 +243,12 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
             />
           </label>
 
-          <p className="text-xs text-slate-500">
+          <p className="pm-caption text-xs">
             Límite MVP: {CSV_MAX_ROWS} filas por importación para proteger Nominatim y evitar bloqueos.
           </p>
 
           {message ? (
-            <p className="rounded-lg border border-rose-700/60 bg-rose-900/30 px-3 py-2 text-sm text-rose-200">
-              {message}
-            </p>
+            <PmNotice tone="rose">{message}</PmNotice>
           ) : null}
 
           <button type="button" disabled={loading || !file} onClick={handleRunImport} className="pm-btn pm-btn-primary w-full">
@@ -256,9 +256,9 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
           </button>
 
           {summary ? (
-            <div className="rounded-xl border border-slate-700 bg-slate-950/60 p-3">
-              <p className="text-sm text-slate-200">Resumen de importación</p>
-              <ul className="mt-2 space-y-1 text-sm text-slate-300">
+            <div className="pm-card-soft p-3">
+              <p className="text-sm text-[var(--pm-text)]">Resumen de importación</p>
+              <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-secondary)]">
                 <li>Importados: {summary.imported}</li>
                 <li>Errores: {summary.errors}</li>
                 <li>Ignorados por límite: {summary.ignored}</li>
@@ -267,12 +267,12 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
           ) : null}
 
           {errorsPreview.length > 0 ? (
-            <div className="max-h-52 space-y-2 overflow-y-auto rounded-xl border border-slate-700 bg-slate-950/60 p-3">
-              <p className="text-sm text-slate-200">Muestra de errores</p>
+            <div className="max-h-52 space-y-2 overflow-y-auto rounded-[1.25rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] p-3">
+              <p className="text-sm text-[var(--pm-text)]">Muestra de errores</p>
               {errorsPreview.map((entry, index) => (
-                <div key={`${entry.rawName ?? "sin-nombre"}-${index}`} className="rounded-lg border border-slate-800 p-2">
-                  <p className="text-xs text-slate-400">{entry.rawName ?? "Sin nombre"}</p>
-                  <p className="text-sm text-rose-300">{entry.errorReason}</p>
+                <div key={`${entry.rawName ?? "sin-nombre"}-${index}`} className="rounded-[1rem] border border-[var(--pm-border)] p-2">
+                  <p className="text-xs text-[var(--pm-text-tertiary)]">{entry.rawName ?? "Sin nombre"}</p>
+                  <p className="text-sm text-[rgba(255,230,234,0.98)]">{entry.errorReason}</p>
                 </div>
               ))}
             </div>

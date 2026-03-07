@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
 
+import { PmNotice } from "../ui/pm";
+
 function getLoginErrorMessage(message: string) {
   const normalized = message.toLowerCase();
 
@@ -57,18 +59,16 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
       </div>
 
       {registered ? (
-        <div className="rounded-lg border border-emerald-700/60 bg-emerald-900/30 px-3 py-2 text-sm text-emerald-200">
+        <PmNotice tone="emerald">
           Cuenta creada. Si tu acceso requiere validación por email, revisa tu bandeja antes de entrar.
-        </div>
+        </PmNotice>
       ) : null}
 
-      {error ? (
-        <div className="rounded-lg border border-rose-700/60 bg-rose-900/30 px-3 py-2 text-sm text-rose-200">{error}</div>
-      ) : null}
+      {error ? <PmNotice tone="rose">{error}</PmNotice> : null}
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Email</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Email</span>
           <input
             type="email"
             required
@@ -80,7 +80,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
         </label>
 
         <label className="block space-y-1">
-          <span className="text-sm text-slate-300">Contraseña</span>
+          <span className="text-sm text-[var(--pm-text-secondary)]">Contraseña</span>
           <input
             type="password"
             required
@@ -96,7 +96,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-400">
+      <p className="text-center text-sm text-[var(--pm-text-tertiary)]">
         ¿No tienes cuenta?{" "}
         <Link className="text-[var(--pm-primary)] hover:text-[var(--pm-primary-hover)]" href="/register">
           Crear empresa

@@ -552,7 +552,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                   type="file"
                   accept=".pdf,.txt,.md,text/plain,application/pdf"
                   onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-                  className="field file:mr-3 file:rounded-md file:border-0 file:bg-[var(--pm-primary)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-950"
+                  className="field file:mr-3 file:rounded-[0.9rem] file:border-0 file:bg-[var(--pm-primary)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-[#1a1209]"
                 />
               </Field>
 
@@ -567,7 +567,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500">
+              <p className="pm-caption text-xs">
                 Si el PDF sale mal, no bloquea nada: puedes editar el texto y los campos manualmente.
               </p>
             </FormSection>
@@ -580,7 +580,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
               <SummaryList title="Dolores detectados" items={summary.detectedPainPoints} icon={Sparkles} emptyText="Sin dolores detectados todavía." />
               <SummaryList title="Objeciones detectadas" items={summary.detectedObjections} icon={Sparkles} emptyText="Sin objeciones detectadas todavía." />
               <SummaryList title="Propuesta de valor detectada" items={summary.detectedValueProps} icon={Sparkles} emptyText="Sin propuesta de valor detectada todavía." />
-              {summary.sourceNote ? <p className="text-xs text-slate-500">{summary.sourceNote}</p> : null}
+              {summary.sourceNote ? <p className="pm-caption text-xs">{summary.sourceNote}</p> : null}
             </FormSection>
 
             <PmPanel className="p-4">

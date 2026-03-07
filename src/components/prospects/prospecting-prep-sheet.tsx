@@ -5,7 +5,8 @@ import { Copy, X } from "lucide-react";
 
 import type { PriorityLevel } from "@/lib/constants";
 import type { ProspectInsight } from "@/lib/prospect-intelligence";
-import { cn } from "@/lib/utils";
+
+import { PmBadge } from "../ui/pm";
 
 type Props = {
   open: boolean;
@@ -41,15 +42,15 @@ export function ProspectingPrepSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[650] bg-slate-950/75 p-3 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[650] bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] shadow-[0_28px_90px_rgba(2,6,23,0.6)]"
+        className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] shadow-[var(--pm-shadow-float)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-[rgba(42,52,66,0.72)] px-5 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-[var(--pm-border)] px-5 py-4">
           <div>
             <p className="pm-kicker">Preparar prospección</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-100">{businessName}</h2>
+            <h2 className="mt-2 text-2xl font-semibold text-[var(--pm-text)]">{businessName}</h2>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
               <Chip label={`Prioridad ${insight.score}`} tone="cyan" />
               <Chip label={insight.tierLabel} tone="emerald" />
@@ -74,15 +75,15 @@ export function ProspectingPrepSheet({
         <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-5 py-5 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <Card title="Resumen ejecutivo">
-              <p className="text-sm leading-6 text-slate-300">{insight.executiveSummary}</p>
+              <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.executiveSummary}</p>
             </Card>
 
             <div className="grid gap-4 md:grid-cols-2">
               <Card title="Ángulo comercial recomendado">
-                <p className="text-sm leading-6 text-slate-300">{insight.commercialAngle}</p>
+                <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.commercialAngle}</p>
               </Card>
               <Card title="CTA sugerida">
-                <p className="text-sm leading-6 text-slate-300">{insight.ctaSuggestion}</p>
+                <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.ctaSuggestion}</p>
               </Card>
             </div>
 
@@ -97,9 +98,9 @@ export function ProspectingPrepSheet({
             <Card title="Objeciones y respuestas">
               <div className="space-y-3">
                 {insight.objections.map((item) => (
-                  <article key={item.objection} className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-                    <p className="text-sm font-medium text-slate-100">{item.objection}</p>
-                    <p className="mt-1 text-sm text-slate-300">{item.response}</p>
+                  <article key={item.objection} className="pm-card-soft p-3">
+                    <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
+                    <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{item.response}</p>
                   </article>
                 ))}
               </div>
@@ -164,7 +165,7 @@ function CopyBlock({
 }) {
   return (
     <div className="space-y-3">
-      <p className="text-sm leading-6 text-slate-300">{content}</p>
+      <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{content}</p>
       <button
         type="button"
         onClick={onCopy}
@@ -180,9 +181,9 @@ function CopyBlock({
 function Checklist({ items, emptyText }: { items: string[]; emptyText: string }) {
   return (
     <div className="space-y-2">
-      {items.length === 0 ? <p className="text-sm text-slate-500">{emptyText}</p> : null}
+      {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">{emptyText}</p> : null}
       {items.map((item) => (
-        <p key={item} className="text-sm text-slate-300">
+        <p key={item} className="text-sm text-[var(--pm-text-secondary)]">
           • {item}
         </p>
       ))}
@@ -198,19 +199,6 @@ function Chip({
   tone: "cyan" | "emerald" | "amber" | "slate";
 }) {
   return (
-    <span
-      className={cn(
-        "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
-        tone === "emerald"
-          ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
-          : tone === "amber"
-            ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
-            : tone === "slate"
-              ? "border-slate-700 bg-slate-900 text-slate-200"
-              : "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]",
-      )}
-    >
-      {label}
-    </span>
+    <PmBadge tone={tone === "slate" ? "neutral" : tone}>{label}</PmBadge>
   );
 }

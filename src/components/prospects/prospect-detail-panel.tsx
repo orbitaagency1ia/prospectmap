@@ -31,6 +31,14 @@ export function ProspectDetailPanel({
 
   const status = STATUS_META[record.business.status];
   const opportunity = OPPORTUNITY_META[record.insight.tier];
+  const badgeToneMap = {
+    emerald: "emerald",
+    amber: "amber",
+    violet: "violet",
+    cyan: "cyan",
+    slate: "neutral",
+    neutral: "neutral",
+  } as const;
 
   const handleCopy = async (key: string, value: string) => {
     try {
@@ -44,12 +52,12 @@ export function ProspectDetailPanel({
 
   return (
     <>
-      <PmPanel className="space-y-4 p-4">
+      <PmPanel elevated className="space-y-5 p-5">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <p className="pm-kicker">Informe comercial</p>
-            <h2 className="pm-title mt-2 text-lg">{record.business.name}</h2>
-            <p className="pm-muted mt-1 text-sm">
+            <h2 className="pm-title mt-2 text-[1.55rem]">{record.business.name}</h2>
+            <p className="pm-muted mt-2 text-sm leading-6">
               {record.insight.sectorLabel} · {record.insight.cityLabel}
             </p>
           </div>
@@ -82,61 +90,51 @@ export function ProspectDetailPanel({
           <span className="pm-badge">{record.insight.service.fitLabel}</span>
         </div>
 
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <InfoPill label="Valor estimado" value={formatCurrency(record.insight.estimatedValue)} />
+          <InfoPill label="Valor ponderado" value={formatCurrency(record.insight.weightedValue)} />
+          <InfoPill label="Atención" value={record.insight.attentionLabel} />
+          <InfoPill label="Último toque" value={formatDaysSince(record.insight.daysSinceTouch)} />
+        </div>
+
         {showDemoBadges && record.insight.demoBadges.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {record.insight.demoBadges.map((badge) => (
-              <span
+              <PmBadge
                 key={badge.label}
-                className={cn(
-                  "inline-flex rounded-full border px-2 py-1 text-xs font-medium",
-                  badge.tone === "emerald"
-                    ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
-                    : badge.tone === "amber"
-                      ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
-                      : badge.tone === "violet"
-                        ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
-                        : badge.tone === "cyan"
-                          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
-                          : "border-slate-600 bg-slate-700/50 text-slate-200",
-                )}
+                tone={badgeToneMap[badge.tone] ?? "neutral"}
               >
                 {badge.label}
-              </span>
+              </PmBadge>
             ))}
           </div>
         ) : null}
 
         <InfoBlock title="Resumen ejecutivo" body={record.insight.executiveSummary}>
-          <p className="text-sm text-slate-300">{record.insight.fitSummary}</p>
+          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.fitSummary}</p>
         </InfoBlock>
 
         <InfoBlock title="Por qué atacarlo" body={record.insight.attackSummary}>
-          <div className="mt-2 grid gap-3 xl:grid-cols-2">
-            <InfoPill label="Valor estimado" value={formatCurrency(record.insight.estimatedValue)} />
-            <InfoPill label="Valor ponderado" value={formatCurrency(record.insight.weightedValue)} />
-            <InfoPill label="Atención" value={record.insight.attentionLabel} />
-            <InfoPill label="Días sin tocar" value={formatDaysSince(record.insight.daysSinceTouch)} />
-          </div>
-          <p className="mt-3 text-sm text-slate-300">{record.insight.riskSummary}</p>
+          <p className="mt-3 text-sm text-[var(--pm-text-secondary)]">{record.insight.riskSummary}</p>
         </InfoBlock>
 
         <InfoBlock title="Dolor principal detectado" body={record.insight.painPoint}>
-          <p className="text-sm text-slate-300">{record.insight.commercialFocus}</p>
+          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.commercialFocus}</p>
         </InfoBlock>
 
         <InfoBlock title="Siguiente mejor acción" body={record.insight.nextAction.action}>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-[var(--pm-text-secondary)]">
             {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
           </p>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">
             Urgencia: {record.insight.nextAction.urgency} · Probabilidad de cierre:{" "}
             {Math.round(record.insight.closeProbability * 100)}%
           </p>
         </InfoBlock>
 
         <InfoBlock title="Servicio Órbita recomendado" body={record.insight.service.label}>
-          <p className="text-sm text-slate-300">{record.insight.service.reason}</p>
-          <ul className="mt-2 space-y-1 text-sm text-slate-400">
+          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.service.reason}</p>
+          <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-tertiary)]">
             {record.insight.service.reasons.map((reason) => (
               <li key={reason}>• {reason}</li>
             ))}
@@ -145,10 +143,10 @@ export function ProspectDetailPanel({
 
         <div className="grid gap-4 xl:grid-cols-2">
           <InfoBlock title="Ángulo comercial recomendado" body={record.insight.commercialAngle}>
-            <p className="text-sm text-slate-300">{record.insight.ctaSuggestion}</p>
+            <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.ctaSuggestion}</p>
           </InfoBlock>
           <InfoBlock title="Qué revisar antes de contactar" body={record.insight.reviewChecklist[0] ?? "Sin checklist adicional"}>
-            <ul className="mt-2 space-y-1 text-sm text-slate-400">
+            <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-tertiary)]">
               {record.insight.reviewChecklist.slice(1).map((item) => (
                 <li key={item}>• {item}</li>
               ))}
@@ -250,10 +248,10 @@ function InfoBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="pm-card-soft p-3">
+    <section className="pm-card-soft p-4">
       <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
-      <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{body}</p>
-      <div className="mt-1">{children}</div>
+      <p className="mt-2 text-sm font-medium leading-6 text-[var(--pm-text)]">{body}</p>
+      <div className="mt-2">{children}</div>
     </section>
   );
 }

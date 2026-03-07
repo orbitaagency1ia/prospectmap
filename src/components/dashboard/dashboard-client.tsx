@@ -48,15 +48,15 @@ export function DashboardClient({ data }: Props) {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.funnel}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="status" tick={{ fill: "#cbd5e1", fontSize: 11 }} interval={0} angle={-20} dy={12} />
-                <YAxis tick={{ fill: "#cbd5e1", fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(247,236,220,0.08)" />
+                <XAxis dataKey="status" tick={{ fill: "#8f877b", fontSize: 11 }} interval={0} angle={-20} dy={12} />
+                <YAxis tick={{ fill: "#8f877b", fontSize: 12 }} />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid #334155",
-                    borderRadius: "0.5rem",
-                    color: "#e2e8f0",
+                    background: "rgba(20,24,31,0.96)",
+                    border: "1px solid rgba(247,236,220,0.08)",
+                    borderRadius: "1rem",
+                    color: "#f6f1e8",
                   }}
                 />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
@@ -80,10 +80,10 @@ export function DashboardClient({ data }: Props) {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid #334155",
-                    borderRadius: "0.5rem",
-                    color: "#e2e8f0",
+                    background: "rgba(20,24,31,0.96)",
+                    border: "1px solid rgba(247,236,220,0.08)",
+                    borderRadius: "1rem",
+                    color: "#f6f1e8",
                   }}
                 />
               </PieChart>
@@ -97,18 +97,18 @@ export function DashboardClient({ data }: Props) {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.timeline}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="date" tick={{ fill: "#cbd5e1", fontSize: 12 }} />
-                <YAxis tick={{ fill: "#cbd5e1", fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(247,236,220,0.08)" />
+                <XAxis dataKey="date" tick={{ fill: "#8f877b", fontSize: 12 }} />
+                <YAxis tick={{ fill: "#8f877b", fontSize: 12 }} />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid #334155",
-                    borderRadius: "0.5rem",
-                    color: "#e2e8f0",
+                    background: "rgba(20,24,31,0.96)",
+                    border: "1px solid rgba(247,236,220,0.08)",
+                    borderRadius: "1rem",
+                    color: "#f6f1e8",
                   }}
                 />
-                <Line type="monotone" dataKey="updates" stroke="#f28a2e" strokeWidth={2.5} dot={{ fill: "#ff9f43" }} />
+                <Line type="monotone" dataKey="updates" stroke="#ef8b35" strokeWidth={2.5} dot={{ fill: "#f6a24c" }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -118,18 +118,18 @@ export function DashboardClient({ data }: Props) {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.sectorDistribution} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis type="number" tick={{ fill: "#cbd5e1", fontSize: 12 }} />
-                <YAxis type="category" dataKey="sector" tick={{ fill: "#cbd5e1", fontSize: 11 }} width={100} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(247,236,220,0.08)" />
+                <XAxis type="number" tick={{ fill: "#8f877b", fontSize: 12 }} />
+                <YAxis type="category" dataKey="sector" tick={{ fill: "#8f877b", fontSize: 11 }} width={100} />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid #334155",
-                    borderRadius: "0.5rem",
-                    color: "#e2e8f0",
+                    background: "rgba(20,24,31,0.96)",
+                    border: "1px solid rgba(247,236,220,0.08)",
+                    borderRadius: "1rem",
+                    color: "#f6f1e8",
                   }}
                 />
-                <Bar dataKey="value" fill="#f28a2e" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="value" fill="#ef8b35" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -139,19 +139,19 @@ export function DashboardClient({ data }: Props) {
       <Panel title="Actividad reciente">
         <div className="space-y-2">
           {data.recentActivity.length === 0 ? (
-            <p className="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-400">
+            <p className="pm-card-soft px-3 py-2 text-sm text-[var(--pm-text-secondary)]">
               Aún no hay actividad registrada.
             </p>
           ) : null}
           {data.recentActivity.map((activity) => (
-            <article key={activity.id} className="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{formatDateTime(activity.createdAt)}</p>
-              <p className="mt-1 text-sm text-slate-100">
+            <article key={activity.id} className="pm-card-soft px-3 py-2">
+              <p className="text-xs uppercase tracking-wide text-[var(--pm-text-tertiary)]">{formatDateTime(activity.createdAt)}</p>
+              <p className="mt-1 text-sm text-[var(--pm-text)]">
                 <span className="font-semibold">{activity.businessName}</span>
                 {" · "}
-                <span className="text-slate-300">{activity.type === "note" ? "Nota" : "Actualización"}</span>
+                <span className="text-[var(--pm-text-secondary)]">{activity.type === "note" ? "Nota" : "Actualización"}</span>
               </p>
-              <p className="mt-1 text-sm text-slate-300">{activity.text}</p>
+              <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{activity.text}</p>
             </article>
           ))}
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Filter, Loader2, Radar, ScanSearch, Upload } from "lucide-react";
 
@@ -29,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
 import { ConquestPanel } from "../prospects/intelligence-panels";
-import { PmEmpty } from "../ui/pm";
+import { PmBadge, PmEmpty, PmNotice } from "../ui/pm";
 import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
 import { ProspectCard } from "../prospects/prospect-ui";
 
@@ -40,7 +41,7 @@ import type { MapBounds } from "./map-canvas";
 const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanvas), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center bg-slate-900 text-sm text-slate-300">
+    <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(17,20,27,0.94),rgba(10,11,15,0.98))] text-sm text-[var(--pm-text-secondary)]">
       Cargando mapa...
     </div>
   ),
@@ -251,6 +252,22 @@ export function MapWorkspace({ profile }: Props) {
       }),
     [filteredRecords, mapBounds, profile.city_name],
   );
+  const attackZoneHref = useMemo(() => {
+    const params = new URLSearchParams({
+      source: "territory",
+      territoryOnly: "1",
+      territoryLabel: mapBounds ? "Zona visible" : profile.city_name,
+    });
+
+    if (mapBounds) {
+      params.set("south", String(mapBounds.south));
+      params.set("west", String(mapBounds.west));
+      params.set("north", String(mapBounds.north));
+      params.set("east", String(mapBounds.east));
+    }
+
+    return `/attack?${params.toString()}`;
+  }, [mapBounds, profile.city_name]);
 
   const selectedSweepRecord = useMemo(
     () => sweepRecords.find((record) => record.business.key === sweepSelectedKey) ?? sweepRecords[0] ?? null,
@@ -435,79 +452,72 @@ export function MapWorkspace({ profile }: Props) {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-140px)] min-h-[620px] flex-1 overflow-hidden rounded-none lg:h-[calc(100vh-112px)] lg:rounded-[32px] lg:border lg:border-[rgba(30,51,80,0.92)]">
+    <div className="relative flex h-[calc(100vh-140px)] min-h-[620px] flex-1 overflow-hidden rounded-none bg-[linear-gradient(180deg,rgba(18,20,26,0.92),rgba(9,11,15,0.98))] lg:h-[calc(100vh-112px)] lg:rounded-[34px] lg:border lg:border-[var(--pm-border)] lg:shadow-[var(--pm-shadow-float)]">
       <div className="absolute left-3 right-3 top-3 z-[450]">
-        <div className="hidden flex-wrap items-center gap-2 rounded-[24px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] p-2 shadow-lg backdrop-blur lg:flex">
+        <div className="pm-floating-sheet hidden p-3 xl:flex xl:flex-col xl:gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <CommercialContextInline
+              ready={ready && profileReady}
+              vertical={settings.vertical}
+              saveState={saveState}
+              onVerticalChange={setVertical}
+            />
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSweepMode(true)}
+                className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
+              >
+                <ScanSearch className="h-4 w-4" />
+                Barrido de zona
+              </button>
+              <Link href={attackZoneHref} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+                Atacar zona
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowConquestMode(true)}
+                className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+              >
+                <Radar className="h-4 w-4" />
+                Modo conquista
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCsvImport(true)}
+                className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+              >
+                <Upload className="h-4 w-4" />
+                Importar CSV
+              </button>
+              <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
+            </div>
+          </div>
+
           <FiltersRow
             filters={filters}
             categories={categoryOptions}
             onChange={setFilters}
             onReset={() => setFilters(DEFAULT_FILTERS)}
           />
-          <CommercialContextInline
-            ready={ready && profileReady}
-            vertical={settings.vertical}
-            saveState={saveState}
-            onVerticalChange={setVertical}
-          />
-          <button
-            type="button"
-            onClick={() => setShowSweepMode(true)}
-            className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
-          >
-            <ScanSearch className="h-4 w-4" />
-            Barrido de zona
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowConquestMode(true)}
-            className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
-          >
-            <Radar className="h-4 w-4" />
-            Modo conquista
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowCsvImport(true)}
-            className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
-          >
-            <Upload className="h-4 w-4" />
-            Importar CSV
-          </button>
-          <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
         </div>
 
-        <div className="flex items-center justify-between gap-2 lg:hidden">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
-              onClick={() => setShowMobileFilters((value) => !value)}
-            >
-              <Filter className="h-4 w-4" />
-              Filtros
-            </button>
-            <span className="pm-badge text-[11px]">
-              {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Cargando..."}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowSweepMode(true)}
-              className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
-            >
-              <ScanSearch className="h-4 w-4" />
-              Barrido
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowConquestMode(true)}
-              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
-            >
-              <Radar className="h-4 w-4" />
-              Conquista
-            </button>
+        <div className="pm-floating-sheet flex flex-col gap-2 p-2 xl:hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <button
+                type="button"
+                className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+                onClick={() => setShowMobileFilters((value) => !value)}
+              >
+                <Filter className="h-4 w-4" />
+                Filtros
+              </button>
+              <PmBadge className="max-w-[120px] truncate text-[11px]">
+                {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Cargando..."}
+              </PmBadge>
+            </div>
             <button
               type="button"
               onClick={() => setShowCsvImport(true)}
@@ -517,10 +527,35 @@ export function MapWorkspace({ profile }: Props) {
               CSV
             </button>
           </div>
+
+          <div className="-mx-1 overflow-x-auto pb-1">
+            <div className="flex min-w-max items-center gap-2 px-1">
+              <button
+                type="button"
+                onClick={() => setShowSweepMode(true)}
+                className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs"
+              >
+                <ScanSearch className="h-4 w-4" />
+                Barrido
+              </button>
+              <Link href={attackZoneHref} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+                Ataque
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowConquestMode(true)}
+                className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+              >
+                <Radar className="h-4 w-4" />
+                Conquista
+              </button>
+              <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
+            </div>
+          </div>
         </div>
 
         {showMobileFilters ? (
-          <div className="mt-2 rounded-[24px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.95)] p-3 shadow-lg lg:hidden">
+          <div className="pm-floating-sheet mt-2 p-3 lg:hidden">
             <FiltersRow
               filters={filters}
               categories={categoryOptions}
@@ -541,22 +576,15 @@ export function MapWorkspace({ profile }: Props) {
         ) : null}
 
         {message ? (
-          <div
-            className={cn(
-              "mt-2 rounded-lg border px-3 py-2 text-xs",
-              message.type === "success"
-                ? "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(220,255,234,0.98)]"
-                : "border-[rgba(227,93,106,0.4)] bg-[rgba(227,93,106,0.12)] text-[rgba(255,224,229,0.98)]",
-            )}
-          >
+          <PmNotice tone={message.type === "success" ? "emerald" : "rose"} className="mt-2 text-xs">
             {message.text}
-          </div>
+          </PmNotice>
         ) : null}
       </div>
 
       <div className="relative flex-1">
         {(loadingSaved || loadingOverpass) && (
-          <div className="pointer-events-none absolute right-3 top-3 z-[450] rounded-2xl border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.9)] px-3 py-2 text-xs text-[var(--pm-text-secondary)] shadow-[0_16px_40px_rgba(3,9,18,0.32)]">
+          <div className="pm-floating-sheet pointer-events-none absolute right-3 top-3 z-[450] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               {loadingSaved ? "Cargando datos guardados" : "Cargando negocios reales"}
@@ -624,9 +652,9 @@ export function MapWorkspace({ profile }: Props) {
       </div>
 
       {showMobilePanel && selectedRecord ? (
-        <div className="fixed inset-0 z-[500] bg-slate-950/55 backdrop-blur-sm lg:hidden" onClick={() => setShowMobilePanel(false)}>
+        <div className="fixed inset-0 z-[500] bg-[rgba(7,8,12,0.68)] backdrop-blur-md lg:hidden" onClick={() => setShowMobilePanel(false)}>
           <div
-            className="absolute inset-x-0 bottom-0 top-[14%] overflow-hidden rounded-t-[28px] border-t border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)] shadow-[0_-24px_60px_rgba(3,9,18,0.4)]"
+            className="absolute inset-x-0 bottom-0 top-[11%] overflow-hidden rounded-t-[30px] border-t border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] shadow-[0_-28px_64px_rgba(3,6,10,0.42)]"
             onClick={(event) => event.stopPropagation()}
           >
             <BusinessPanel
@@ -695,12 +723,12 @@ function ConquestModeModal({
   onOpenBusiness: (businessKey: string) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-[520] bg-slate-950/70 p-3 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[520] bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-6xl flex-col overflow-hidden rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] shadow-2xl"
+        className="mx-auto flex h-full max-w-6xl flex-col overflow-hidden rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] shadow-[var(--pm-shadow-float)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[rgba(42,52,66,0.72)] px-4 py-4">
+        <div className="flex items-center justify-between border-b border-[var(--pm-border)] px-4 py-4">
           <div>
             <p className="pm-kicker">Modo conquista</p>
             <h2 className="pm-title mt-1 text-lg">Cobertura y potencial del territorio</h2>
@@ -726,7 +754,7 @@ function ConquestModeModal({
 
 function SummaryTag({ total, filtered }: { total: number; filtered: number }) {
   return (
-    <div className="pm-badge rounded-2xl px-3 py-2 text-xs">
+    <div className="pm-badge rounded-[1.15rem] px-3 py-2 text-xs">
       <span>{filtered}</span>
       <span className="text-[var(--pm-text-tertiary)]">/</span>
       <span>{total} negocios</span>
@@ -750,7 +778,7 @@ function FiltersRow({
       <select
         value={filters.category}
         onChange={(event) => onChange({ ...filters, category: event.target.value })}
-        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
+        className="field min-h-0 w-full rounded-2xl px-3 py-2 text-xs sm:!w-[190px] xl:!w-[200px]"
       >
         <option value="all">Sector: todos</option>
         {categories.map((category) => (
@@ -768,7 +796,7 @@ function FiltersRow({
             status: event.target.value as ProspectStatus | "all",
           })
         }
-        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
+        className="field min-h-0 w-full rounded-2xl px-3 py-2 text-xs sm:!w-[190px] xl:!w-[200px]"
       >
         <option value="all">Estado: todos</option>
         {PROSPECT_STATUS_ORDER.map((status) => (
@@ -786,7 +814,7 @@ function FiltersRow({
             priority: event.target.value as PriorityLevel | "all",
           })
         }
-        className="field min-h-0 rounded-2xl px-3 py-2 text-xs"
+        className="field min-h-0 w-full rounded-2xl px-3 py-2 text-xs sm:!w-[160px] xl:!w-[170px]"
       >
         <option value="all">Prioridad: todas</option>
         {PRIORITY_OPTIONS.map((priority) => (
@@ -825,13 +853,13 @@ function SweepModeModal({
   onOpenBusiness: (record: ProspectRecord) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-[520] bg-slate-950/70 p-3 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[520] bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-7xl flex-col overflow-hidden rounded-[28px] border border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.98)] shadow-2xl xl:grid xl:grid-cols-[1.2fr_0.8fr]"
+        className="mx-auto flex h-full max-w-7xl flex-col overflow-hidden rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] shadow-[var(--pm-shadow-float)] xl:grid xl:grid-cols-[1.2fr_0.8fr]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex min-h-0 flex-col border-b border-[rgba(30,51,80,0.72)] xl:border-b-0 xl:border-r">
-          <div className="flex items-center justify-between border-b border-[rgba(30,51,80,0.72)] px-4 py-4">
+        <div className="flex min-h-0 flex-col border-b border-[var(--pm-border)] xl:border-b-0 xl:border-r">
+          <div className="flex items-center justify-between border-b border-[var(--pm-border)] px-4 py-4">
             <div>
               <p className="pm-kicker">Barrido de zona</p>
               <h2 className="pm-title mt-1 text-lg">Mejores negocios de la zona visible</h2>
@@ -896,10 +924,12 @@ function CommercialContextInline({
       : saveState === "saved"
         ? "Actualizado"
         : saveState === "local_only"
-          ? "Temporal"
+          ? "En este navegador"
           : saveState === "error"
             ? "Revisar"
             : "Listo";
+
+  const tone = saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : saveState === "saved" ? "emerald" : "neutral";
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2", mobile ? "w-full" : "")}>
@@ -915,7 +945,9 @@ function CommercialContextInline({
           </option>
         ))}
       </select>
-      <span className="pm-badge px-3 py-2 text-[11px]">{saveLabel}</span>
+      <PmBadge tone={tone} className="px-3 py-2 text-[11px]">
+        {saveLabel}
+      </PmBadge>
     </div>
   );
 }

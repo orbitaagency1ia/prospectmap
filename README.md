@@ -19,11 +19,23 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - Carga real de negocios por zona visible con Overpass.
 - Rediseño UX/UI más premium:
   - navegación con naming más comercial (`Centro de control`, `Territorio`, `Prioridades`, `Pipeline`, `Configuración`),
-  - nueva paleta premium oscura (`#07111F`, `#0D1728`, `#122033`, `#1E3350`, `#3ABEF9`),
-  - mejor jerarquía visual y espaciado,
+  - nueva paleta premium grafito + naranja eléctrico (`#0A0B0F`, `#101217`, `#171B22`, `#1D222B`, `#252C36`, `#EF8B35`),
+  - mejor jerarquía visual, aire y contraste entre capas,
+  - paneles, overlays y sheets con superficies mucho más refinadas,
+  - microinteracciones y motion suave en botones, tabs, métricas y paneles,
+  - escritorio más editorial y menos rígido,
+  - móvil más cómodo, con sheets, cards y navegación mejor resueltos,
   - ficha con tabs (`Informe`, `Datos`, `Notas`),
   - mejores previews en mapa,
   - mejor lectura de cards, badges y estados.
+- Nuevo modulo `Ataque` / Attack Workspace con:
+  - cola diaria de leads,
+  - filtros por ciudad, vertical, campaña, servicio, urgencia y zona,
+  - sesion de ataque persistente,
+  - briefing operativo del lead,
+  - registro rapido de resultado,
+  - siguiente paso recomendado,
+  - progreso y KPIs de ejecucion.
 - Onboarding comercial guiado.
 - Configuración comercial desde formulario estructurado + texto/PDF opcional.
 - Perfil comercial de cuenta persistente en Supabase.
@@ -103,20 +115,24 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 ## 2) Estructura principal
 
 - `src/app/(auth)` login y registro.
-- `src/app/(protected)` today, ranking, pipeline, mapa, dashboard, settings, onboarding.
+- `src/app/(protected)` today, attack, ranking, pipeline, mapa, dashboard, settings, onboarding.
 - `src/app/api/overpass` proxy Overpass + normalización + caché.
 - `src/app/api/geocode/*` búsqueda de ciudad y geocodificación de direcciones.
 - `src/components/commercial/*` persistencia de configuracion comercial, selectors y paneles de control.
+- `src/components/attack/*` Attack Workspace, hook de sesiones y flujo de ejecución diaria.
 - `src/components/layout/onboarding-workspace.tsx` onboarding de empresa + onboarding comercial.
 - `src/components/map/*` mapa, ficha comercial, importador CSV.
 - `src/components/prospects/*` command center, ranking, detalle comercial y UI de prospectos.
 - `src/components/dashboard/*` cards y gráficos.
+- `src/components/ui/pm.tsx` primitivas del design system interno (`PmPanel`, `PmHero`, `PmMetric`, `PmBadge`, `PmNotice`, `PmEmpty`, `PmSectionHeader`).
+- `src/app/globals.css` tokens visuales, capas, motion, superficies y estilos base reutilizables.
 - `src/lib/commercial/account-profile.ts` saneado, persistencia local y resumen heurístico del perfil comercial.
 - `src/lib/commercial/types.ts` tipos del dominio comercial.
 - `src/lib/commercial/verticals.ts` configuracion centralizada de verticales, presets y librerias.
 - `src/lib/commercial/scoring.ts` capa de scoring.
 - `src/lib/commercial/valuation.ts` valor económico estimado y probabilidad de cierre.
 - `src/lib/commercial/pipeline.ts` recordatorios, caducidad y lectura de pipeline.
+- `src/lib/commercial/attack.ts` cola diaria, sesion, razones de prioridad y siguiente paso.
 - `src/lib/commercial/recommendations.ts` capa de servicio recomendado, dolor, accion y canal.
 - `src/lib/commercial/messaging.ts` mensajes sugeridos y demo badges.
 - `src/lib/commercial/objections.ts` objeciones probables y respuestas.
@@ -129,6 +145,49 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `supabase/migrations/0003_phase4_account_profiles.sql` migracion incremental para onboarding comercial y perfil de cuenta.
 - `supabase/migrations/0004_phase5_pipeline_lists.sql` migracion incremental para follow-ups y listas/campañas.
 - `supabase/migrations/0005_fix_missing_account_settings.sql` reparacion idempotente para proyectos donde falta `account_settings` o el trigger de alta de usuario quedó roto.
+- `supabase/migrations/0006_attack_workspace.sql` migracion incremental para sesiones de ataque y registro de resultados.
+
+## 2.1) Sistema visual y UX
+
+La fase actual deja una base visual más seria y reutilizable sin cambiar la arquitectura del producto.
+
+Paleta principal:
+- fondo base `#0A0B0F`
+- fondo secundario `#101217`
+- superficie `#171B22`
+- superficie terciaria `#1D222B`
+- superficie flotante `rgba(20, 24, 31, 0.74)`
+- borde sutil `rgba(247, 236, 220, 0.075)`
+- borde fuerte `rgba(247, 236, 220, 0.14)`
+- texto principal `#F6F1E8`
+- texto secundario `#C7BCAE`
+- texto tenue `#8F877B`
+- acento `#EF8B35`
+- hover acento `#F6A24C`
+- éxito `#4EC086`
+- advertencia `#DDAE55`
+- riesgo `#D76F7B`
+- info neutra `#9A93AF`
+
+Decisiones de diseño:
+- menos aspecto de dashboard genérico y más sensación de sistema operativo comercial,
+- paneles con mejor profundidad, bordes suaves y elevación sutil,
+- tipografía y spacing más consistentes entre vistas,
+- badges y estados comerciales más legibles,
+- mapas, sheets y paneles laterales más refinados,
+- mejor ergonomía móvil sin meter complejidad funcional nueva.
+
+Componentes más rehechos visualmente:
+- `Centro de control`
+- `Territorio`
+- `Prioridades`
+- `Pipeline`
+- `Analítica`
+- `Configuración`
+- `Onboarding`
+- ficha de negocio
+- hoja `Preparar prospección`
+- diálogos y overlays como CSV, barrido y conquista
 
 ## 3) Configuración local
 
@@ -160,7 +219,7 @@ La app abrirá directamente en `/today`.
 1. Crea un proyecto en Supabase Free.
 2. Ve a SQL Editor y ejecuta:
    - proyecto nuevo desde cero: `supabase/migrations/0001_init.sql`
-   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql` y despues `supabase/migrations/0004_phase5_pipeline_lists.sql`
+   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql`, despues `supabase/migrations/0004_phase5_pipeline_lists.sql` y despues `supabase/migrations/0006_attack_workspace.sql`
    - si la UI muestra `Error guardando` en configuracion comercial o el registro devuelve `Database error saving new user`: ejecuta `supabase/migrations/0005_fix_missing_account_settings.sql`
 3. En Authentication > Providers:
    - Email activado.
@@ -180,6 +239,9 @@ Tablas implementadas:
 - `account_profiles`
 - `prospect_lists`
 - `prospect_list_items`
+- `attack_sessions`
+- `attack_session_items`
+- `attack_results`
 
 RLS:
 - cada operación valida `auth.uid()` contra `id`/`user_id`.
@@ -188,6 +250,7 @@ RLS:
 - la configuracion comercial (vertical, pesos y preferencias; el flag de presentacion sigue interno) tambien es privada por cuenta.
 - el perfil comercial de cuenta (ICP, oferta, ticket, texto base y resumen estructurado) tambien es privado por cuenta.
 - las listas/campañas y sus elementos tambien son privadas por cuenta.
+- las sesiones de ataque y sus resultados tambien son privadas por cuenta.
 
 Datos públicos (Overpass/OSM):
 - solo se consumen para mostrar oportunidades.
@@ -415,6 +478,128 @@ La fase actual añade una capa orientada a cierre y uso diario:
 - listas/campañas guardadas (`prospect_lists`, `prospect_list_items`) para reutilizar focos de prospeccion.
 - progreso por lista basado en leads trabajados.
 
+### Attack Workspace
+
+ProspectMap ya no solo detecta y prioriza. Ahora tambien ejecuta.
+
+La vista `Ataque` funciona como sistema operativo diario para prospeccion activa:
+- monta una cola de leads del dia,
+- permite arrancar una sesion de trabajo real,
+- muestra un briefing operativo escaneable,
+- registra el resultado en segundos,
+- y deja el siguiente paso recomendado listo.
+
+#### Como funciona la cola diaria
+
+- parte de negocios ya guardados en la cuenta.
+- cruza score, urgencia, follow-up, valor ponderado, vertical, servicio y contexto de entrada.
+- puede arrancarse desde:
+  - `Centro de control` (alertas),
+  - `Prioridades`,
+  - `Pipeline`,
+  - `Campañas`,
+  - `Territorio` sobre la zona visible.
+- cada entrada muestra:
+  - nombre,
+  - sector,
+  - score,
+  - urgencia,
+  - servicio recomendado,
+  - siguiente accion,
+  - valor estimado,
+  - estado,
+  - por que entra hoy.
+
+#### Como funciona la sesion
+
+- al pulsar `Empezar sesion`, ProspectMap crea una sesion persistente con los mejores leads del foco actual.
+- guarda:
+  - origen de la sesion,
+  - filtros aplicados,
+  - orden de cola,
+  - razon de inclusion,
+  - zona,
+  - estado de cada item.
+- permite:
+  - trabajar ahora,
+  - saltar,
+  - mover al final,
+  - fijar para hoy,
+  - marcar no relevante,
+  - pausar o cerrar la sesion.
+
+#### Como funciona el briefing
+
+Cada lead abierto en `Ataque` muestra una version operativa del informe:
+- resumen ejecutivo,
+- por que atacarlo,
+- dolor principal,
+- servicio recomendado,
+- angulo comercial,
+- mensaje inicial,
+- follow-up 1,
+- follow-up 2,
+- objeciones probables,
+- que revisar antes,
+- que no decir,
+- valor estimado y urgencia.
+
+#### Como se registra el resultado
+
+El bloque de resultado permite marcar:
+- no contactado
+- contacto intentado
+- hablo con alguien
+- interesado
+- reunion conseguida
+- propuesta pendiente
+- no encaja
+- perdido
+- volver mas tarde
+
+Ademas permite:
+- nota rapida,
+- fecha de follow-up,
+- cambio de prioridad,
+- mover a pipeline,
+- añadir a campaña,
+- sacar del foco.
+
+El guardado actualiza:
+- `businesses.prospect_status`
+- `businesses.priority`
+- `businesses.last_contact_at`
+- `businesses.next_follow_up_at`
+- notas en `business_notes`
+- resultado de ataque en `attack_results`
+- estado del item dentro de la sesion
+
+#### Siguiente paso recomendado
+
+Tras elegir resultado, ProspectMap propone automaticamente el siguiente movimiento:
+- reintentar mañana,
+- follow-up en 2 dias,
+- subir prioridad,
+- mover a pipeline,
+- cerrar y sacar del foco,
+- revisar mas tarde.
+
+El usuario puede aceptar la sugerencia o sobrescribirla manualmente.
+
+#### Integracion con el resto del producto
+
+- `Centro de control` envia alertas al modulo `Ataque`.
+- `Prioridades` abre una sesion centrada en score y valor.
+- `Pipeline` abre una sesion orientada a seguimiento y cierre.
+- `Campañas` permiten trabajar una lista guardada como sesion.
+- `Territorio` lanza `Ataque` sobre la zona visible del mapa.
+
+#### Tablas nuevas
+
+- `attack_sessions`: cabecera de sesion.
+- `attack_session_items`: cola persistida de negocios por sesion.
+- `attack_results`: resultado registrado tras trabajar cada lead.
+
 ## 7) Dashboard y fórmulas usadas
 
 - **Total prospectados**: estado distinto de `sin_contactar`.
@@ -487,6 +672,7 @@ Cambios mas importantes:
 - configuracion comercial por cuenta en tabla propia (`account_settings`)
 - perfil comercial de cuenta en tabla propia (`account_profiles`)
 - listas/campañas por cuenta con RLS (`prospect_lists`, `prospect_list_items`)
+- sesiones de ataque y resultados por cuenta con RLS (`attack_sessions`, `attack_session_items`, `attack_results`)
 - sistema de verticales centralizado y extensible
 - separacion clara entre dominio comercial y UI
 - override de vertical por negocio sin romper la vertical global
