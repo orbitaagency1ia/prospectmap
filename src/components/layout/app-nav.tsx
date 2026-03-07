@@ -31,7 +31,7 @@ export function AppNav() {
               className={cn(
                 "inline-flex items-center gap-2 rounded-2xl border px-3 py-2.5 text-sm transition",
                 active
-                  ? "border-[rgba(58,190,249,0.45)] bg-[rgba(58,190,249,0.14)] text-[var(--pm-text)] shadow-[0_0_0_1px_rgba(58,190,249,0.08)]"
+                  ? "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.14)] text-[var(--pm-text)] shadow-[0_0_0_1px_rgba(242,138,46,0.08)]"
                   : "border-transparent bg-transparent text-[var(--pm-text-secondary)] hover:border-[rgba(30,51,80,0.92)] hover:bg-[rgba(7,17,31,0.72)] hover:text-[var(--pm-text)]",
               )}
             >
@@ -54,7 +54,7 @@ export function AppNav() {
                 className={cn(
                   "inline-flex min-h-[46px] items-center gap-2 rounded-2xl border px-3 py-2 text-sm whitespace-nowrap transition",
                   active
-                    ? "border-[rgba(58,190,249,0.45)] bg-[rgba(58,190,249,0.14)] text-[var(--pm-text)]"
+                    ? "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.14)] text-[var(--pm-text)]"
                     : "border-transparent bg-transparent text-[var(--pm-text-secondary)] hover:border-[rgba(30,51,80,0.92)] hover:bg-[rgba(7,17,31,0.72)] hover:text-[var(--pm-text)]",
                 )}
               >

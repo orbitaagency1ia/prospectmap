@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
+import { isMissingTableError } from "@/lib/supabase/error-helpers";
 import type { ProspectListItemRow, ProspectListRow } from "@/lib/types";
 
 type ListStatus = ProspectListRow["status"];
@@ -17,6 +18,14 @@ type CreateProspectListInput = {
   notes?: string | null;
   businessIds: string[];
 };
+
+function getListsErrorMessage() {
+  return "No pude actualizar las campañas en este momento.";
+}
+
+function getListsUnavailableMessage() {
+  return "Las campañas todavía no están disponibles en esta instalación.";
+}
 
 export function useProspectLists(userId: string) {
   const supabase = useMemo(() => createClient(), []);
@@ -46,7 +55,7 @@ export function useProspectLists(userId: string) {
 
     const tableError = listsResponse.error ?? itemsResponse.error;
     if (tableError) {
-      if (tableError.code === "42P01") {
+      if (isMissingTableError(tableError, "prospect_lists") || isMissingTableError(tableError, "prospect_list_items")) {
         setTableAvailable(false);
         setLists([]);
         setItems([]);
@@ -54,7 +63,7 @@ export function useProspectLists(userId: string) {
         return;
       }
 
-      setError(tableError.message);
+      setError(getListsErrorMessage());
       setLoading(false);
       return;
     }
@@ -77,7 +86,7 @@ export function useProspectLists(userId: string) {
 
         const tableError = listsResponse.error ?? itemsResponse.error;
         if (tableError) {
-          if (tableError.code === "42P01") {
+          if (isMissingTableError(tableError, "prospect_lists") || isMissingTableError(tableError, "prospect_list_items")) {
             setTableAvailable(false);
             setLists([]);
             setItems([]);
@@ -85,7 +94,7 @@ export function useProspectLists(userId: string) {
             return;
           }
 
-          setError(tableError.message);
+          setError(getListsErrorMessage());
           setLoading(false);
           return;
         }
@@ -112,7 +121,7 @@ export function useProspectLists(userId: string) {
   const createList = useCallback(
     async (input: CreateProspectListInput) => {
       if (!tableAvailable) {
-        return { ok: false as const, error: "La tabla de listas no existe aún." };
+        return { ok: false as const, error: getListsUnavailableMessage() };
       }
 
       const { data, error } = await supabase
@@ -131,7 +140,7 @@ export function useProspectLists(userId: string) {
         .single();
 
       if (error || !data) {
-        return { ok: false as const, error: error?.message ?? "No pude crear la lista." };
+        return { ok: false as const, error: getListsErrorMessage() };
       }
 
       if (input.businessIds.length > 0) {
@@ -144,7 +153,7 @@ export function useProspectLists(userId: string) {
         const { error: itemsError } = await supabase.from("prospect_list_items").insert(payload);
 
         if (itemsError && itemsError.code !== "23505") {
-          return { ok: false as const, error: itemsError.message };
+          return { ok: false as const, error: getListsErrorMessage() };
         }
       }
 
@@ -169,7 +178,7 @@ export function useProspectLists(userId: string) {
       const { error } = await supabase.from("prospect_list_items").insert(payload);
 
       if (error && error.code !== "23505") {
-        return { ok: false as const, error: error.message };
+        return { ok: false as const, error: getListsErrorMessage() };
       }
 
       await load();
@@ -181,12 +190,12 @@ export function useProspectLists(userId: string) {
   const updateList = useCallback(
     async (listId: string, patch: Partial<ProspectListRow>) => {
       if (!tableAvailable) {
-        return { ok: false as const, error: "La tabla de listas no existe aún." };
+        return { ok: false as const, error: getListsUnavailableMessage() };
       }
 
       const { error } = await supabase.from("prospect_lists").update(patch).eq("id", listId);
       if (error) {
-        return { ok: false as const, error: error.message };
+        return { ok: false as const, error: getListsErrorMessage() };
       }
 
       await load();

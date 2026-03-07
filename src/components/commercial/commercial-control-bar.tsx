@@ -20,14 +20,14 @@ export function CommercialControlBar({
 }: Props) {
   const saveLabel =
     saveState === "saving"
-      ? "Guardando..."
+      ? "Guardando"
       : saveState === "saved"
-        ? "Guardado en Supabase"
+        ? "Cambios guardados"
         : saveState === "local_only"
-          ? "Solo local"
+          ? "Guardado temporal"
           : saveState === "error"
-            ? "Error guardando"
-            : "Configuracion activa";
+            ? "Sincronización pendiente"
+            : "Todo al día";
 
   return (
     <PmPanel className="p-4">

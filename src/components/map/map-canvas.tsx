@@ -157,7 +157,7 @@ export function MapCanvas({
                       <p className="font-semibold text-slate-50">{marker.name}</p>
                       <p className="text-slate-300">{marker.category ?? "Sin categoría"}</p>
                     </div>
-                    <span className="rounded-full border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-cyan-200">
+                    <span className="rounded-full border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 text-[rgba(255,214,179,0.98)]">
                       {marker.score}
                     </span>
                   </div>
@@ -184,7 +184,7 @@ export function MapCanvas({
                       <p className="font-semibold">{marker.name}</p>
                       <p>{marker.category ?? "Sin categoría"}</p>
                     </div>
-                    <span className="rounded-full border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-cyan-200">
+                    <span className="rounded-full border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 text-[rgba(255,214,179,0.98)]">
                       Prioridad {marker.score}
                     </span>
                   </div>
@@ -199,7 +199,7 @@ export function MapCanvas({
                   <button
                     type="button"
                     onClick={() => onMarkerSelect(marker.key)}
-                    className="w-full rounded-lg border border-cyan-700/50 bg-cyan-500/10 px-3 py-2 text-left font-medium text-cyan-100"
+                    className="w-full rounded-lg border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-3 py-2 text-left font-medium text-[rgba(255,221,188,0.98)]"
                   >
                     Abrir informe
                   </button>

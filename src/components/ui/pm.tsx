@@ -8,8 +8,8 @@ export type PmTone = "neutral" | "cyan" | "amber" | "emerald" | "rose" | "violet
 
 const badgeToneClass: Record<PmTone, string> = {
   neutral: "border-[rgba(30,51,80,0.92)] bg-[rgba(7,17,31,0.68)] text-[var(--pm-text-secondary)]",
-  cyan: "border-[rgba(58,190,249,0.45)] bg-[rgba(58,190,249,0.12)] text-[var(--pm-text)]",
-  amber: "border-[rgba(245,185,66,0.4)] bg-[rgba(245,185,66,0.12)] text-[rgba(255,239,204,0.98)]",
+  cyan: "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.12)] text-[var(--pm-text)]",
+  amber: "border-[rgba(227,167,55,0.4)] bg-[rgba(227,167,55,0.12)] text-[rgba(255,239,204,0.98)]",
   emerald: "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(221,255,235,0.98)]",
   rose: "border-[rgba(227,93,106,0.4)] bg-[rgba(227,93,106,0.12)] text-[rgba(255,230,234,0.98)]",
   violet: "border-[rgba(138,124,255,0.4)] bg-[rgba(138,124,255,0.12)] text-[rgba(235,233,255,0.98)]",
@@ -17,8 +17,8 @@ const badgeToneClass: Record<PmTone, string> = {
 
 const metricToneClass: Record<PmTone, string> = {
   neutral: "border-[rgba(30,51,80,0.92)] bg-[rgba(18,32,51,0.78)]",
-  cyan: "border-[rgba(58,190,249,0.34)] bg-[rgba(58,190,249,0.1)]",
-  amber: "border-[rgba(245,185,66,0.3)] bg-[rgba(245,185,66,0.1)]",
+  cyan: "border-[rgba(242,138,46,0.34)] bg-[rgba(242,138,46,0.1)]",
+  amber: "border-[rgba(227,167,55,0.3)] bg-[rgba(227,167,55,0.1)]",
   emerald: "border-[rgba(46,212,122,0.3)] bg-[rgba(46,212,122,0.1)]",
   rose: "border-[rgba(227,93,106,0.3)] bg-[rgba(227,93,106,0.1)]",
   violet: "border-[rgba(138,124,255,0.3)] bg-[rgba(138,124,255,0.1)]",
@@ -90,7 +90,7 @@ export function PmMetric({
           {helper ? <p className="pm-muted mt-2 text-sm">{helper}</p> : null}
         </div>
         {Icon ? (
-          <div className="rounded-2xl border border-[rgba(58,190,249,0.24)] bg-[rgba(58,190,249,0.08)] p-2.5 text-[var(--pm-primary)]">
+          <div className="rounded-2xl border border-[rgba(242,138,46,0.24)] bg-[rgba(242,138,46,0.08)] p-2.5 text-[var(--pm-primary)]">
             <Icon className="h-4 w-4" />
           </div>
         ) : null}

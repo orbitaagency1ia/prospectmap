@@ -169,14 +169,14 @@ function FocusPanel({
             key={record.business.key}
             type="button"
             onClick={() => onSelect(record.business.key)}
-            className="pm-card w-full p-3 text-left transition hover:border-[rgba(58,190,249,0.45)]"
+            className="pm-card w-full p-3 text-left transition hover:border-[rgba(242,138,46,0.42)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-[var(--pm-text)]">{record.business.name}</p>
                 <p className="mt-1 text-xs text-[var(--pm-text-secondary)]">{record.insight.service.shortLabel}</p>
               </div>
-              <p className="text-sm font-semibold text-[rgba(58,190,249,0.96)]">{formatCurrency(record.insight.weightedValue)}</p>
+              <p className="text-sm font-semibold text-[var(--pm-primary)]">{formatCurrency(record.insight.weightedValue)}</p>
             </div>
             <p className="mt-2 text-sm text-[var(--pm-text-secondary)]">{record.insight.nextAction.action}</p>
           </button>
@@ -223,8 +223,8 @@ function PipelineStageColumn({
             className={cn(
               "w-full rounded-2xl border p-3 text-left transition",
               selectedKey === record.business.key
-                ? "border-[rgba(58,190,249,0.5)] bg-[rgba(18,32,51,0.95)]"
-                : "border-[rgba(30,51,80,0.9)] bg-[rgba(18,32,51,0.74)] hover:border-[rgba(58,190,249,0.4)]",
+                ? "border-[rgba(242,138,46,0.46)] bg-[rgba(18,32,51,0.95)]"
+                : "border-[rgba(30,51,80,0.9)] bg-[rgba(18,32,51,0.74)] hover:border-[rgba(242,138,46,0.35)]",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -232,7 +232,7 @@ function PipelineStageColumn({
                 <p className="text-sm font-semibold text-[var(--pm-text)]">{record.business.name}</p>
                 <p className="mt-1 text-xs text-[var(--pm-text-secondary)]">{record.insight.service.shortLabel}</p>
               </div>
-              <p className="text-sm font-semibold text-[rgba(58,190,249,0.96)]">{record.insight.score}</p>
+              <p className="text-sm font-semibold text-[var(--pm-primary)]">{record.insight.score}</p>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -320,7 +320,7 @@ function SummaryRow({
           <p className="text-sm font-medium text-[var(--pm-text)]">{label}</p>
           <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{detail}</p>
         </div>
-        <p className="text-base font-semibold text-[rgba(58,190,249,0.96)]">{value}</p>
+        <p className="text-base font-semibold text-[var(--pm-primary)]">{value}</p>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import {
   buildCommandCenterSummary,
   buildProspectRecords,
   buildTodayBuckets,
+  type OpportunityAlert,
   isAccountCommercialProfileComplete,
   type CommandCenterSummary,
   type ProspectRecord,
@@ -21,8 +22,10 @@ import { useCommercialConfig } from "../commercial/use-commercial-config";
 import { PmEmpty, PmHero, PmMetric, PmNotice, PmPanel, PmSectionHeader } from "../ui/pm";
 
 import { ProspectDetailPanel } from "./prospect-detail-panel";
+import { ConquestPanel, OpportunityAlertsPanel } from "./intelligence-panels";
 import { ProspectListsPanel } from "./prospect-lists-panel";
 import { ProspectCard } from "./prospect-ui";
+import { useProspectLists } from "./use-prospect-lists";
 import { useSavedProspects } from "./use-saved-prospects";
 
 type Props = {
@@ -33,6 +36,7 @@ export function TodayClient({ profile }: Props) {
   const { businesses, latestNotes, loading, error } = useSavedProspects();
   const { settings, ready, saveState, setVertical } = useCommercialConfig(profile.id);
   const { profile: accountProfile, ready: profileReady } = useAccountCommercialProfile(profile.id);
+  const { lists, items } = useProspectLists(profile.id);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const combinedBusinesses = useMemo(
@@ -51,12 +55,55 @@ export function TodayClient({ profile }: Props) {
   );
   const buckets = useMemo(() => buildTodayBuckets(records), [records]);
   const summary = useMemo(() => buildCommandCenterSummary(records, settings.vertical), [records, settings.vertical]);
+  const listAlerts = useMemo(() => {
+    const itemMap = new Map<string, string[]>();
+
+    items.forEach((item) => {
+      itemMap.set(item.list_id, [...(itemMap.get(item.list_id) ?? []), item.business_id]);
+    });
+
+    const businessMap = new Map(
+      records
+        .map((record) => [record.business.business?.id ?? null, record] as const)
+        .filter((entry): entry is [string, ProspectRecord] => Boolean(entry[0])),
+    );
+
+    return lists
+      .filter((list) => list.status === "activa" || list.status === "en_curso")
+      .map<OpportunityAlert | null>((list) => {
+        const linked = (itemMap.get(list.id) ?? [])
+          .map((businessId) => businessMap.get(businessId))
+          .filter((record): record is ProspectRecord => Boolean(record));
+
+        const urgent = linked.filter((record) => record.insight.followUpDue || record.insight.coolingDown);
+        const untouched = linked.filter((record) => record.business.status === "sin_contactar");
+
+        if (linked.length === 0 || (urgent.length === 0 && untouched.length < 3)) {
+          return null;
+        }
+
+        const top = urgent[0] ?? untouched[0] ?? linked[0];
+
+        return {
+          id: `list-${list.id}`,
+          kind: "stalled_list",
+          title: `${list.name} está perdiendo ritmo`,
+          summary: `${urgent.length} leads con urgencia y ${untouched.length} todavía sin tocar.`,
+          reason: "La campaña tiene oportunidad viva, pero necesita movimiento para no quedarse parada.",
+          actionLabel: "Abrir mejor cuenta",
+          urgency: urgent.length > 0 ? "alta" : "media",
+          businessKey: top?.business.key,
+        };
+      })
+      .filter((alert): alert is OpportunityAlert => Boolean(alert));
+  }, [items, lists, records]);
+  const alertFeed = useMemo(() => [...summary.alerts, ...listAlerts].slice(0, 8), [listAlerts, summary.alerts]);
   const commercialProfileComplete = isAccountCommercialProfileComplete(accountProfile);
   const selected =
     records.find((record) => record.business.key === selectedKey) ?? buckets.prioritizedToday[0] ?? records[0] ?? null;
 
   if (loading || !ready || !profileReady) {
-    return <PageState text="Preparando command center comercial..." />;
+    return <PageState text="Preparando centro de control..." />;
   }
 
   if (error) {
@@ -108,6 +155,13 @@ export function TodayClient({ profile }: Props) {
           <div className="grid gap-4 2xl:grid-cols-[1.45fr_0.95fr]">
             <div className="space-y-4">
               <ActionSummaryPanel summary={summary} />
+              <OpportunityAlertsPanel alerts={alertFeed} onOpenBusiness={setSelectedKey} />
+              <ConquestPanel
+                snapshot={summary.conquest}
+                title="Cómo va la conquista del territorio"
+                description="Cobertura real, zonas con tracción y huecos claros donde todavía no estás atacando."
+                onOpenBusiness={setSelectedKey}
+              />
 
               <div className="grid gap-4 xl:grid-cols-2">
                 <ProspectSection
@@ -214,7 +268,7 @@ function ProspectSection({
   return (
     <PmPanel className="p-4">
       <div className="flex items-start gap-3">
-        <div className="rounded-xl border border-cyan-800/50 bg-cyan-500/10 p-2 text-cyan-200">
+        <div className="rounded-xl border border-[rgba(242,138,46,0.38)] bg-[rgba(242,138,46,0.12)] p-2 text-[rgba(255,214,179,0.98)]">
           <Icon className="h-4 w-4" />
         </div>
         <div>
@@ -287,7 +341,7 @@ function DistributionPanel({
             </div>
             <div className="h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-200"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(242,138,46,0.96)] to-[rgba(255,186,110,0.96)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -319,7 +373,7 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
             </div>
             <div className="mt-3 h-2 rounded-full bg-[rgba(7,17,31,0.72)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-200"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(242,138,46,0.96)] to-[rgba(255,186,110,0.96)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -347,7 +401,7 @@ function RightRailSummary({ summary }: { summary: CommandCenterSummary }) {
       <div className="mt-3 space-y-3">
         {summary.actionSummary.map((item) => (
           <div key={item} className="pm-card-soft flex gap-3">
-            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[var(--pm-primary)]" />
             <p className="pm-muted text-sm">{item}</p>
           </div>
         ))}

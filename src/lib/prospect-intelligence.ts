@@ -12,6 +12,8 @@ export {
   OPPORTUNITY_META,
   sortProspectRecordsByScore,
 } from "@/lib/commercial/engine";
+export { buildConquestSnapshot } from "@/lib/commercial/territory";
+export { buildOpportunityAlerts } from "@/lib/commercial/alerts";
 
 export {
   buildDefaultCommercialSettings,
@@ -43,11 +45,15 @@ export type {
   AccountKnowledgeSummary,
   CommercialPreferences,
   CommandCenterSummary,
+  ConquestSnapshot,
+  ConquestZoneSummary,
   DemoBadge,
   IdealCustomerProfile,
   ObjectionResponse,
   OfferProfile,
   OpportunityTier,
+  OpportunityAlert,
+  OpportunityAlertKind,
   OrbitaService,
   PipelineSnapshot,
   PricingProfile,

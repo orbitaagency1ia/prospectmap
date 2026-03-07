@@ -31,7 +31,7 @@ export default async function ProtectedLayout({
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-center">
               <div className="rounded-[28px] border border-[rgba(30,51,80,0.92)] bg-[rgba(13,23,40,0.84)] px-4 py-3 shadow-[0_18px_46px_rgba(3,9,18,0.3)]">
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[rgba(58,190,249,0.84)]">ProspectMap</p>
+                <p className="text-[11px] uppercase tracking-[0.24em] text-[rgba(242,138,46,0.84)]">ProspectMap</p>
                 <p className="mt-1 text-base font-semibold text-[var(--pm-text)]">{profile?.company_name || "Empresa"}</p>
                 <p className="text-sm text-[var(--pm-text-secondary)]">
                 {profile?.city_name ? `${profile.city_name} · ` : ""}

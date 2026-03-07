@@ -182,14 +182,14 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
 
   const saveLabel =
     saveState === "saving"
-      ? "Guardando..."
+      ? "Guardando"
       : saveState === "saved"
-        ? "Guardado en Supabase"
+        ? "Cambios guardados"
         : saveState === "local_only"
-          ? "Solo local"
+          ? "Guardado temporal"
           : saveState === "error"
-            ? "Error guardando"
-            : "Sin cambios";
+            ? "Revisión pendiente"
+            : "Todo al día";
 
   const summaryHasData = useMemo(
     () =>
@@ -286,11 +286,11 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
       <PmHero
         eyebrow="Perfil comercial"
         title={mode === "onboarding" ? "Enséñale a ProspectMap cómo vende tu empresa" : "Conocimiento de cuenta"}
-        description="Este bloque alimenta el scoring, las recomendaciones, los mensajes y el informe de cada negocio. No usa IA externa: todo se guarda en Supabase y se procesa con reglas deterministas."
+        description="Este bloque afina el scoring, las recomendaciones, los mensajes y el informe de cada negocio con reglas claras y controlables."
         actions={
           <>
             <StatusPill label={saveLabel} tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"} />
-            <StatusPill label={tableAvailable ? "Persistencia remota activa" : "Solo local"} tone={tableAvailable ? "emerald" : "amber"} />
+            <StatusPill label={tableAvailable ? "Cuenta sincronizada" : "Guardado temporal"} tone={tableAvailable ? "emerald" : "amber"} />
           </>
         }
       />
@@ -317,7 +317,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     value={draft.sector}
                     onChange={(event) => setDraft((current) => ({ ...current, sector: event.target.value }))}
                     className="field"
-                    placeholder="Ej. automatizacion comercial B2B"
+                    placeholder="Ej. automatización comercial B2B"
                   />
                 </Field>
                 <Field label="Verticales objetivo">
@@ -356,7 +356,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     onChange={(event) => setDraft((current) => ({ ...current, bestFitCompanyTraits: event.target.value }))}
                     rows={4}
                     className="field resize-y"
-                    placeholder="varias sedes, recepcion saturada, ventas manuales..."
+                    placeholder="varias sedes, recepción saturada, ventas manuales..."
                   />
                 </Field>
                 <Field label="Empresas que NO encajan">
@@ -365,26 +365,26 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     onChange={(event) => setDraft((current) => ({ ...current, excludedCompanyTraits: event.target.value }))}
                     rows={4}
                     className="field resize-y"
-                    placeholder="muy pequenas, sin equipo, ticket demasiado bajo..."
+                    placeholder="muy pequeñas, sin equipo, ticket demasiado bajo..."
                   />
                 </Field>
               </div>
 
-              <Field label="Zonas geograficas objetivo">
+              <Field label="Zonas geográficas objetivo">
                 <input
                   value={draft.targetGeographies}
                   onChange={(event) => setDraft((current) => ({ ...current, targetGeographies: event.target.value }))}
                   className="field"
-                  placeholder="Madrid, Valencia, Andalucia..."
+                  placeholder="Madrid, Valencia, Andalucía..."
                 />
               </Field>
             </FormSection>
 
             <FormSection
               title="Oferta, objeciones y estilo comercial"
-              description="Esto alimenta mensajes, CTA, angulo y servicio recomendado."
+              description="Esto alimenta mensajes, CTA, ángulo y servicio recomendado."
             >
-              <Field label="Que vende exactamente la empresa">
+              <Field label="Qué vende exactamente la empresa">
                 <textarea
                   value={draft.whatYouSell}
                   onChange={(event) => setDraft((current) => ({ ...current, whatYouSell: event.target.value }))}
@@ -401,7 +401,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     onChange={(event) => setDraft((current) => ({ ...current, mainServices: event.target.value }))}
                     rows={4}
                     className="field resize-y"
-                    placeholder="asistente multicanal, automatizacion interna..."
+                    placeholder="asistente multicanal, automatización interna..."
                   />
                 </Field>
                 <Field label="Servicios secundarios">
@@ -424,7 +424,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     placeholder="Ej. 1200-3500 EUR"
                   />
                 </Field>
-                <Field label="Ticket minimo deseado">
+                <Field label="Ticket mínimo deseado">
                   <input
                     value={draft.minimumDesiredTicket}
                     onChange={(event) => setDraft((current) => ({ ...current, minimumDesiredTicket: event.target.value }))}
@@ -440,7 +440,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                   onChange={(event) => setDraft((current) => ({ ...current, mainProblemSolved: event.target.value }))}
                   rows={3}
                   className="field resize-y"
-                  placeholder="Que dolor atacas primero en una cuenta buena"
+                  placeholder="Qué dolor atacas primero en una cuenta buena"
                 />
               </Field>
 
@@ -450,12 +450,12 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                   onChange={(event) => setDraft((current) => ({ ...current, valueProposition: event.target.value }))}
                   rows={3}
                   className="field resize-y"
-                  placeholder="Que hace a la empresa especialmente creible o valiosa"
+                  placeholder="Qué hace a la empresa especialmente creíble o valiosa"
                 />
               </Field>
 
               <div className="grid gap-3 md:grid-cols-2">
-                <Field label="Objeciones tipicas">
+                <Field label="Objeciones típicas">
                   <textarea
                     value={draft.typicalObjections}
                     onChange={(event) => setDraft((current) => ({ ...current, typicalObjections: event.target.value }))}
@@ -477,7 +477,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     onChange={(event) => setDraft((current) => ({ ...current, focusPriorities: event.target.value }))}
                     rows={2}
                     className="field resize-y"
-                    placeholder="respuesta rapida, recepcion saturada, reserva directa..."
+                    placeholder="respuesta rápida, recepción saturada, reserva directa..."
                   />
                 </Field>
               </div>
@@ -499,27 +499,27 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                     placeholder="agendar demo de 15 min"
                   />
                 </Field>
-                <Field label="Angulo comercial recomendado">
+                <Field label="Ángulo comercial recomendado">
                   <input
                     value={draft.recommendedAngles}
                     onChange={(event) => setDraft((current) => ({ ...current, recommendedAngles: event.target.value }))}
                     className="field"
-                    placeholder="captacion, operacion, reservas..."
+                    placeholder="captación, operación, reservas..."
                   />
                 </Field>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
-                <Field label="Que revisar antes de contactar">
+                <Field label="Qué revisar antes de contactar">
                   <textarea
                     value={draft.reviewBeforeContact}
                     onChange={(event) => setDraft((current) => ({ ...current, reviewBeforeContact: event.target.value }))}
                     rows={4}
                     className="field resize-y"
-                    placeholder="web, reseñas, quien atiende, propuesta actual..."
+                    placeholder="web, reseñas, quién atiende, propuesta actual..."
                   />
                 </Field>
-                <Field label="Que no decir">
+                <Field label="Qué no decir">
                   <textarea
                     value={draft.avoidTalkingPoints}
                     onChange={(event) => setDraft((current) => ({ ...current, avoidTalkingPoints: event.target.value }))}
@@ -552,7 +552,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
                   type="file"
                   accept=".pdf,.txt,.md,text/plain,application/pdf"
                   onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-                  className="field file:mr-3 file:rounded-md file:border-0 file:bg-cyan-500 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-950"
+                  className="field file:mr-3 file:rounded-md file:border-0 file:bg-[var(--pm-primary)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-950"
                 />
               </Field>
 
@@ -574,12 +574,12 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
 
             <FormSection
               title="Resumen estructurado detectado"
-              description="Se usa como fuente complementaria para scoring, mensajes y recomendacion."
+              description="Se usa como fuente complementaria para scoring, mensajes y recomendación."
             >
-              <SummaryList title="Servicios detectados" items={summary.detectedServices} icon={FileText} emptyText="Sin servicios detectados todavia." />
-              <SummaryList title="Dolores detectados" items={summary.detectedPainPoints} icon={Sparkles} emptyText="Sin dolores detectados todavia." />
-              <SummaryList title="Objeciones detectadas" items={summary.detectedObjections} icon={Sparkles} emptyText="Sin objeciones detectadas todavia." />
-              <SummaryList title="Propuesta de valor detectada" items={summary.detectedValueProps} icon={Sparkles} emptyText="Sin propuesta de valor detectada todavia." />
+              <SummaryList title="Servicios detectados" items={summary.detectedServices} icon={FileText} emptyText="Sin servicios detectados todavía." />
+              <SummaryList title="Dolores detectados" items={summary.detectedPainPoints} icon={Sparkles} emptyText="Sin dolores detectados todavía." />
+              <SummaryList title="Objeciones detectadas" items={summary.detectedObjections} icon={Sparkles} emptyText="Sin objeciones detectadas todavía." />
+              <SummaryList title="Propuesta de valor detectada" items={summary.detectedValueProps} icon={Sparkles} emptyText="Sin propuesta de valor detectada todavía." />
               {summary.sourceNote ? <p className="text-xs text-slate-500">{summary.sourceNote}</p> : null}
             </FormSection>
 
@@ -587,7 +587,7 @@ export function AccountCommercialProfileForm({ mode, userId }: Props) {
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--pm-text)]">Impacto en ProspectMap</h2>
               <ul className="mt-3 space-y-2 text-sm text-[var(--pm-text-secondary)]">
                 <li>• refina el scoring con ICP, oferta y ticket deseado</li>
-                <li>• mejora mensajes, CTA, objeciones y angulo comercial</li>
+                <li>• mejora mensajes, CTA, objeciones y ángulo comercial</li>
                 <li>• alimenta el informe detallado del negocio</li>
                 <li>• deja una base clara para futuras fases de inteligencia comercial</li>
               </ul>
@@ -670,7 +670,7 @@ function SummaryList({
   return (
     <div className="pm-card-soft">
       <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-cyan-300" />
+        <Icon className="h-4 w-4 text-[var(--pm-primary)]" />
         <p className="text-sm font-medium text-[var(--pm-text)]">{title}</p>
       </div>
       <div className="mt-3 space-y-2">

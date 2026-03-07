@@ -43,12 +43,12 @@ export function ProspectingPrepSheet({
   return (
     <div className="fixed inset-0 z-[650] bg-slate-950/75 p-3 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-slate-700 bg-slate-950 shadow-[0_28px_90px_rgba(2,6,23,0.6)]"
+        className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] shadow-[0_28px_90px_rgba(2,6,23,0.6)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-[rgba(42,52,66,0.72)] px-5 py-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">Preparar prospeccion</p>
+            <p className="pm-kicker">Preparar prospección</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-100">{businessName}</h2>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
               <Chip label={`Prioridad ${insight.score}`} tone="cyan" />
@@ -62,7 +62,7 @@ export function ProspectingPrepSheet({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"
+            className="pm-btn pm-btn-secondary"
           >
             <span className="inline-flex items-center gap-2">
               <X className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function ProspectingPrepSheet({
             </Card>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Card title="Angulo comercial recomendado">
+              <Card title="Ángulo comercial recomendado">
                 <p className="text-sm leading-6 text-slate-300">{insight.commercialAngle}</p>
               </Card>
               <Card title="CTA sugerida">
@@ -86,11 +86,11 @@ export function ProspectingPrepSheet({
               </Card>
             </div>
 
-            <Card title="Que revisar antes de contactar">
+            <Card title="Qué revisar antes de contactar">
               <Checklist items={insight.reviewChecklist} emptyText="No hay checklist adicional." />
             </Card>
 
-            <Card title="Que no decir">
+            <Card title="Qué no decir">
               <Checklist items={insight.avoidTalkingPoints} emptyText="No hay alertas adicionales." />
             </Card>
 
@@ -146,8 +146,8 @@ function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-500">{title}</p>
+    <section className="pm-card">
+      <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -168,7 +168,7 @@ function CopyBlock({
       <button
         type="button"
         onClick={onCopy}
-        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500"
+        className="pm-btn pm-btn-secondary"
       >
         <Copy className="h-4 w-4" />
         {copied ? "Copiado" : "Copiar"}
@@ -207,7 +207,7 @@ function Chip({
             ? "border-amber-500/60 bg-amber-500/15 text-amber-200"
             : tone === "slate"
               ? "border-slate-700 bg-slate-900 text-slate-200"
-              : "border-cyan-500/60 bg-cyan-500/15 text-cyan-200",
+              : "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]",
       )}
     >
       {label}

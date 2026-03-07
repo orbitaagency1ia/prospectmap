@@ -139,6 +139,28 @@ export type DemoBadge = {
   tone: DemoBadgeTone;
 };
 
+export type OpportunityAlertKind =
+  | "follow_up_due"
+  | "cooling_down"
+  | "high_opportunity_untouched"
+  | "high_value_pending"
+  | "recent_priority"
+  | "zone_underused"
+  | "stalled_list";
+
+export type OpportunityAlert = {
+  id: string;
+  kind: OpportunityAlertKind;
+  title: string;
+  summary: string;
+  reason: string;
+  actionLabel: string;
+  urgency: UrgencyLevel;
+  businessKey?: string;
+  zoneKey?: string;
+  zoneLabel?: string;
+};
+
 export type SectorPattern = {
   label: string;
   keywords: string[];
@@ -223,6 +245,38 @@ export type TodayBuckets = {
   highPotentialUntouched: ProspectRecord[];
 };
 
+export type ConquestZoneSummary = {
+  key: string;
+  label: string;
+  totalCount: number;
+  workedCount: number;
+  untouchedCount: number;
+  openCount: number;
+  highPotentialCount: number;
+  hotLeadCount: number;
+  weightedValue: number;
+  averageScore: number;
+  coveragePercent: number;
+  topBusinessKey?: string;
+  topBusinessName?: string;
+};
+
+export type ConquestSnapshot = {
+  scopeLabel: string;
+  totalCount: number;
+  workedCount: number;
+  untouchedCount: number;
+  openCount: number;
+  hotLeadCount: number;
+  coveragePercent: number;
+  weightedValue: number;
+  estimatedValue: number;
+  hotZones: ConquestZoneSummary[];
+  underusedZones: ConquestZoneSummary[];
+  liveZones: ConquestZoneSummary[];
+  coverageNarrative: string[];
+};
+
 export type CommandCenterSummary = {
   prioritizedCount: number;
   hotCount: number;
@@ -236,6 +290,8 @@ export type CommandCenterSummary = {
   sectorDistribution: Array<{ label: string; value: number }>;
   pipelineMoments: Array<{ label: string; value: number }>;
   actionSummary: string[];
+  alerts: OpportunityAlert[];
+  conquest: ConquestSnapshot;
 };
 
 export type PipelineStageSummary = {

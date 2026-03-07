@@ -28,7 +28,7 @@ export function useSavedProspects() {
     ]);
 
     if (businessesResponse.error) {
-      setError(businessesResponse.error.message);
+      setError("No pude cargar la actividad comercial en este momento.");
       setLoading(false);
       return;
     }
@@ -70,7 +70,7 @@ export function useSavedProspects() {
       ]);
 
       if (businessesResponse.error) {
-        setError(businessesResponse.error.message);
+        setError("No pude cargar la actividad comercial en este momento.");
         setLoading(false);
         return;
       }

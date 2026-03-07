@@ -5,7 +5,7 @@ export default function AuthLayout({
 }) {
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur-sm sm:p-8">
+      <div className="w-full max-w-md rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.86)] p-6 shadow-2xl backdrop-blur-sm sm:p-8">
         {children}
       </div>
     </main>

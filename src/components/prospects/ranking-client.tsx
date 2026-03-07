@@ -189,13 +189,13 @@ export function RankingClient({ profile }: Props) {
               {sortedRecords.map((record) => (
                 <div
                   key={record.business.key}
-                  className={cn(
-                    "rounded-[24px] border transition",
-                    selected?.business.key === record.business.key
-                      ? "border-[rgba(58,190,249,0.45)] bg-[rgba(18,32,51,0.94)]"
+                    className={cn(
+                      "rounded-[24px] border transition",
+                      selected?.business.key === record.business.key
+                      ? "border-[rgba(242,138,46,0.45)] bg-[rgba(18,32,51,0.94)]"
                       : "border-[rgba(30,51,80,0.9)] bg-[rgba(13,23,40,0.82)]",
-                  )}
-                >
+                    )}
+                  >
                   <ProspectCard
                     record={record}
                     onSelect={(next) => setSelectedKey(next.business.key)}

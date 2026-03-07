@@ -7,6 +7,7 @@ import { buildDemoBadges, buildSuggestedMessages } from "./messaging";
 import { buildObjectionResponses } from "./objections";
 import { resolveAttentionState, buildPipelineSnapshot } from "./pipeline";
 import { buildCommercialFocus, buildNextBestAction, buildServiceRecommendation, detectPainPoint } from "./recommendations";
+import { buildOpportunityAlerts } from "./alerts";
 import {
   buildAvoidTalkingPoints,
   buildCommercialAngle,
@@ -18,6 +19,7 @@ import {
   buildRiskSignals,
 } from "./report";
 import { calculateScoreLayer, resolveSectorPattern } from "./scoring";
+import { buildConquestSnapshot } from "./territory";
 import { estimateCommercialValue } from "./valuation";
 import { getVerticalLabel, inferMarketVerticalId } from "./verticals";
 import type {
@@ -356,6 +358,10 @@ export function buildCommandCenterSummary(records: ProspectRecord[], accountVert
   const staleCount = records.filter((record) => record.insight.coolingDown).length;
   const estimatedValueTotal = records.reduce((sum, record) => sum + record.insight.estimatedValue, 0);
   const weightedValueTotal = records.reduce((sum, record) => sum + record.insight.weightedValue, 0);
+  const conquest = buildConquestSnapshot(records, {
+    scopeLabel: "Ciudad base",
+  });
+  const alerts = buildOpportunityAlerts(records, conquest);
 
   const topService = serviceDistribution[0]?.label ?? "Sin señal dominante";
   const topVertical = marketVerticalDistribution[0]?.label ?? getVerticalLabel(accountVertical);
@@ -373,6 +379,8 @@ export function buildCommandCenterSummary(records: ProspectRecord[], accountVert
     marketVerticalDistribution,
     sectorDistribution,
     pipelineMoments,
+    alerts,
+    conquest,
     actionSummary: [
       `${followUpCount} leads piden seguimiento antes de que se enfrien.`,
       `${staleCount} oportunidades estan perdiendo timing y requieren un toque hoy.`,

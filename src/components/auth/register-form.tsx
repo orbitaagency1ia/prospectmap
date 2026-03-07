@@ -7,6 +7,20 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CitySuggestion } from "@/lib/types";
 
+function getRegisterErrorMessage(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("already registered") || normalized.includes("already been registered")) {
+    return "Ese email ya está en uso. Prueba con otro o entra en tu cuenta.";
+  }
+
+  if (normalized.includes("database error")) {
+    return "No pude crear la cuenta con esta configuración. Revisa Auth y vuelve a intentarlo.";
+  }
+
+  return "No pude crear la cuenta ahora mismo. Inténtalo de nuevo en unos segundos.";
+}
+
 export function RegisterForm() {
   const router = useRouter();
 
@@ -96,7 +110,7 @@ export function RegisterForm() {
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      setError(getRegisterErrorMessage(signUpError.message));
       setLoading(false);
       return;
     }
@@ -113,7 +127,7 @@ export function RegisterForm() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">ProspectMap</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--pm-primary)]">ProspectMap</p>
         <h1 className="text-2xl font-semibold text-white">Crear empresa</h1>
       </div>
 
@@ -129,7 +143,7 @@ export function RegisterForm() {
             required
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="Orbita Agency"
           />
         </label>
@@ -142,7 +156,7 @@ export function RegisterForm() {
             list="city-suggestions"
             value={cityInput}
             onChange={(event) => setCityInput(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="Madrid"
           />
           <datalist id="city-suggestions">
@@ -162,7 +176,7 @@ export function RegisterForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="contacto@tuempresa.com"
           />
         </label>
@@ -175,23 +189,19 @@ export function RegisterForm() {
             minLength={8}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="Mínimo 8 caracteres"
           />
         </label>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className="pm-btn pm-btn-primary w-full">
           {loading ? "Creando cuenta..." : "Crear cuenta"}
         </button>
       </form>
 
       <p className="text-center text-sm text-slate-400">
         ¿Ya tienes cuenta?{" "}
-        <Link className="text-cyan-300 hover:text-cyan-200" href="/login">
+        <Link className="text-[var(--pm-primary)] hover:text-[var(--pm-primary-hover)]" href="/login">
           Inicia sesión
         </Link>
       </p>

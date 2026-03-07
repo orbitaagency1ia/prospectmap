@@ -96,7 +96,7 @@ export function ProspectDetailPanel({
                       : badge.tone === "violet"
                         ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
                         : badge.tone === "cyan"
-                          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-200"
+                          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
                           : "border-slate-600 bg-slate-700/50 text-slate-200",
                 )}
               >
@@ -124,7 +124,7 @@ export function ProspectDetailPanel({
           <p className="text-sm text-slate-300">{record.insight.commercialFocus}</p>
         </InfoBlock>
 
-        <InfoBlock title="Siguiente mejor accion" body={record.insight.nextAction.action}>
+        <InfoBlock title="Siguiente mejor acción" body={record.insight.nextAction.action}>
           <p className="text-sm text-slate-300">
             {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
           </p>
@@ -134,7 +134,7 @@ export function ProspectDetailPanel({
           </p>
         </InfoBlock>
 
-        <InfoBlock title="Servicio Orbita recomendado" body={record.insight.service.label}>
+        <InfoBlock title="Servicio Órbita recomendado" body={record.insight.service.label}>
           <p className="text-sm text-slate-300">{record.insight.service.reason}</p>
           <ul className="mt-2 space-y-1 text-sm text-slate-400">
             {record.insight.service.reasons.map((reason) => (
@@ -144,10 +144,10 @@ export function ProspectDetailPanel({
         </InfoBlock>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <InfoBlock title="Angulo comercial recomendado" body={record.insight.commercialAngle}>
+          <InfoBlock title="Ángulo comercial recomendado" body={record.insight.commercialAngle}>
             <p className="text-sm text-slate-300">{record.insight.ctaSuggestion}</p>
           </InfoBlock>
-          <InfoBlock title="Que revisar antes de contactar" body={record.insight.reviewChecklist[0] ?? "Sin checklist adicional"}>
+          <InfoBlock title="Qué revisar antes de contactar" body={record.insight.reviewChecklist[0] ?? "Sin checklist adicional"}>
             <ul className="mt-2 space-y-1 text-sm text-slate-400">
               {record.insight.reviewChecklist.slice(1).map((item) => (
                 <li key={item}>• {item}</li>
@@ -193,7 +193,7 @@ export function ProspectDetailPanel({
                 <p
                   className={cn(
                     "font-mono text-sm",
-                    item.direction === "minus" ? "text-rose-300" : "text-cyan-200",
+                    item.direction === "minus" ? "text-rose-300" : "text-[var(--pm-primary)]",
                   )}
                 >
                   {item.direction === "minus" ? "-" : "+"}

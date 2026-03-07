@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Filter, Loader2, ScanSearch, Upload } from "lucide-react";
+import { Filter, Loader2, Radar, ScanSearch, Upload } from "lucide-react";
 
 import {
   OVERPASS_FETCH_DEBOUNCE_MS,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/constants";
 import { buildCategoryOptions, mergeBusinesses, type BusinessFilters, DEFAULT_FILTERS } from "@/lib/business-helpers";
 import {
+  buildConquestSnapshot,
   buildProspectRecords,
   filterByBounds,
   sortProspectRecordsByScore,
@@ -27,6 +28,7 @@ import { cn } from "@/lib/utils";
 
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
+import { ConquestPanel } from "../prospects/intelligence-panels";
 import { PmEmpty } from "../ui/pm";
 import { ProspectDetailPanel } from "../prospects/prospect-detail-panel";
 import { ProspectCard } from "../prospects/prospect-ui";
@@ -78,6 +80,7 @@ export function MapWorkspace({ profile }: Props) {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const [showSweepMode, setShowSweepMode] = useState(false);
+  const [showConquestMode, setShowConquestMode] = useState(false);
   const [sweepSelectedKey, setSweepSelectedKey] = useState<string | null>(null);
 
   const [message, setMessage] = useState<InfoMessage | null>(null);
@@ -240,6 +243,14 @@ export function MapWorkspace({ profile }: Props) {
 
     return sortProspectRecordsByScore(filteredRecords.filter((record) => filterByBounds(record, mapBounds))).slice(0, 20);
   }, [filteredRecords, mapBounds]);
+  const conquestSnapshot = useMemo(
+    () =>
+      buildConquestSnapshot(mapBounds ? filteredRecords.filter((record) => filterByBounds(record, mapBounds)) : filteredRecords, {
+        scopeLabel: mapBounds ? "Zona visible" : profile.city_name,
+        bounds: mapBounds,
+      }),
+    [filteredRecords, mapBounds, profile.city_name],
+  );
 
   const selectedSweepRecord = useMemo(
     () => sweepRecords.find((record) => record.business.key === sweepSelectedKey) ?? sweepRecords[0] ?? null,
@@ -321,7 +332,7 @@ export function MapWorkspace({ profile }: Props) {
           showMessage({ type: "success", text: "Negocio ya estaba guardado. Se abrió su ficha." });
         }
       } else {
-        showMessage({ type: "error", text: `No se pudo guardar: ${error.message}` });
+        showMessage({ type: "error", text: "No pude guardar este negocio ahora mismo. Vuelve a intentarlo en unos segundos." });
       }
 
       setBusy(false);
@@ -386,7 +397,7 @@ export function MapWorkspace({ profile }: Props) {
       .eq("id", businessId);
 
     if (error) {
-      showMessage({ type: "error", text: `No se pudo actualizar: ${error.message}` });
+      showMessage({ type: "error", text: "No pude actualizar la ficha en este momento. Reinténtalo." });
       setBusy(false);
       return;
     }
@@ -406,7 +417,7 @@ export function MapWorkspace({ profile }: Props) {
     });
 
     if (error) {
-      showMessage({ type: "error", text: `No se pudo guardar nota: ${error.message}` });
+      showMessage({ type: "error", text: "No pude guardar la nota en este momento. Reinténtalo." });
       setSavingNote(false);
       return;
     }
@@ -449,6 +460,14 @@ export function MapWorkspace({ profile }: Props) {
           </button>
           <button
             type="button"
+            onClick={() => setShowConquestMode(true)}
+            className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+          >
+            <Radar className="h-4 w-4" />
+            Modo conquista
+          </button>
+          <button
+            type="button"
             onClick={() => setShowCsvImport(true)}
             className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
           >
@@ -480,6 +499,14 @@ export function MapWorkspace({ profile }: Props) {
             >
               <ScanSearch className="h-4 w-4" />
               Barrido
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowConquestMode(true)}
+              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+            >
+              <Radar className="h-4 w-4" />
+              Conquista
             </button>
             <button
               type="button"
@@ -536,6 +563,36 @@ export function MapWorkspace({ profile }: Props) {
             </span>
           </div>
         )}
+
+        {conquestSnapshot.totalCount > 0 ? (
+          <div className="pointer-events-none absolute bottom-3 left-3 z-[430] hidden max-w-[320px] lg:block">
+            <div className="pointer-events-auto rounded-[24px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.86)] p-4 shadow-[0_20px_48px_rgba(3,9,18,0.34)] backdrop-blur">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="pm-kicker">Modo conquista</p>
+                  <h3 className="pm-title mt-1 text-base">{conquestSnapshot.scopeLabel}</h3>
+                  <p className="pm-muted mt-1 text-sm">
+                    {conquestSnapshot.coveragePercent}% trabajado · {conquestSnapshot.openCount} oportunidades vivas
+                  </p>
+                </div>
+                <button type="button" className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs" onClick={() => setShowConquestMode(true)}>
+                  Ver
+                </button>
+              </div>
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <div className="pm-card-soft">
+                  <p className="pm-caption uppercase tracking-[0.14em]">Zona caliente</p>
+                  <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.hotZones[0]?.label ?? "Sin señal"}</p>
+                </div>
+                <div className="pm-card-soft">
+                  <p className="pm-caption uppercase tracking-[0.14em]">Pendiente</p>
+                  <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.untouchedCount} sin tocar</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <MapCanvas
           center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
@@ -606,12 +663,63 @@ export function MapWorkspace({ profile }: Props) {
         />
       ) : null}
 
+      {showConquestMode ? (
+        <ConquestModeModal
+          snapshot={conquestSnapshot}
+          onClose={() => setShowConquestMode(false)}
+          onOpenBusiness={(businessKey) => {
+            setSelectedKey(businessKey);
+            setShowConquestMode(false);
+            setShowMobilePanel(true);
+          }}
+        />
+      ) : null}
+
       <CsvImportDialog
         open={showCsvImport}
         profile={profile}
         onClose={() => setShowCsvImport(false)}
         onImported={loadSavedBusinesses}
       />
+    </div>
+  );
+}
+
+function ConquestModeModal({
+  snapshot,
+  onClose,
+  onOpenBusiness,
+}: {
+  snapshot: ReturnType<typeof buildConquestSnapshot>;
+  onClose: () => void;
+  onOpenBusiness: (businessKey: string) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[520] bg-slate-950/70 p-3 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="mx-auto flex h-full max-w-6xl flex-col overflow-hidden rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-[rgba(42,52,66,0.72)] px-4 py-4">
+          <div>
+            <p className="pm-kicker">Modo conquista</p>
+            <h2 className="pm-title mt-1 text-lg">Cobertura y potencial del territorio</h2>
+            <p className="pm-muted mt-1 text-sm">{snapshot.scopeLabel}</p>
+          </div>
+          <button type="button" onClick={onClose} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+            Cerrar
+          </button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <ConquestPanel
+            snapshot={snapshot}
+            title="Dónde estás avanzando y dónde estás dejando dinero"
+            description="Vista táctica del territorio visible para decidir qué zonas merecen barrido, seguimiento o ataque inmediato."
+            onOpenBusiness={onOpenBusiness}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -752,7 +860,7 @@ function SweepModeModal({
           <ProspectDetailPanel
             record={selectedRecord}
             showDemoBadges={showDemoBadges}
-            emptyText="Selecciona un negocio del barrido para ver servicio, accion y mensajes."
+            emptyText="Selecciona un negocio del barrido para ver servicio, acción y mensajes."
           />
           {selectedRecord ? (
             <button
@@ -786,12 +894,12 @@ function CommercialContextInline({
     saveState === "saving"
       ? "Guardando"
       : saveState === "saved"
-        ? "Supabase"
+        ? "Actualizado"
         : saveState === "local_only"
-          ? "Solo local"
+          ? "Temporal"
           : saveState === "error"
-            ? "Error"
-            : "Activo";
+            ? "Revisar"
+            : "Listo";
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2", mobile ? "w-full" : "")}>

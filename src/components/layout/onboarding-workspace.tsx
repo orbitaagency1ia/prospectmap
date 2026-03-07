@@ -28,7 +28,7 @@ const STEPS = [
   },
   {
     key: "launch",
-    title: "Prospeccion lista",
+    title: "Prospección lista",
     body: "Con eso, ProspectMap ya puede priorizar, recomendar y preparar el ataque.",
   },
 ];
@@ -62,7 +62,7 @@ export function OnboardingWorkspace({
               className={cn(
                 "pm-card",
                 active
-                  ? "border-cyan-500/50 bg-cyan-500/10"
+                  ? "border-[rgba(242,138,46,0.45)] bg-[rgba(242,138,46,0.12)]"
                   : done
                     ? "border-emerald-500/40 bg-emerald-500/10"
                     : "",
@@ -90,7 +90,7 @@ export function OnboardingWorkspace({
             <p className="pm-kicker">Siguiente</p>
             <h2 className="pm-title mt-2 text-xl">Después configurarás el playbook comercial</h2>
             <p className="pm-muted mt-3 text-sm leading-6">
-              Cuando guardes empresa y ciudad, esta misma pantalla pasara al perfil comercial guiado con ICP, oferta,
+              Cuando guardes empresa y ciudad, esta misma pantalla pasará al perfil comercial guiado con ICP, oferta,
               ticket, objeciones y conocimiento base por PDF o texto.
             </p>
           </PmPanel>

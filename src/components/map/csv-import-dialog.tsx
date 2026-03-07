@@ -213,7 +213,7 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 p-3 backdrop-blur sm:items-center">
-      <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-2xl shadow-cyan-900/30 sm:p-6">
+      <div className="w-full max-w-2xl rounded-[28px] border border-[rgba(42,52,66,0.92)] bg-[rgba(9,11,16,0.98)] p-4 shadow-2xl sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-slate-100">Importar negocios desde CSV</h3>
           <button
@@ -237,7 +237,7 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
               type="file"
               accept=".csv,text/csv"
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+              className="field"
             />
           </label>
 
@@ -251,12 +251,7 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
             </p>
           ) : null}
 
-          <button
-            type="button"
-            disabled={loading || !file}
-            onClick={handleRunImport}
-            className="w-full rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="button" disabled={loading || !file} onClick={handleRunImport} className="pm-btn pm-btn-primary w-full">
             {loading ? "Importando..." : "Ejecutar importación"}
           </button>
 

@@ -111,7 +111,7 @@ export function ProspectListsPanel({
 
       {!tableAvailable ? (
         <div className="mt-4 rounded-2xl border border-[rgba(245,185,66,0.35)] bg-[rgba(245,185,66,0.1)] px-4 py-3 text-sm text-[rgba(245,233,190,0.98)]">
-          Esta cuenta todavía no tiene activada la migración de listas. Ejecuta `0004_phase5_pipeline_lists.sql`.
+          Las campañas todavía no están disponibles en esta instalación. Puedes seguir trabajando con el resto del flujo comercial mientras se termina la activación.
         </div>
       ) : null}
 
@@ -192,7 +192,7 @@ export function ProspectListsPanel({
                           ? "border-[rgba(46,212,122,0.4)] bg-[rgba(46,212,122,0.12)] text-[rgba(209,250,223,0.98)]"
                           : list.status === "archivada"
                             ? "border-[rgba(110,130,154,0.45)] bg-[rgba(110,130,154,0.12)] text-[var(--pm-text-secondary)]"
-                            : "border-[rgba(58,190,249,0.35)] bg-[rgba(58,190,249,0.1)] text-[var(--pm-text)]",
+                            : "border-[rgba(242,138,46,0.35)] bg-[rgba(242,138,46,0.1)] text-[var(--pm-text)]",
                       )}
                     >
                       {LIST_STATUS_LABELS[list.status]}

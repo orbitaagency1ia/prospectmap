@@ -8,6 +8,26 @@ import type { CitySuggestion } from "@/lib/types";
 
 import { PmNotice, PmPanel, PmSectionHeader } from "../ui/pm";
 
+function getProfileSaveErrorMessage(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("duplicate")) {
+    return "No pude actualizar el perfil con esos datos. Revisa la información e inténtalo de nuevo.";
+  }
+
+  return "No pude guardar los cambios ahora mismo. Inténtalo de nuevo en unos segundos.";
+}
+
+function getPasswordErrorMessage(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("same password")) {
+    return "Elige una contraseña distinta a la actual.";
+  }
+
+  return "No pude actualizar la contraseña ahora mismo. Inténtalo de nuevo en unos segundos.";
+}
+
 type Props = {
   mode: "onboarding" | "settings";
   userId: string;
@@ -92,7 +112,7 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
     });
 
     if (profileError) {
-      setError(profileError.message);
+      setError(getProfileSaveErrorMessage(profileError.message));
       setLoading(false);
       return;
     }
@@ -128,7 +148,7 @@ export function AccountProfileForm({ mode, userId, email, initialCompany, initia
     const { error: passwordError } = await supabase.auth.updateUser({ password });
 
     if (passwordError) {
-      setError(passwordError.message);
+      setError(getPasswordErrorMessage(passwordError.message));
       setPasswordLoading(false);
       return;
     }

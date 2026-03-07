@@ -10,19 +10,19 @@
 
 :root {
   color-scheme: dark;
-  --pm-bg: #07111f;
-  --pm-bg-secondary: #0d1728;
-  --pm-surface: #122033;
-  --pm-border: #1e3350;
-  --pm-text: #f3f7fb;
-  --pm-text-secondary: #a9b9cc;
-  --pm-text-tertiary: #6e829a;
-  --pm-primary: #3abef9;
-  --pm-primary-hover: #20a9e0;
-  --pm-success: #2ed47a;
-  --pm-warning: #f5b942;
-  --pm-danger: #e35d6a;
-  --pm-premium: #8a7cff;
+  --pm-bg: #090b10;
+  --pm-bg-secondary: #11141b;
+  --pm-surface: #171b23;
+  --pm-border: #2a3442;
+  --pm-text: #f6f2eb;
+  --pm-text-secondary: #b7aea2;
+  --pm-text-tertiary: #7d766d;
+  --pm-primary: #f28a2e;
+  --pm-primary-hover: #ff9f43;
+  --pm-success: #38c172;
+  --pm-warning: #e3a737;
+  --pm-danger: #d76572;
+  --pm-premium: #8f7af5;
   --pm-radius-panel: 1.75rem;
   --pm-radius-card: 1.35rem;
   --pm-radius-soft: 1rem;
@@ -37,9 +37,9 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top right, rgba(58, 190, 249, 0.14), transparent 34%),
-    radial-gradient(circle at top left, rgba(138, 124, 255, 0.08), transparent 24%),
-    linear-gradient(180deg, rgba(13, 23, 40, 0.98), rgba(7, 17, 31, 1)),
+    radial-gradient(circle at top left, rgba(242, 138, 46, 0.16), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(143, 122, 245, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(17, 20, 27, 0.98), rgba(9, 11, 16, 1)),
     var(--pm-bg);
   color: var(--pm-text);
   -webkit-font-smoothing: antialiased;
@@ -67,7 +67,7 @@ body {
 }
 
 ::selection {
-  background: rgba(58, 190, 249, 0.26);
+  background: rgba(242, 138, 46, 0.26);
   color: var(--pm-text);
 }
 
@@ -94,11 +94,11 @@ body {
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
-  background: rgba(32, 169, 224, 0.42);
+  background: rgba(242, 138, 46, 0.34);
 }
 
 .marker-cluster div {
-  background: rgba(58, 190, 249, 0.86);
+  background: rgba(242, 138, 46, 0.88);
   color: var(--pm-bg);
   font-weight: 700;
 }
@@ -124,14 +124,14 @@ body {
 }
 
 .field:hover {
-  border-color: rgba(58, 190, 249, 0.28);
+  border-color: rgba(242, 138, 46, 0.28);
   background: rgba(9, 20, 36, 0.9);
 }
 
 .field:focus {
-  outline: 1px solid rgba(58, 190, 249, 0.76);
-  border-color: rgba(58, 190, 249, 0.7);
-  box-shadow: 0 0 0 3px rgba(58, 190, 249, 0.12);
+  outline: 1px solid rgba(242, 138, 46, 0.76);
+  border-color: rgba(242, 138, 46, 0.7);
+  box-shadow: 0 0 0 3px rgba(242, 138, 46, 0.12);
 }
 
 textarea.field {
@@ -162,7 +162,7 @@ textarea {
 
 .pm-panel-elevated {
   background:
-    radial-gradient(circle at top left, rgba(58, 190, 249, 0.12), transparent 34%),
+    radial-gradient(circle at top left, rgba(242, 138, 46, 0.12), transparent 34%),
     linear-gradient(180deg, rgba(13, 23, 40, 0.96), rgba(7, 17, 31, 0.96));
 }
 
@@ -194,7 +194,7 @@ textarea {
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(58, 190, 249, 0.84);
+  color: rgba(242, 138, 46, 0.84);
 }
 
 .pm-title {
@@ -240,14 +240,14 @@ textarea {
 }
 
 .pm-btn-primary {
-  border: 1px solid rgba(58, 190, 249, 0.42);
-  background: rgba(58, 190, 249, 0.14);
+  border: 1px solid rgba(242, 138, 46, 0.42);
+  background: rgba(242, 138, 46, 0.14);
   color: var(--pm-text);
 }
 
 .pm-btn-primary:hover {
-  border-color: rgba(58, 190, 249, 0.72);
-  background: rgba(58, 190, 249, 0.2);
+  border-color: rgba(242, 138, 46, 0.72);
+  background: rgba(242, 138, 46, 0.2);
 }
 
 .pm-btn-secondary {
@@ -257,7 +257,7 @@ textarea {
 }
 
 .pm-btn-secondary:hover {
-  border-color: rgba(58, 190, 249, 0.28);
+  border-color: rgba(242, 138, 46, 0.24);
   background: rgba(9, 20, 36, 0.94);
 }
 

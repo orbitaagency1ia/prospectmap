@@ -6,6 +6,20 @@ import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
 
+function getLoginErrorMessage(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("invalid login credentials")) {
+    return "Email o contraseña incorrectos.";
+  }
+
+  if (normalized.includes("email not confirmed")) {
+    return "Tu acceso aún no está validado. Revisa el correo y vuelve a intentarlo.";
+  }
+
+  return "No pude iniciar sesión ahora mismo. Inténtalo de nuevo en unos segundos.";
+}
+
 export function LoginForm({ registered = false }: { registered?: boolean }) {
   const router = useRouter();
 
@@ -26,7 +40,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
     });
 
     if (signInError) {
-      setError(signInError.message);
+      setError(getLoginErrorMessage(signInError.message));
       setLoading(false);
       return;
     }
@@ -38,13 +52,13 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">ProspectMap</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--pm-primary)]">ProspectMap</p>
         <h1 className="text-2xl font-semibold text-white">Iniciar sesión</h1>
       </div>
 
       {registered ? (
         <div className="rounded-lg border border-emerald-700/60 bg-emerald-900/30 px-3 py-2 text-sm text-emerald-200">
-          Cuenta creada. Si activaste confirmación por email en Supabase, valida tu email antes de entrar.
+          Cuenta creada. Si tu acceso requiere validación por email, revisa tu bandeja antes de entrar.
         </div>
       ) : null}
 
@@ -60,7 +74,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="empresa@dominio.com"
           />
         </label>
@@ -72,23 +86,19 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400"
+            className="field"
             placeholder="********"
           />
         </label>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className="pm-btn pm-btn-primary w-full">
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
 
       <p className="text-center text-sm text-slate-400">
         ¿No tienes cuenta?{" "}
-        <Link className="text-cyan-300 hover:text-cyan-200" href="/register">
+        <Link className="text-[var(--pm-primary)] hover:text-[var(--pm-primary-hover)]" href="/register">
           Crear empresa
         </Link>
       </p>

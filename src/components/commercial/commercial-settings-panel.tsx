@@ -72,8 +72,8 @@ export function CommercialSettingsPanel({
               }
               className="field"
             >
-              <option value="captacion">Captacion</option>
-              <option value="operacion">Operacion</option>
+              <option value="captacion">Captación</option>
+              <option value="operacion">Operación</option>
               <option value="roi">ROI</option>
             </select>
           </label>
@@ -84,8 +84,8 @@ export function CommercialSettingsPanel({
           <p className="mt-1">{vertical.description}</p>
           <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">
             {tableAvailable
-              ? "La configuración se persiste por cuenta en Supabase y mantiene fallback local."
-              : "La tabla account_settings no existe todavía. La configuración funciona en local, pero debes ejecutar la migración 0005_fix_missing_account_settings.sql para reparar la persistencia en Supabase."}
+              ? "Los ajustes quedan vinculados a la cuenta y se mantienen consistentes entre sesiones."
+              : "Esta instalación está guardando los ajustes de forma temporal en este dispositivo hasta completar la configuración de cuenta."}
           </p>
         </div>
       </PmPanel>

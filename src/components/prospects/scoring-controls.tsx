@@ -16,18 +16,18 @@ type Props = {
 
 export function ScoringControls({ config, onChange, onReset }: Props) {
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900/65 p-4">
+    <section className="pm-panel p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-slate-300">Reglas del score</h2>
-          <p className="mt-1 text-sm text-slate-400">
-            Lógica visible y editable. Se persiste por cuenta cuando `account_settings` está disponible y mantiene fallback local.
+          <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--pm-text)]">Reglas del score</h2>
+          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">
+            Lógica visible y editable para ajustar encaje, potencial, urgencia y valor sin tocar la mecánica del pipeline.
           </p>
         </div>
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-200 transition hover:border-slate-500"
+          className="pm-btn pm-btn-secondary"
         >
           <RotateCcw className="h-4 w-4" />
           Reset
@@ -36,13 +36,13 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
 
       <div className="mt-4 space-y-4">
         {SCORING_RULES_META.map((rule) => (
-          <div key={rule.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+          <div key={rule.key} className="pm-card-soft">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-slate-100">{rule.label}</p>
-                <p className="text-xs text-slate-500">{rule.description}</p>
+                <p className="text-sm font-medium text-[var(--pm-text)]">{rule.label}</p>
+                <p className="text-xs text-[var(--pm-text-tertiary)]">{rule.description}</p>
               </div>
-              <span className="rounded-md border border-cyan-700/60 bg-cyan-500/10 px-2 py-1 font-mono text-xs text-cyan-200">
+              <span className="rounded-md border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 font-mono text-xs text-[rgba(255,214,179,0.98)]">
                 {config[rule.key]}
               </span>
             </div>
@@ -64,7 +64,7 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
         ))}
       </div>
 
-      <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-500">
+      <div className="pm-card-soft mt-4 text-xs text-[var(--pm-text-tertiary)]">
         Base de referencia: {BASE_SUMMARY(DEFAULT_SCORING_CONFIG)}. Ajusta pesos, no estados ni datos del negocio.
       </div>
     </section>

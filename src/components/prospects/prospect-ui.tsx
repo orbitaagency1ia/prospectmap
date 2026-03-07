@@ -70,7 +70,7 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
                       : badge.tone === "violet"
                         ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
                         : badge.tone === "cyan"
-                          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-200"
+                          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
                           : "border-slate-600 bg-slate-700/50 text-slate-200",
                 )}
               >

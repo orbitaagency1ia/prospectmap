@@ -239,7 +239,7 @@ export function BusinessPanel({
 
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {selected.mode === "overpass" ? (
-          <div className="space-y-3 rounded-[22px] border border-[rgba(58,190,249,0.35)] bg-[rgba(58,190,249,0.12)] p-4 text-sm">
+          <div className="space-y-3 rounded-[22px] border border-[rgba(242,138,46,0.35)] bg-[rgba(242,138,46,0.12)] p-4 text-sm">
             <p className="text-[var(--pm-text)]">Negocio detectado en OpenStreetMap. Aún no está guardado en tu cuenta.</p>
             <button
               type="button"
@@ -293,7 +293,7 @@ export function BusinessPanel({
                           : badge.tone === "violet"
                             ? "border-violet-500/60 bg-violet-500/15 text-violet-200"
                             : badge.tone === "cyan"
-                              ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-200"
+                              ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,214,179,0.98)]"
                               : "border-slate-600 bg-slate-700/50 text-slate-200",
                     )}
                   >
@@ -393,7 +393,7 @@ export function BusinessPanel({
 
         {activeTab === "informe" && insight ? (
           <section className="space-y-3">
-            <InsightBlock title="Nivel de encaje y angulo">
+            <InsightBlock title="Nivel de encaje y ángulo">
               <p className="text-sm font-medium text-slate-100">{insight.fitSummary}</p>
               <p className="mt-1 text-sm text-slate-300">{insight.commercialAngle}</p>
               <p className="mt-2 text-xs text-slate-500">{insight.ctaSuggestion}</p>
@@ -409,7 +409,7 @@ export function BusinessPanel({
               </div>
             </InsightBlock>
 
-            <InsightBlock title="Siguiente mejor accion">
+            <InsightBlock title="Siguiente mejor acción">
               <p className="text-sm font-medium text-slate-100">{insight.nextAction.action}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {insight.nextAction.channel} · {insight.nextAction.reason}
@@ -419,7 +419,7 @@ export function BusinessPanel({
               </p>
             </InsightBlock>
 
-            <InsightBlock title="Servicio Orbita recomendado">
+            <InsightBlock title="Servicio Órbita recomendado">
               <p className="text-sm font-medium text-slate-100">{insight.service.label}</p>
               <p className="mt-1 text-sm text-slate-300">{insight.service.reason}</p>
               <div className="mt-2 space-y-1">
@@ -432,10 +432,10 @@ export function BusinessPanel({
             </InsightBlock>
 
             <div className="grid gap-3">
-              <ListInsightBlock title="Que lo hace prioritario" items={insight.fitSignals} />
+              <ListInsightBlock title="Qué lo hace prioritario" items={insight.fitSignals} />
               <ListInsightBlock title="Riesgos y objeciones" items={[...insight.riskSignals, ...insight.missingData]} />
-              <ListInsightBlock title="Que revisar antes de contactar" items={insight.reviewChecklist} />
-              <ListInsightBlock title="Que no decir" items={insight.avoidTalkingPoints} />
+              <ListInsightBlock title="Qué revisar antes de contactar" items={insight.reviewChecklist} />
+              <ListInsightBlock title="Qué no decir" items={insight.avoidTalkingPoints} />
             </div>
 
             <div className="space-y-2">
@@ -456,7 +456,7 @@ export function BusinessPanel({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Logica del score</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Lógica del score</p>
               {insight.breakdown.map((item) => (
                 <div key={item.key} className="rounded-lg border border-slate-800 bg-slate-950/60 p-2">
                   <div className="flex items-center justify-between gap-3">
@@ -464,7 +464,7 @@ export function BusinessPanel({
                     <p
                       className={cn(
                         "font-mono text-xs",
-                        item.direction === "minus" ? "text-rose-300" : "text-cyan-200",
+                        item.direction === "minus" ? "text-rose-300" : "text-[var(--pm-primary)]",
                       )}
                     >
                       {item.direction === "minus" ? "-" : "+"}
@@ -673,7 +673,7 @@ export function BusinessPanel({
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="pm-btn pm-btn-primary w-full"
             >
               {busy ? "Guardando..." : "Guardar cambios"}
             </button>
@@ -809,8 +809,8 @@ function TabButton({
       className={cn(
         "rounded-2xl border px-3 py-2 text-xs font-medium transition",
         active
-          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100"
-          : "border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] text-[var(--pm-text-secondary)] hover:border-[rgba(58,190,249,0.35)] hover:text-[var(--pm-text)]",
+          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,223,199,0.98)]"
+          : "border-[rgba(30,51,80,0.9)] bg-[rgba(7,17,31,0.72)] text-[var(--pm-text-secondary)] hover:border-[rgba(242,138,46,0.3)] hover:text-[var(--pm-text)]",
       )}
     >
       {label}
@@ -836,7 +836,7 @@ function QuickActionButton({
       className={cn(
         "inline-flex min-h-[42px] items-center justify-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition",
         tone === "cyan"
-          ? "border-cyan-500/60 bg-cyan-500/15 text-cyan-100 hover:border-cyan-400"
+          ? "border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] text-[rgba(255,223,199,0.98)] hover:border-[rgba(242,138,46,0.72)]"
           : tone === "amber"
             ? "border-amber-500/60 bg-amber-500/15 text-amber-100 hover:border-amber-400"
             : tone === "violet"
