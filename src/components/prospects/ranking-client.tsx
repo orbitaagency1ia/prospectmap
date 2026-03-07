@@ -255,7 +255,7 @@ export function RankingClient({ profile }: Props) {
                       </td>
                       <td className="px-4 py-3 align-top">
                         <div className="space-y-2">
-                          <p className="text-lg font-semibold text-[rgba(184,235,255,0.98)]">{record.insight.score}</p>
+                          <p className="text-lg font-semibold text-[rgba(255,223,199,0.98)]">{record.insight.score}</p>
                           <OpportunityBadge record={record} />
                         </div>
                       </td>

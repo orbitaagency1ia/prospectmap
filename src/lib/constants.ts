@@ -40,14 +40,14 @@ export const STATUS_META: Record<
   },
   contactado: {
     label: "Contactado",
-    badgeClass: "bg-sky-500/20 text-sky-200 border border-sky-400/70",
-    markerColor: "#38bdf8",
+    badgeClass: "bg-amber-500/18 text-amber-100 border border-amber-300/70",
+    markerColor: "#fbbf24",
     legend: "Primer contacto logrado",
   },
   reunion_agendada: {
     label: "Reunión agendada",
-    badgeClass: "bg-indigo-500/20 text-indigo-200 border border-indigo-400/70",
-    markerColor: "#6366f1",
+    badgeClass: "bg-violet-500/20 text-violet-100 border border-violet-400/70",
+    markerColor: "#8b5cf6",
     legend: "Siguiente paso confirmado",
   },
   propuesta_enviada: {

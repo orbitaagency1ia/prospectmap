@@ -43,7 +43,7 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
         </div>
         <div className="rounded-2xl border border-[rgba(30,51,80,0.86)] bg-[rgba(7,17,31,0.62)] px-3 py-2 text-left sm:min-w-[88px] sm:text-right">
           <p className="text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Prioridad</p>
-          <p className="text-2xl font-semibold text-[rgba(184,235,255,0.98)]">{record.insight.score}</p>
+          <p className="text-2xl font-semibold text-[rgba(255,223,199,0.98)]">{record.insight.score}</p>
         </div>
       </div>
 

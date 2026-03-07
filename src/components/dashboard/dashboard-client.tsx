@@ -108,7 +108,7 @@ export function DashboardClient({ data }: Props) {
                     color: "#e2e8f0",
                   }}
                 />
-                <Line type="monotone" dataKey="updates" stroke="#22d3ee" strokeWidth={2.5} dot={{ fill: "#22d3ee" }} />
+                <Line type="monotone" dataKey="updates" stroke="#f28a2e" strokeWidth={2.5} dot={{ fill: "#ff9f43" }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -129,7 +129,7 @@ export function DashboardClient({ data }: Props) {
                     color: "#e2e8f0",
                   }}
                 />
-                <Bar dataKey="value" fill="#38bdf8" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="value" fill="#f28a2e" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

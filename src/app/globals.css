@@ -11,9 +11,9 @@
 :root {
   color-scheme: dark;
   --pm-bg: #090b10;
-  --pm-bg-secondary: #11141b;
-  --pm-surface: #171b23;
-  --pm-border: #2a3442;
+  --pm-bg-secondary: #121418;
+  --pm-surface: #191d24;
+  --pm-border: #343a44;
   --pm-text: #f6f2eb;
   --pm-text-secondary: #b7aea2;
   --pm-text-tertiary: #7d766d;
@@ -37,9 +37,9 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(242, 138, 46, 0.16), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(143, 122, 245, 0.08), transparent 24%),
-    linear-gradient(180deg, rgba(17, 20, 27, 0.98), rgba(9, 11, 16, 1)),
+    radial-gradient(circle at top left, rgba(242, 138, 46, 0.18), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(255, 159, 67, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(18, 20, 24, 0.98), rgba(9, 11, 16, 1)),
     var(--pm-bg);
   color: var(--pm-text);
   -webkit-font-smoothing: antialiased;
@@ -48,7 +48,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(58, 190, 249, 0.2) rgba(7, 17, 31, 0.7);
+  scrollbar-color: rgba(242, 138, 46, 0.32) rgba(9, 11, 16, 0.7);
 }
 
 *::-webkit-scrollbar {
@@ -57,13 +57,13 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(7, 17, 31, 0.65);
+  background: rgba(9, 11, 16, 0.65);
 }
 
 *::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  border: 2px solid rgba(7, 17, 31, 0.65);
-  background: rgba(58, 190, 249, 0.24);
+  border: 2px solid rgba(9, 11, 16, 0.65);
+  background: rgba(242, 138, 46, 0.34);
 }
 
 ::selection {
@@ -81,12 +81,12 @@ body {
 .leaflet-popup-tip {
   background: var(--pm-bg-secondary);
   color: var(--pm-text);
-  border: 1px solid rgba(30, 51, 80, 0.94);
+  border: 1px solid rgba(52, 58, 68, 0.92);
 }
 
 .leaflet-tooltip {
-  background: rgba(7, 17, 31, 0.95);
-  border: 1px solid rgba(30, 51, 80, 0.95);
+  background: rgba(12, 14, 18, 0.95);
+  border: 1px solid rgba(52, 58, 68, 0.95);
   color: var(--pm-text);
   box-shadow: 0 16px 40px rgba(3, 9, 18, 0.45);
 }
@@ -107,8 +107,8 @@ body {
   width: 100%;
   min-height: 3rem;
   border-radius: 1rem;
-  border: 1px solid rgba(30, 51, 80, 0.92);
-  background: rgba(7, 17, 31, 0.74);
+  border: 1px solid rgba(52, 58, 68, 0.92);
+  background: rgba(14, 16, 20, 0.76);
   padding: 0.75rem 0.95rem;
   color: var(--pm-text);
   font-size: 0.875rem;
@@ -125,7 +125,7 @@ body {
 
 .field:hover {
   border-color: rgba(242, 138, 46, 0.28);
-  background: rgba(9, 20, 36, 0.9);
+  background: rgba(20, 22, 27, 0.92);
 }
 
 .field:focus {
@@ -154,37 +154,63 @@ textarea {
 
 .pm-panel {
   border-radius: var(--pm-radius-panel);
-  border: 1px solid rgba(30, 51, 80, 0.92);
-  background: rgba(13, 23, 40, 0.88);
+  border: 1px solid rgba(52, 58, 68, 0.92);
+  background: rgba(20, 23, 29, 0.9);
   box-shadow: var(--pm-shadow-panel);
   padding: 1.25rem;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .pm-panel-elevated {
   background:
-    radial-gradient(circle at top left, rgba(242, 138, 46, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(13, 23, 40, 0.96), rgba(7, 17, 31, 0.96));
+    radial-gradient(circle at top left, rgba(242, 138, 46, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(23, 26, 32, 0.98), rgba(12, 14, 18, 0.98));
 }
 
 .pm-card {
   border-radius: var(--pm-radius-card);
-  border: 1px solid rgba(30, 51, 80, 0.9);
-  background: rgba(18, 32, 51, 0.78);
+  border: 1px solid rgba(52, 58, 68, 0.9);
+  background: rgba(24, 29, 36, 0.82);
   box-shadow: var(--pm-shadow-card);
   padding: 1rem;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.pm-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(242, 138, 46, 0.28);
+  background: rgba(28, 33, 41, 0.88);
+  box-shadow: 0 22px 52px rgba(3, 9, 18, 0.28);
 }
 
 .pm-card-soft {
   border-radius: 1rem;
-  border: 1px solid rgba(30, 51, 80, 0.86);
-  background: rgba(7, 17, 31, 0.68);
+  border: 1px solid rgba(52, 58, 68, 0.86);
+  background: rgba(15, 17, 21, 0.74);
   padding: 0.9rem;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.pm-card-soft:hover {
+  transform: translateY(-1px);
+  border-color: rgba(242, 138, 46, 0.2);
+  background: rgba(18, 20, 24, 0.86);
 }
 
 .pm-empty {
   border-radius: var(--pm-radius-card);
-  border: 1px dashed rgba(30, 51, 80, 0.96);
-  background: rgba(7, 17, 31, 0.62);
+  border: 1px dashed rgba(52, 58, 68, 0.96);
+  background: rgba(14, 16, 20, 0.64);
   padding: 1rem;
   color: var(--pm-text-secondary);
 }
@@ -239,26 +265,32 @@ textarea {
   transform: translateY(-1px);
 }
 
+.pm-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
 .pm-btn-primary {
   border: 1px solid rgba(242, 138, 46, 0.42);
   background: rgba(242, 138, 46, 0.14);
   color: var(--pm-text);
+  box-shadow: inset 0 1px 0 rgba(255, 224, 196, 0.08), 0 14px 30px rgba(242, 138, 46, 0.12);
 }
 
 .pm-btn-primary:hover {
   border-color: rgba(242, 138, 46, 0.72);
-  background: rgba(242, 138, 46, 0.2);
+  background: rgba(242, 138, 46, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 224, 196, 0.1), 0 18px 34px rgba(242, 138, 46, 0.18);
 }
 
 .pm-btn-secondary {
-  border: 1px solid rgba(30, 51, 80, 0.92);
-  background: rgba(7, 17, 31, 0.74);
+  border: 1px solid rgba(52, 58, 68, 0.92);
+  background: rgba(15, 17, 21, 0.78);
   color: var(--pm-text);
 }
 
 .pm-btn-secondary:hover {
-  border-color: rgba(242, 138, 46, 0.24);
-  background: rgba(9, 20, 36, 0.94);
+  border-color: rgba(242, 138, 46, 0.3);
+  background: rgba(21, 23, 28, 0.92);
 }
 
 .pm-btn-ghost {
@@ -268,8 +300,8 @@ textarea {
 }
 
 .pm-btn-ghost:hover {
-  border-color: rgba(30, 51, 80, 0.92);
-  background: rgba(7, 17, 31, 0.72);
+  border-color: rgba(52, 58, 68, 0.92);
+  background: rgba(15, 17, 21, 0.78);
   color: var(--pm-text);
 }
 
@@ -278,8 +310,8 @@ textarea {
   align-items: center;
   gap: 0.35rem;
   border-radius: 999px;
-  border: 1px solid rgba(30, 51, 80, 0.92);
-  background: rgba(7, 17, 31, 0.68);
+  border: 1px solid rgba(52, 58, 68, 0.92);
+  background: rgba(15, 17, 21, 0.72);
   padding: 0.35rem 0.7rem;
   font-size: 0.73rem;
   font-weight: 600;
@@ -293,7 +325,7 @@ textarea {
 }
 
 .pm-divider {
-  border-color: rgba(30, 51, 80, 0.72);
+  border-color: rgba(52, 58, 68, 0.72);
 }
 
 @media (min-width: 1024px) {
