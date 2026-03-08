@@ -52,12 +52,48 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const { error } = await supabase.auth.signInWithPassword({
+    const signIn = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
+    if (signIn.error) {
+      const normalized = signIn.error.message.toLowerCase();
+      const canAutoCreate =
+        normalized.includes("invalid login credentials") ||
+        normalized.includes("email not confirmed");
+
+      if (canAutoCreate) {
+        const signUp = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              company_name: "ProspectMap Local",
+              city_name: "Valencia",
+              city_lat: 39.4699,
+              city_lng: -0.3763,
+            },
+          },
+        });
+
+        const signUpError = signUp.error?.message.toLowerCase() ?? "";
+        const alreadyRegistered =
+          signUpError.includes("already registered") ||
+          signUpError.includes("already been registered");
+
+        if (!signUp.error || signUp.data.session || alreadyRegistered) {
+          const retrySignIn = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (!retrySignIn.error) {
+            return response;
+          }
+        }
+      }
+
       loginUrl.searchParams.set("localBypass", "invalid_credentials");
       return NextResponse.redirect(loginUrl);
     }
