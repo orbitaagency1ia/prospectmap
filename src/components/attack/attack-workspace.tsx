@@ -951,8 +951,8 @@ function QueuePanel({
             className={cn(
               "rounded-[24px] border p-4 transition",
               selectedKey === entry.business.key
-                ? "border-[rgba(242,138,46,0.46)] bg-[rgba(23,28,36,0.96)] shadow-[0_18px_42px_rgba(3,9,18,0.24)]"
-                : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.86)] hover:border-[rgba(242,138,46,0.28)]",
+                ? "border-[rgba(255,255,255,0.09)] bg-[rgba(23,28,36,0.96)] shadow-[0_18px_42px_rgba(3,9,18,0.24)]"
+                : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.86)] hover:border-[rgba(255,255,255,0.08)]",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -968,7 +968,7 @@ function QueuePanel({
               </button>
 
               <div className="text-right">
-                <p className="text-xl font-semibold text-[var(--pm-primary)]">{entry.insight.score}</p>
+                <p className="text-xl font-semibold text-[var(--pm-text)]">{entry.insight.score}</p>
                 <p className="text-xs text-[var(--pm-text-tertiary)]">{formatCurrency(entry.insight.weightedValue)}</p>
               </div>
             </div>
@@ -1195,7 +1195,7 @@ function SessionControlPanel({
         action={<PmBadge tone={attackStatus === "paused" ? "amber" : "neutral"}>{sourceLabel}</PmBadge>}
       />
 
-      <div className="mt-4 rounded-[24px] border border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.84)] p-4">
+      <div className="mt-4 rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.84)] p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-[var(--pm-text)]">
@@ -1207,12 +1207,12 @@ function SessionControlPanel({
                 : `La sesión arranca con los ${startSize} mejores leads del foco actual.`}
             </p>
           </div>
-          <p className="text-2xl font-semibold text-[var(--pm-primary)]">{hasActiveSession ? `${progress.percent}%` : startSize}</p>
+          <p className="text-2xl font-semibold text-[var(--pm-text)]">{hasActiveSession ? `${progress.percent}%` : startSize}</p>
         </div>
 
-        <div className="mt-4 h-2.5 rounded-full bg-[rgba(42,52,66,0.76)]">
+        <div className="mt-4 h-2.5 rounded-full bg-[rgba(255,255,255,0.05)]">
           <div
-            className="h-full rounded-full bg-[linear-gradient(90deg,var(--pm-primary),rgba(242,138,46,0.58))] transition-all"
+            className="h-full rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.82),rgba(255,255,255,0.28))] transition-all"
             style={{ width: `${hasActiveSession ? progress.percent : queueSize === 0 ? 0 : Math.min(100, Math.round((startSize / queueSize) * 100))}%` }}
           />
         </div>
@@ -1290,8 +1290,8 @@ function ResultPanel({
               className={cn(
                 "rounded-[20px] border p-3 text-left transition",
                 resultDraft.result === option.id
-                  ? "border-[rgba(242,138,46,0.44)] bg-[rgba(242,138,46,0.12)]"
-                  : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.84)] hover:border-[rgba(242,138,46,0.28)]",
+                  ? "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)]"
+                  : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.84)] hover:border-[rgba(255,255,255,0.08)]",
               )}
             >
               <p className="text-sm font-medium text-[var(--pm-text)]">{option.label}</p>
@@ -1301,14 +1301,14 @@ function ResultPanel({
         </div>
 
         {suggestion ? (
-          <div className="rounded-[20px] border border-[rgba(142,122,245,0.32)] bg-[rgba(143,122,245,0.08)] p-4">
+          <div className="rounded-[20px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="pm-caption uppercase tracking-[0.14em]">Siguiente paso recomendado</p>
                 <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{suggestion.label}</p>
                 <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{suggestion.reason}</p>
               </div>
-              {suggestion.dueAt ? <PmBadge tone="violet">{formatDateTime(suggestion.dueAt)}</PmBadge> : null}
+              {suggestion.dueAt ? <PmBadge>{formatDateTime(suggestion.dueAt)}</PmBadge> : null}
             </div>
 
             <label className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--pm-text-secondary)]">
@@ -1380,7 +1380,7 @@ function ResultPanel({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(42,52,66,0.82)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
+          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
             <input
               type="checkbox"
               checked={resultDraft.moveToPipeline}
@@ -1389,7 +1389,7 @@ function ResultPanel({
             />
             Mover a pipeline
           </label>
-          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(42,52,66,0.82)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
+          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
             <input
               type="checkbox"
               checked={resultDraft.discard}

@@ -121,28 +121,24 @@ export function TodayClient({ profile }: Props) {
 
       {!commercialProfileComplete ? (
         <PmNotice tone="amber">
-          Falta completar el perfil comercial de la cuenta. ProspectMap ya funciona, pero el scoring, los mensajes y el
-          informe del negocio serán mucho mejores cuando completes el onboarding comercial en `Configuración`.
+          Completa el perfil comercial en `Configuración` para afinar scoring, mensajes e informe.
         </PmNotice>
       ) : null}
 
       {records.length === 0 ? (
         <PmHero
           eyebrow="Centro de control"
-          title="Sin pipeline todavía"
-          description="Empieza desde el mapa, guarda negocios y vuelve aquí. Esta vista se llena sola con prioridades, seguimiento, encaje de servicio y narrativa comercial por vertical."
+          title="Todavía no hay pipeline"
+          description="Guarda cuentas desde el mapa y esta vista se completará sola."
         >
-          <p className="pm-muted max-w-2xl text-sm leading-6">
-            Empieza desde el mapa, guarda negocios y vuelve aquí. Esta vista se llena sola con prioridades, seguimiento,
-            encaje de servicio y narrativa comercial por vertical.
-          </p>
+          <p className="pm-muted max-w-2xl text-sm leading-6">Empieza en Territorio.</p>
         </PmHero>
       ) : (
         <>
           <PmHero
             eyebrow="Centro de control"
-            title="Hoy sabes exactamente dónde atacar."
-            description="ProspectMap resume qué leads merecen foco inmediato, qué servicio de Órbita entra mejor y dónde se concentra la oportunidad real de la cuenta."
+            title="Foco del día."
+            description="Lo urgente, lo valioso y lo que merece atención ahora."
             actions={
               <div className="space-y-3">
                 <Link href="/attack?source=alerts" className="pm-btn pm-btn-primary w-full sm:w-auto">
@@ -168,21 +164,21 @@ export function TodayClient({ profile }: Props) {
                 action={
                   <Link href="/attack?source=alerts" className="pm-btn pm-btn-secondary">
                     <ArrowRight className="h-4 w-4" />
-                    Trabajar alertas
+                    Abrir
                   </Link>
                 }
               />
               <ConquestPanel
                 snapshot={summary.conquest}
-                title="Cómo va la conquista del territorio"
-                description="Cobertura real, zonas con tracción y huecos claros donde todavía no estás atacando."
+                title="Conquista del territorio"
+                description="Cobertura, tracción y huecos por atacar."
                 onOpenBusiness={setSelectedKey}
               />
 
               <div className="grid gap-4 xl:grid-cols-2">
                 <ProspectSection
                   title="Negocios prioritarios de hoy"
-                  description="Prioridad alta o follow-up vencido. El mejor sitio para concentrar energía comercial."
+                  description="Alta prioridad o seguimiento vencido."
                   icon={Target}
                   records={buckets.prioritizedToday}
                   showDemoBadges
@@ -190,7 +186,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <ProspectSection
                   title="Follow-ups pendientes"
-                  description="Prospectos ya tocados donde insistir hoy todavía tiene sentido."
+                  description="Cuentas que conviene retomar hoy."
                   icon={RefreshCw}
                   records={buckets.followUpsPending}
                   showDemoBadges
@@ -198,7 +194,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <ProspectSection
                   title="Negocios calientes"
-                  description="Cuentas con mejor temperatura comercial y una narrativa clara."
+                  description="Señal fuerte y narrativa clara."
                   icon={Flame}
                   records={buckets.hotLeads}
                   showDemoBadges
@@ -206,7 +202,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <ProspectSection
                   title="Sin contactar de alta oportunidad"
-                  description="Pipeline limpio para abrir conversación con buen ángulo."
+                  description="Buen encaje y conversación por abrir."
                   icon={Sparkles}
                   records={buckets.highPotentialUntouched}
                   showDemoBadges
@@ -217,7 +213,7 @@ export function TodayClient({ profile }: Props) {
               <div className="grid gap-4 xl:grid-cols-3">
                 <DistributionPanel
                   title="Servicios con más encaje"
-                  description="Dónde está hoy la palanca más vendible de Órbita."
+                  description="Dónde hay más encaje hoy."
                   items={summary.serviceDistribution.map((item) => ({
                     label: item.label,
                     value: item.value,
@@ -226,7 +222,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <DistributionPanel
                   title="Oportunidad por vertical"
-                  description="Concentración del pipeline según vertical detectada."
+                  description="Concentración actual del pipeline."
                   items={summary.marketVerticalDistribution.map((item) => ({
                     label: item.label,
                     value: item.value,
@@ -235,7 +231,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <DistributionPanel
                   title="Sectores dominantes"
-                  description="Sectores con más volumen aprovechable ahora mismo."
+                  description="Sectores con más volumen útil."
                   items={summary.sectorDistribution}
                   emptyText="Sin sectores dominantes todavía."
                 />
@@ -246,7 +242,7 @@ export function TodayClient({ profile }: Props) {
                 userId={profile.id}
                 records={records}
                 title="Campañas operativas"
-                description="Guarda focos de ataque reutilizables por vertical, servicio o ciudad."
+                description="Focos reutilizables por vertical, servicio o ciudad."
                 defaultName="Nueva campaña"
               />
             </div>
@@ -255,7 +251,7 @@ export function TodayClient({ profile }: Props) {
               <ProspectDetailPanel
                 record={selected}
                 showDemoBadges
-                emptyText="Selecciona un prospecto para ver el guion comercial completo."
+                emptyText="Selecciona un prospecto para ver el guion."
               />
               <RightRailSummary summary={summary} />
             </div>
@@ -284,7 +280,7 @@ function ProspectSection({
   return (
     <PmPanel className="p-5">
       <div className="flex items-start gap-3">
-        <div className="rounded-[1rem] border border-[rgba(239,139,53,0.14)] bg-[rgba(239,139,53,0.08)] p-2.5 text-[var(--pm-primary)] shadow-[0_10px_24px_rgba(239,139,53,0.08)]">
+        <div className="rounded-[1rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] p-2.5 text-[var(--pm-text)] shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
           <Icon className="h-4 w-4" />
         </div>
         <div>
@@ -357,7 +353,7 @@ function DistributionPanel({
             </div>
             <div className="h-2 rounded-full bg-[rgba(255,255,255,0.04)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.94)] via-[rgba(246,162,76,0.88)] to-[rgba(143,130,239,0.58)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(255,255,255,0.72)] to-[rgba(255,255,255,0.24)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -389,7 +385,7 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
             </div>
             <div className="mt-4 h-2 rounded-full bg-[rgba(255,255,255,0.04)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.94)] via-[rgba(246,162,76,0.88)] to-[rgba(143,130,239,0.58)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(255,255,255,0.72)] to-[rgba(255,255,255,0.24)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>

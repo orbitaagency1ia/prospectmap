@@ -30,8 +30,8 @@ export function DashboardClient({ data }: Props) {
     <div className="pm-page">
       <PmHero
         eyebrow="Analítica"
-        title="Lectura clara del pipeline y de la actividad comercial"
-        description="Menos paneles sueltos y más narrativa. Aquí se ve cuánto avanza la prospección, dónde se atasca el embudo y qué parte del territorio merece atención."
+        title="Lectura del pipeline."
+        description="Actividad, distribución y ritmo comercial en una sola vista."
       />
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

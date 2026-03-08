@@ -8,20 +8,20 @@ export type PmTone = "neutral" | "cyan" | "amber" | "emerald" | "rose" | "violet
 
 const badgeToneClass: Record<PmTone, string> = {
   neutral: "border-[rgba(244,236,224,0.06)] bg-[rgba(255,255,255,0.03)] text-[var(--pm-text-secondary)]",
-  cyan: "border-[rgba(240,138,47,0.18)] bg-[rgba(240,138,47,0.09)] text-[rgba(255,239,220,0.98)]",
-  amber: "border-[rgba(217,173,89,0.18)] bg-[rgba(217,173,89,0.1)] text-[rgba(255,244,223,0.98)]",
-  emerald: "border-[rgba(78,190,137,0.18)] bg-[rgba(78,190,137,0.1)] text-[rgba(232,255,244,0.98)]",
-  rose: "border-[rgba(213,107,119,0.18)] bg-[rgba(213,107,119,0.1)] text-[rgba(255,234,238,0.98)]",
-  violet: "border-[rgba(143,130,239,0.18)] bg-[rgba(143,130,239,0.1)] text-[rgba(239,236,255,0.98)]",
+  cyan: "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] text-[var(--pm-text)]",
+  amber: "border-[rgba(161,148,128,0.18)] bg-[rgba(161,148,128,0.09)] text-[rgba(244,241,234,0.96)]",
+  emerald: "border-[rgba(141,157,146,0.18)] bg-[rgba(141,157,146,0.1)] text-[rgba(240,244,241,0.96)]",
+  rose: "border-[rgba(154,125,130,0.18)] bg-[rgba(154,125,130,0.1)] text-[rgba(245,238,239,0.96)]",
+  violet: "border-[rgba(168,171,177,0.16)] bg-[rgba(168,171,177,0.08)] text-[rgba(240,240,240,0.96)]",
 };
 
 const metricToneClass: Record<PmTone, string> = {
   neutral: "before:bg-[linear-gradient(135deg,rgba(255,255,255,0.06),transparent_58%)]",
-  cyan: "before:bg-[linear-gradient(135deg,rgba(240,138,47,0.14),transparent_60%)]",
-  amber: "before:bg-[linear-gradient(135deg,rgba(217,173,89,0.16),transparent_60%)]",
-  emerald: "before:bg-[linear-gradient(135deg,rgba(78,190,137,0.14),transparent_60%)]",
-  rose: "before:bg-[linear-gradient(135deg,rgba(213,107,119,0.14),transparent_60%)]",
-  violet: "before:bg-[linear-gradient(135deg,rgba(143,130,239,0.14),transparent_60%)]",
+  cyan: "before:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_60%)]",
+  amber: "before:bg-[linear-gradient(135deg,rgba(161,148,128,0.14),transparent_60%)]",
+  emerald: "before:bg-[linear-gradient(135deg,rgba(141,157,146,0.12),transparent_60%)]",
+  rose: "before:bg-[linear-gradient(135deg,rgba(154,125,130,0.12),transparent_60%)]",
+  violet: "before:bg-[linear-gradient(135deg,rgba(168,171,177,0.1),transparent_60%)]",
 };
 
 export function PmPanel({

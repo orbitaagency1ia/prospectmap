@@ -42,12 +42,12 @@ export function ProspectingPrepSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[650] bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md" onClick={onClose}>
+    <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-[650] p-3" onClick={onClose}>
       <div
-        className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] shadow-[var(--pm-shadow-float)]"
+        className="pm-shell pm-sheet-shell mx-auto flex h-full max-w-5xl flex-col overflow-hidden"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-[var(--pm-border)] px-5 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-[var(--pm-border)] px-5 py-5">
           <div>
             <p className="pm-kicker">Preparar prospección</p>
             <h2 className="mt-2 text-2xl font-semibold text-[var(--pm-text)]">{businessName}</h2>
@@ -74,7 +74,7 @@ export function ProspectingPrepSheet({
 
         <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-5 py-5 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
-            <Card title="Resumen ejecutivo">
+            <Card title="Resumen">
               <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.executiveSummary}</p>
             </Card>
 
@@ -82,7 +82,7 @@ export function ProspectingPrepSheet({
               <Card title="Ángulo comercial recomendado">
                 <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.commercialAngle}</p>
               </Card>
-              <Card title="CTA sugerida">
+              <Card title="CTA">
                 <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{insight.ctaSuggestion}</p>
               </Card>
             </div>
@@ -95,10 +95,10 @@ export function ProspectingPrepSheet({
               <Checklist items={insight.avoidTalkingPoints} emptyText="No hay alertas adicionales." />
             </Card>
 
-            <Card title="Objeciones y respuestas">
+            <Card title="Objeciones">
               <div className="space-y-3">
                 {insight.objections.map((item) => (
-                  <article key={item.objection} className="pm-card-soft p-3">
+                  <article key={item.objection} className="pm-list-row rounded-[1rem] px-3.5 py-3">
                     <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
                     <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{item.response}</p>
                   </article>
@@ -129,8 +129,8 @@ export function ProspectingPrepSheet({
                 content={insight.messages.followUp2}
               />
             </Card>
-            <Card title="Riesgos y datos faltantes">
-              <Checklist items={[...insight.riskSignals, ...insight.missingData]} emptyText="Sin riesgos fuertes detectados." />
+            <Card title="Riesgos">
+              <Checklist items={[...insight.riskSignals, ...insight.missingData]} emptyText="Sin alertas claras." />
             </Card>
           </div>
         </div>
@@ -183,7 +183,7 @@ function Checklist({ items, emptyText }: { items: string[]; emptyText: string })
     <div className="space-y-2">
       {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">{emptyText}</p> : null}
       {items.map((item) => (
-        <p key={item} className="text-sm text-[var(--pm-text-secondary)]">
+        <p key={item} className="text-sm leading-6 text-[var(--pm-text-secondary)]">
           • {item}
         </p>
       ))}

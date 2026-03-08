@@ -72,14 +72,14 @@ export function PipelineClient({ profile }: Props) {
 
       {!commercialProfileComplete ? (
         <PmNotice tone="amber">
-          Completa el perfil comercial de la cuenta para afinar valor económico, servicio recomendado y cierre.
+          Completa el perfil comercial para afinar valor, servicio y cierre.
         </PmNotice>
       ) : null}
 
       <PmHero
         eyebrow="Pipeline de cierre"
-        title="Qué está más cerca de convertirse en dinero."
-        description="Esta vista concentra oportunidades activas, valor estimado, días sin tocar y siguiente movimiento para empujar cierres sin perder timing."
+        title="Cierre en marcha."
+        description="Qué está más cerca de avanzar y qué se enfría."
         actions={
           <div className="space-y-3">
             <Link href="/attack?source=pipeline" className="pm-btn pm-btn-primary w-full sm:w-auto">
@@ -133,7 +133,7 @@ export function PipelineClient({ profile }: Props) {
             userId={profile.id}
             records={records}
             title="Campañas de ataque y cierre"
-            description="Guarda listas accionables y reutiliza foco comercial por ciudad, vertical o servicio."
+            description="Listas accionables por ciudad, vertical o servicio."
             defaultName="Nueva campaña de cierre"
           />
         </div>
@@ -142,7 +142,7 @@ export function PipelineClient({ profile }: Props) {
           <ProspectDetailPanel
             record={selected}
             showDemoBadges
-            emptyText="Selecciona una oportunidad del pipeline para abrir el informe de cierre."
+            emptyText="Selecciona una oportunidad para abrir el informe."
           />
           <PipelineSummary snapshot={snapshot} />
         </div>
@@ -175,14 +175,14 @@ function FocusPanel({
             key={record.business.key}
             type="button"
             onClick={() => onSelect(record.business.key)}
-            className="pm-card w-full p-4 text-left transition hover:border-[rgba(242,138,46,0.18)]"
+            className="pm-card w-full p-4 text-left transition hover:border-[rgba(255,255,255,0.08)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-[var(--pm-text)]">{record.business.name}</p>
                 <p className="mt-1 text-xs text-[var(--pm-text-secondary)]">{record.insight.service.shortLabel}</p>
               </div>
-              <p className="text-sm font-semibold text-[var(--pm-primary)]">{formatCurrency(record.insight.weightedValue)}</p>
+              <p className="text-sm font-semibold text-[var(--pm-text)]">{formatCurrency(record.insight.weightedValue)}</p>
             </div>
             <p className="mt-2 text-sm text-[var(--pm-text-secondary)]">{record.insight.nextAction.action}</p>
           </button>
@@ -229,8 +229,8 @@ function PipelineStageColumn({
             className={cn(
               "w-full rounded-[1.25rem] border p-3.5 text-left transition",
               selectedKey === record.business.key
-                ? "border-[rgba(239,139,53,0.16)] bg-[rgba(24,29,36,0.86)] shadow-[0_18px_40px_rgba(239,139,53,0.06)]"
-                : "border-[var(--pm-border)] bg-[rgba(18,22,28,0.68)] hover:border-[rgba(239,139,53,0.12)]",
+                ? "border-[rgba(255,255,255,0.08)] bg-[rgba(24,29,36,0.86)] shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
+                : "border-[var(--pm-border)] bg-[rgba(18,22,28,0.68)] hover:border-[rgba(255,255,255,0.07)]",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -238,7 +238,7 @@ function PipelineStageColumn({
                 <p className="text-sm font-semibold text-[var(--pm-text)]">{record.business.name}</p>
                 <p className="mt-1 text-xs text-[var(--pm-text-secondary)]">{record.insight.service.shortLabel}</p>
               </div>
-              <p className="text-sm font-semibold text-[var(--pm-primary)]">{record.insight.score}</p>
+              <p className="text-sm font-semibold text-[var(--pm-text)]">{record.insight.score}</p>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -326,7 +326,7 @@ function SummaryRow({
           <p className="text-sm font-medium text-[var(--pm-text)]">{label}</p>
           <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{detail}</p>
         </div>
-        <p className="text-base font-semibold text-[var(--pm-primary)]">{value}</p>
+        <p className="text-base font-semibold text-[var(--pm-text)]">{value}</p>
       </div>
     </div>
   );

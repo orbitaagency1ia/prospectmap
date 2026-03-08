@@ -42,7 +42,7 @@ export function ScoringControls({ config, onChange, onReset }: Props) {
                 <p className="text-sm font-medium text-[var(--pm-text)]">{rule.label}</p>
                 <p className="text-xs text-[var(--pm-text-tertiary)]">{rule.description}</p>
               </div>
-              <span className="rounded-md border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 font-mono text-xs text-[rgba(255,214,179,0.98)]">
+              <span className="rounded-md border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-2 py-1 font-mono text-xs text-[var(--pm-text)]">
                 {config[rule.key]}
               </span>
             </div>

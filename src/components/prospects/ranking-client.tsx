@@ -118,8 +118,7 @@ export function RankingClient({ profile }: Props) {
 
       {!commercialProfileComplete ? (
         <PmNotice tone="amber">
-          El perfil comercial de la cuenta sigue incompleto. El ranking actual usa la base vertical, pero puede afinar
-          mucho más cuando completes ICP, oferta y ticket en `Configuración`.
+          Completa el perfil comercial en `Configuración` para afinar este ranking.
         </PmNotice>
       ) : null}
 
@@ -127,8 +126,8 @@ export function RankingClient({ profile }: Props) {
         <div className="space-y-4">
           <PmHero
             eyebrow="Prioridades"
-            title="Prospectos ordenados por prioridad comercial"
-            description="Lista operativa para decidir a quién atacar primero, con qué servicio entrar y cuánto valor puede mover."
+            title="Prioridad comercial."
+            description="Qué merece atención primero y por qué."
             actions={
               <div className="flex flex-wrap gap-2">
                 <Link href="/attack?source=priorities" className="pm-btn pm-btn-primary">
@@ -146,6 +145,7 @@ export function RankingClient({ profile }: Props) {
             <PmSectionHeader
               title="Filtros de trabajo"
               description="Recorta la lista por ciudad, sector, estado y prioridad sin perder el informe comercial."
+              
             />
 
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -198,7 +198,7 @@ export function RankingClient({ profile }: Props) {
                     className={cn(
                       "rounded-[1.4rem] border transition",
                       selected?.business.key === record.business.key
-                      ? "border-[rgba(239,139,53,0.16)] bg-[rgba(24,29,36,0.84)] shadow-[0_18px_40px_rgba(239,139,53,0.06)]"
+                      ? "border-[rgba(255,255,255,0.08)] bg-[rgba(24,29,36,0.84)] shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
                       : "border-[var(--pm-border)] bg-[rgba(18,22,28,0.68)]",
                     )}
                   >
@@ -261,7 +261,7 @@ export function RankingClient({ profile }: Props) {
                       </td>
                       <td className="px-4 py-3 align-top">
                         <div className="space-y-2">
-                          <p className="text-lg font-semibold text-[rgba(255,223,199,0.98)]">{record.insight.score}</p>
+                          <p className="text-lg font-semibold text-[var(--pm-text)]">{record.insight.score}</p>
                           <OpportunityBadge record={record} />
                         </div>
                       </td>
@@ -290,7 +290,7 @@ export function RankingClient({ profile }: Props) {
             userId={profile.id}
             records={sortedRecords}
             title="Listas de prioridades"
-            description="Convierte el filtro actual en una campaña operativa guardada."
+            description="Convierte el filtro actual en una lista guardada."
             defaultName="Nueva lista priorizada"
           />
         </div>
@@ -299,7 +299,7 @@ export function RankingClient({ profile }: Props) {
           <ProspectDetailPanel
             record={selected}
             showDemoBadges
-            emptyText="Selecciona una fila de prioridades para ver el informe comercial."
+            emptyText="Selecciona una cuenta para ver el informe."
           />
           <PmPanel className="p-5">
             <p className="pm-kicker">Lectura del ranking</p>

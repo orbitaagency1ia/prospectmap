@@ -11,24 +11,24 @@
 :root {
   color-scheme: dark;
 
-  --pm-bg: #06080c;
-  --pm-bg-secondary: #0b0e13;
-  --pm-surface: #12161d;
-  --pm-surface-secondary: #171c24;
-  --pm-surface-tertiary: #1d2430;
-  --pm-surface-float: rgba(17, 20, 27, 0.74);
-  --pm-border: rgba(244, 236, 224, 0.055);
-  --pm-border-strong: rgba(244, 236, 224, 0.11);
-  --pm-text: #f7f2ea;
-  --pm-text-secondary: #c6bbaf;
-  --pm-text-tertiary: #8c847a;
-  --pm-primary: #ef8b35;
-  --pm-primary-hover: #f6a14a;
-  --pm-success: #4ebe89;
-  --pm-warning: #d9ad59;
-  --pm-danger: #d56b77;
-  --pm-info: #9a93af;
-  --pm-premium: #8f82ef;
+  --pm-bg: #030405;
+  --pm-bg-secondary: #07090c;
+  --pm-surface: #0e1115;
+  --pm-surface-secondary: #13171c;
+  --pm-surface-tertiary: #181d24;
+  --pm-surface-float: rgba(13, 16, 20, 0.76);
+  --pm-border: rgba(255, 255, 255, 0.05);
+  --pm-border-strong: rgba(255, 255, 255, 0.11);
+  --pm-text: #f3f1ed;
+  --pm-text-secondary: #b8b5af;
+  --pm-text-tertiary: #7a7975;
+  --pm-primary: #d4d0c8;
+  --pm-primary-hover: #f0ece4;
+  --pm-success: #8d9d92;
+  --pm-warning: #a19480;
+  --pm-danger: #9a7d82;
+  --pm-info: #8e9299;
+  --pm-premium: #a8abb1;
 
   --pm-radius-panel: 2rem;
   --pm-radius-card: 1.35rem;
@@ -38,7 +38,7 @@
   --pm-shadow-panel: 0 26px 72px rgba(0, 0, 0, 0.22), 0 10px 18px rgba(0, 0, 0, 0.08);
   --pm-shadow-card: 0 14px 32px rgba(0, 0, 0, 0.16), 0 3px 10px rgba(0, 0, 0, 0.06);
   --pm-shadow-float: 0 34px 90px rgba(0, 0, 0, 0.3), 0 10px 22px rgba(0, 0, 0, 0.1);
-  --pm-shadow-warm: 0 18px 44px rgba(239, 139, 53, 0.12);
+  --pm-shadow-warm: 0 18px 44px rgba(212, 208, 200, 0.08);
   --pm-shadow-line: inset 0 1px 0 rgba(255, 255, 255, 0.024);
   --pm-shadow-outline: inset 0 0 0 1px rgba(255, 255, 255, 0.018);
 
@@ -57,10 +57,10 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 14% -6%, rgba(239, 139, 53, 0.11), transparent 23%),
-    radial-gradient(circle at 86% 4%, rgba(143, 130, 239, 0.055), transparent 18%),
-    radial-gradient(circle at 70% 100%, rgba(239, 139, 53, 0.045), transparent 22%),
-    linear-gradient(180deg, rgba(11, 14, 19, 0.98), rgba(6, 8, 12, 1)),
+    radial-gradient(circle at 14% -6%, rgba(255, 255, 255, 0.04), transparent 23%),
+    radial-gradient(circle at 86% 4%, rgba(255, 255, 255, 0.028), transparent 18%),
+    radial-gradient(circle at 70% 100%, rgba(255, 255, 255, 0.02), transparent 22%),
+    linear-gradient(180deg, rgba(7, 9, 12, 0.99), rgba(3, 4, 5, 1)),
     var(--pm-bg);
   color: var(--pm-text);
   font-size: 15px;
@@ -97,7 +97,7 @@ body::after {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(239, 139, 53, 0.28) rgba(17, 20, 27, 0.4);
+  scrollbar-color: rgba(212, 208, 200, 0.22) rgba(17, 20, 27, 0.34);
 }
 
 *::-webkit-scrollbar {
@@ -112,11 +112,11 @@ body::after {
 *::-webkit-scrollbar-thumb {
   border-radius: 999px;
   border: 2px solid rgba(10, 11, 15, 0.68);
-  background: linear-gradient(180deg, rgba(239, 139, 53, 0.4), rgba(143, 130, 239, 0.2));
+  background: linear-gradient(180deg, rgba(212, 208, 200, 0.28), rgba(122, 121, 117, 0.22));
 }
 
 ::selection {
-  background: rgba(239, 139, 53, 0.22);
+  background: rgba(255, 255, 255, 0.14);
   color: var(--pm-text);
 }
 
@@ -148,8 +148,8 @@ select:focus-visible,
 textarea:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 1px rgba(239, 139, 53, 0.74),
-    0 0 0 4px rgba(239, 139, 53, 0.14);
+    0 0 0 1px rgba(212, 208, 200, 0.65),
+    0 0 0 4px rgba(212, 208, 200, 0.1);
 }
 
 .leaflet-container {
@@ -161,9 +161,9 @@ textarea:focus-visible {
 .leaflet-control-zoom a,
 .leaflet-control-attribution,
 .leaflet-bar a {
-  background: rgba(16, 19, 24, 0.88) !important;
+  background: rgba(14, 16, 19, 0.88) !important;
   color: var(--pm-text) !important;
-  border-color: rgba(247, 236, 220, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(18px);
 }
 
@@ -189,14 +189,14 @@ textarea:focus-visible {
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
-  background: rgba(239, 139, 53, 0.24);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .marker-cluster div {
-  background: linear-gradient(180deg, rgba(246, 162, 76, 0.95), rgba(239, 139, 53, 0.92));
-  color: #160d05;
+  background: linear-gradient(180deg, rgba(230, 227, 221, 0.96), rgba(195, 191, 183, 0.92));
+  color: #0d0f12;
   font-weight: 700;
-  box-shadow: 0 12px 28px rgba(239, 139, 53, 0.26);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
 .field {
@@ -228,7 +228,7 @@ textarea:focus-visible {
 .field:focus {
   background:
     linear-gradient(180deg, rgba(22, 27, 34, 0.98), rgba(17, 20, 26, 1)) padding-box,
-    linear-gradient(180deg, rgba(239, 139, 53, 0.46), rgba(239, 139, 53, 0.12)) border-box;
+    linear-gradient(180deg, rgba(212, 208, 200, 0.3), rgba(212, 208, 200, 0.08)) border-box;
 }
 
 textarea.field {
@@ -272,8 +272,8 @@ textarea.field {
 
 .pm-panel-elevated {
   background:
-    radial-gradient(circle at top left, rgba(239, 139, 53, 0.085), transparent 30%),
-    radial-gradient(circle at 92% 4%, rgba(143, 130, 239, 0.05), transparent 20%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 30%),
+    radial-gradient(circle at 92% 4%, rgba(255, 255, 255, 0.028), transparent 20%),
     linear-gradient(180deg, rgba(21, 25, 32, 0.9), rgba(14, 17, 23, 0.96)) padding-box,
     linear-gradient(180deg, rgba(244, 236, 224, 0.055), rgba(244, 236, 224, 0.018)) border-box;
 }
@@ -301,7 +301,7 @@ textarea.field {
   box-shadow: 0 20px 42px rgba(0, 0, 0, 0.18), var(--pm-shadow-warm);
   background:
     linear-gradient(180deg, rgba(20, 25, 32, 0.8), rgba(15, 18, 24, 0.88)) padding-box,
-    linear-gradient(180deg, rgba(239, 139, 53, 0.08), rgba(244, 236, 224, 0.024)) border-box;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(244, 236, 224, 0.02)) border-box;
 }
 
 .pm-card-soft {
@@ -341,7 +341,7 @@ textarea.field {
   font-weight: 650;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(246, 161, 74, 0.86);
+  color: rgba(205, 201, 194, 0.76);
 }
 
 .pm-title {
@@ -392,21 +392,21 @@ textarea.field {
 
 .pm-btn-primary {
   background:
-    linear-gradient(180deg, rgba(239, 139, 53, 0.2), rgba(239, 139, 53, 0.12)) padding-box,
-    linear-gradient(180deg, rgba(255, 228, 198, 0.2), rgba(239, 139, 53, 0.18)) border-box;
-  color: var(--pm-text);
+    linear-gradient(180deg, rgba(212, 208, 200, 0.16), rgba(212, 208, 200, 0.1)) padding-box,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(212, 208, 200, 0.14)) border-box;
+  color: #121417;
   box-shadow:
-    inset 0 1px 0 rgba(255, 245, 228, 0.05),
-    0 14px 28px rgba(239, 139, 53, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 14px 28px rgba(0, 0, 0, 0.12);
 }
 
 .pm-btn-primary:hover {
   background:
-    linear-gradient(180deg, rgba(246, 161, 74, 0.28), rgba(239, 139, 53, 0.18)) padding-box,
-    linear-gradient(180deg, rgba(255, 232, 204, 0.24), rgba(239, 139, 53, 0.22)) border-box;
+    linear-gradient(180deg, rgba(240, 236, 228, 0.18), rgba(212, 208, 200, 0.12)) padding-box,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(212, 208, 200, 0.16)) border-box;
   box-shadow:
-    inset 0 1px 0 rgba(255, 245, 228, 0.07),
-    0 18px 36px rgba(239, 139, 53, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 18px 36px rgba(0, 0, 0, 0.16);
 }
 
 .pm-btn-secondary {
@@ -515,10 +515,10 @@ textarea.field {
 
 .pm-tab-active {
   background:
-    linear-gradient(180deg, rgba(239, 139, 53, 0.15), rgba(239, 139, 53, 0.07)) padding-box,
-    linear-gradient(180deg, rgba(255, 228, 198, 0.16), rgba(239, 139, 53, 0.12)) border-box;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)) padding-box,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)) border-box;
   color: var(--pm-text);
-  box-shadow: 0 10px 20px rgba(239, 139, 53, 0.08);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
 .pm-floating-sheet {
@@ -601,7 +601,7 @@ textarea.field {
 .pm-nav-link-active {
   background: rgba(255, 255, 255, 0.045);
   color: var(--pm-text);
-  box-shadow: inset 0 -1px 0 rgba(239, 139, 53, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .pm-nav-link-active::after {
@@ -612,7 +612,7 @@ textarea.field {
   bottom: 0.34rem;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(239, 139, 53, 0.94), rgba(246, 161, 74, 0.7));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.84), rgba(212, 208, 200, 0.58));
 }
 
 .pm-notice {
@@ -626,8 +626,8 @@ textarea.field {
 }
 
 .pm-sheet-backdrop {
-  background: rgba(7, 9, 13, 0.7);
-  backdrop-filter: blur(14px);
+  background: rgba(4, 5, 7, 0.72);
+  backdrop-filter: blur(16px);
 }
 
 .pm-section-divider {
@@ -636,6 +636,63 @@ textarea.field {
 
 .pm-fade-mask {
   mask-image: linear-gradient(180deg, black 0%, black 88%, transparent 100%);
+}
+
+.pm-overlay-shell {
+  animation: pm-fade-in 180ms var(--pm-ease);
+}
+
+.pm-sheet-shell {
+  animation: pm-sheet-in 220ms var(--pm-ease);
+}
+
+.pm-list-row {
+  border: 1px solid var(--pm-border);
+  background: rgba(255, 255, 255, 0.02);
+  transition:
+    transform var(--pm-transition-fast),
+    background var(--pm-transition-fast),
+    border-color var(--pm-transition-fast),
+    box-shadow var(--pm-transition-fast);
+}
+
+.pm-list-row:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.026);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
+}
+
+.pm-editorial-block {
+  border: 1px solid var(--pm-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)) padding-box,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)) border-box;
+  border-radius: 1.4rem;
+}
+
+.pm-map-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--pm-border);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.38rem 0.7rem;
+  font-size: 0.7rem;
+  color: var(--pm-text-secondary);
+}
+
+.pm-tooltip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.34rem 0.62rem;
+  font-size: 0.7rem;
+  color: var(--pm-text-secondary);
 }
 
 @keyframes pm-fade-up {
@@ -650,14 +707,25 @@ textarea.field {
   }
 }
 
-@keyframes pm-pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 rgba(239, 139, 53, 0);
+@keyframes pm-fade-in {
+  from {
+    opacity: 0;
   }
 
-  50% {
-    box-shadow: 0 0 0 8px rgba(239, 139, 53, 0.08);
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pm-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

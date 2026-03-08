@@ -214,10 +214,10 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(7,8,12,0.78)] p-3 backdrop-blur-md sm:items-center">
-      <div className="w-full max-w-2xl rounded-[30px] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(24,28,35,0.98),rgba(10,11,15,0.99))] p-4 shadow-[var(--pm-shadow-float)] sm:p-6">
+    <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center">
+      <div className="pm-shell pm-sheet-shell w-full max-w-2xl p-4 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[var(--pm-text)]">Importar negocios desde CSV</h3>
+          <h3 className="text-lg font-semibold text-[var(--pm-text)]">Importar CSV</h3>
           <button
             type="button"
             onClick={onClose}
@@ -229,8 +229,7 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
 
         <div className="space-y-3">
           <p className="text-sm text-[var(--pm-text-secondary)]">
-            Campos obligatorios: <strong>nombre</strong> y <strong>dirección</strong>. Opcionales: teléfono, email,
-            sector, contacto, notas, ciudad.
+            Obligatorios: <strong>nombre</strong> y <strong>dirección</strong>. Opcionales: teléfono, email, sector, contacto, notas y ciudad.
           </p>
 
           <label className="block space-y-1 text-sm text-[var(--pm-text-secondary)]">
@@ -243,9 +242,7 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
             />
           </label>
 
-          <p className="pm-caption text-xs">
-            Límite MVP: {CSV_MAX_ROWS} filas por importación para proteger Nominatim y evitar bloqueos.
-          </p>
+          <p className="pm-caption text-xs">Límite: {CSV_MAX_ROWS} filas por importación.</p>
 
           {message ? (
             <PmNotice tone="rose">{message}</PmNotice>
@@ -256,8 +253,8 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
           </button>
 
           {summary ? (
-            <div className="pm-card-soft p-3">
-              <p className="text-sm text-[var(--pm-text)]">Resumen de importación</p>
+            <div className="pm-card p-3.5">
+              <p className="text-sm text-[var(--pm-text)]">Resumen</p>
               <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-secondary)]">
                 <li>Importados: {summary.imported}</li>
                 <li>Errores: {summary.errors}</li>
@@ -267,12 +264,12 @@ export function CsvImportDialog({ open, profile, onClose, onImported }: Props) {
           ) : null}
 
           {errorsPreview.length > 0 ? (
-            <div className="max-h-52 space-y-2 overflow-y-auto rounded-[1.25rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] p-3">
-              <p className="text-sm text-[var(--pm-text)]">Muestra de errores</p>
+            <div className="max-h-52 space-y-2 overflow-y-auto rounded-[1.25rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] p-3">
+              <p className="text-sm text-[var(--pm-text)]">Errores</p>
               {errorsPreview.map((entry, index) => (
-                <div key={`${entry.rawName ?? "sin-nombre"}-${index}`} className="rounded-[1rem] border border-[var(--pm-border)] p-2">
+                <div key={`${entry.rawName ?? "sin-nombre"}-${index}`} className="pm-list-row rounded-[1rem] px-3 py-2.5">
                   <p className="text-xs text-[var(--pm-text-tertiary)]">{entry.rawName ?? "Sin nombre"}</p>
-                  <p className="text-sm text-[rgba(255,230,234,0.98)]">{entry.errorReason}</p>
+                  <p className="text-sm text-[var(--pm-danger)]">{entry.errorReason}</p>
                 </div>
               ))}
             </div>

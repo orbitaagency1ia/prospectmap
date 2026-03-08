@@ -45,7 +45,7 @@ export function CommercialControlBar({
         </div>
 
         <label className="block min-w-[220px] lg:min-w-[250px]">
-          <span className="pm-caption mb-2 block uppercase tracking-[0.16em]">Vertical activa</span>
+          <span className="pm-caption mb-2 block uppercase tracking-[0.16em]">Vertical</span>
           <select
             value={settings.vertical}
             onChange={(event) => onVerticalChange(event.target.value as VerticalId)}

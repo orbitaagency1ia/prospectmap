@@ -41,7 +41,7 @@ import type { MapBounds } from "./map-canvas";
 const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanvas), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(17,20,27,0.94),rgba(10,11,15,0.98))] text-sm text-[var(--pm-text-secondary)]">
+    <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(13,16,20,0.94),rgba(7,9,12,0.98))] text-sm text-[var(--pm-text-secondary)]">
       Cargando mapa...
     </div>
   ),
@@ -452,16 +452,14 @@ export function MapWorkspace({ profile }: Props) {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-148px)] min-h-[640px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(14,17,22,0.94),rgba(8,10,14,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[calc(100vh-120px)] lg:rounded-[2.35rem]">
-      <div className="absolute inset-x-3 top-3 z-[450] hidden grid-cols-[minmax(0,1fr)_320px] gap-3 xl:grid">
-        <div className="pm-map-dock p-4">
+    <div className="relative flex h-[calc(100vh-148px)] min-h-[640px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[calc(100vh-120px)] lg:rounded-[2.35rem]">
+      <div className="absolute inset-x-3 top-3 z-[450] hidden grid-cols-[minmax(0,1fr)_300px] gap-3 xl:grid">
+        <div className="pm-map-dock pm-sheet-shell p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <p className="pm-kicker">Territorio</p>
-              <h1 className="pm-title mt-2 text-[1.45rem]">Prospección en mapa con foco diario</h1>
-              <p className="pm-muted mt-2 max-w-2xl text-sm leading-6">
-                {profile.city_name}. Filtra rápido, detecta cuentas con mejor encaje y abre la ficha operativa sin perder el contexto del mapa.
-              </p>
+              <h1 className="pm-title mt-2 text-[1.3rem]">Prospección en mapa</h1>
+              <p className="pm-muted mt-2 max-w-2xl text-sm leading-6">{profile.city_name}. Filtra, barre y ataca sin perder el contexto.</p>
             </div>
             <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
           </div>
@@ -487,7 +485,7 @@ export function MapWorkspace({ profile }: Props) {
         </div>
 
         <div className="space-y-3">
-          <div className="pm-map-dock p-3.5">
+          <div className="pm-map-dock pm-sheet-shell p-3.5">
             <div className="grid gap-2">
               <Link href={attackZoneHref} className="pm-btn pm-btn-primary w-full">
                 Atacar zona
@@ -509,19 +507,19 @@ export function MapWorkspace({ profile }: Props) {
             </div>
           </div>
 
-          <div className="pm-map-dock p-3.5">
-            <p className="pm-caption uppercase tracking-[0.18em]">Lectura inmediata</p>
+          <div className="pm-map-dock pm-sheet-shell p-3.5">
+            <p className="pm-caption uppercase tracking-[0.18em]">Lectura</p>
             <div className="mt-3 grid gap-2">
               <InlineStat label="Zona visible" value={mapBounds ? "Activa" : "Ciudad completa"} />
               <InlineStat label="Vertical" value={VERTICAL_CONFIGS[settings.vertical].shortLabel} />
-              <InlineStat label="Señal comercial" value={`${conquestSnapshot.openCount} oportunidades abiertas`} />
+              <InlineStat label="Oportunidad" value={`${conquestSnapshot.openCount} abiertas`} />
             </div>
           </div>
         </div>
       </div>
 
       <div className="absolute inset-x-3 top-3 z-[450] space-y-2 xl:hidden">
-        <div className="pm-map-dock p-3">
+        <div className="pm-map-dock pm-sheet-shell p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="pm-kicker">Territorio</p>
@@ -551,7 +549,7 @@ export function MapWorkspace({ profile }: Props) {
           </div>
         </div>
 
-        <div className="pm-map-dock overflow-x-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="pm-map-dock pm-sheet-shell overflow-x-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max items-center gap-2">
             <Link href={attackZoneHref} className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs">
               Ataque
@@ -571,7 +569,7 @@ export function MapWorkspace({ profile }: Props) {
         </div>
 
         {showMobileFilters ? (
-          <div className="pm-map-dock p-3">
+          <div className="pm-map-dock pm-sheet-shell p-3">
             <FiltersRow
               filters={filters}
               categories={categoryOptions}
@@ -599,17 +597,17 @@ export function MapWorkspace({ profile }: Props) {
 
       <div className="relative flex-1">
         {(loadingSaved || loadingOverpass) && (
-          <div className="pm-map-dock pointer-events-none absolute right-3 top-3 z-[430] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
+          <div className="pm-map-dock pm-overlay-shell pointer-events-none absolute right-3 top-3 z-[430] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              {loadingSaved ? "Cargando tus negocios" : "Cargando negocios reales"}
+              {loadingSaved ? "Cargando guardados" : "Cargando reales"}
             </span>
           </div>
         )}
 
         {conquestSnapshot.totalCount > 0 ? (
           <div className="pointer-events-none absolute bottom-4 left-4 z-[430] hidden max-w-[320px] lg:block">
-            <div className="pm-map-dock pointer-events-auto p-4">
+            <div className="pm-map-dock pm-sheet-shell pointer-events-auto p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="pm-kicker">Modo conquista</p>
@@ -624,11 +622,11 @@ export function MapWorkspace({ profile }: Props) {
               </div>
 
               <div className="mt-4 grid gap-2">
-                <div className="pm-card-soft">
+                <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
                   <p className="pm-caption uppercase tracking-[0.16em]">Zona caliente</p>
                   <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.hotZones[0]?.label ?? "Sin señal dominante"}</p>
                 </div>
-                <div className="pm-card-soft">
+                <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
                   <p className="pm-caption uppercase tracking-[0.16em]">Territorio pendiente</p>
                   <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.untouchedCount} negocios sin tocar</p>
                 </div>
@@ -667,9 +665,9 @@ export function MapWorkspace({ profile }: Props) {
       </div>
 
       {showMobilePanel && selectedRecord ? (
-        <div className="pm-sheet-backdrop fixed inset-0 z-[500] lg:hidden" onClick={() => setShowMobilePanel(false)}>
+        <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-[500] lg:hidden" onClick={() => setShowMobilePanel(false)}>
           <div
-            className="pm-side-panel absolute inset-x-0 bottom-0 top-[10%] overflow-hidden rounded-t-[2rem] border-t border-[var(--pm-border)] shadow-[0_-28px_64px_rgba(3,6,10,0.42)]"
+            className="pm-side-panel pm-sheet-shell absolute inset-x-0 bottom-0 top-[10%] overflow-hidden rounded-t-[2rem] border-t border-[var(--pm-border)] shadow-[0_-28px_64px_rgba(3,6,10,0.42)]"
             onClick={(event) => event.stopPropagation()}
           >
             <BusinessPanel
@@ -738,9 +736,9 @@ function ConquestModeModal({
   onOpenBusiness: (businessKey: string) => void;
 }) {
   return (
-    <div className="pm-sheet-backdrop fixed inset-0 z-[520] p-3" onClick={onClose}>
+    <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-[520] p-3" onClick={onClose}>
       <div
-        className="pm-shell mx-auto flex h-full max-w-6xl flex-col overflow-hidden"
+        className="pm-shell pm-sheet-shell mx-auto flex h-full max-w-6xl flex-col overflow-hidden"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[var(--pm-border)] px-5 py-5">
@@ -878,9 +876,9 @@ function SweepModeModal({
   onOpenBusiness: (record: ProspectRecord) => void;
 }) {
   return (
-    <div className="pm-sheet-backdrop fixed inset-0 z-[520] p-3" onClick={onClose}>
+    <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-[520] p-3" onClick={onClose}>
       <div
-        className="pm-shell mx-auto flex h-full max-w-7xl flex-col overflow-hidden xl:grid xl:grid-cols-[1.2fr_0.8fr]"
+        className="pm-shell pm-sheet-shell mx-auto flex h-full max-w-7xl flex-col overflow-hidden xl:grid xl:grid-cols-[1.2fr_0.8fr]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex min-h-0 flex-col border-b border-[var(--pm-border)] xl:border-b-0 xl:border-r">

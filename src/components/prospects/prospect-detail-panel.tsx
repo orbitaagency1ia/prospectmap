@@ -233,7 +233,7 @@ function InfoBlock({
     <section
       className={cn(
         "pm-card p-4 sm:p-5",
-        highlight && "border-[rgba(239,139,53,0.12)] bg-[linear-gradient(180deg,rgba(239,139,53,0.06),rgba(18,22,28,0.82))_padding-box]",
+        highlight && "border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(18,22,28,0.82))_padding-box]",
       )}
     >
       <p className="pm-kicker">{title}</p>

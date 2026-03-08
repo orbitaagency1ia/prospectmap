@@ -224,7 +224,7 @@ export function BusinessPanel({
       <aside className="pm-side-panel flex h-full items-center justify-center p-6">
         <PmEmpty
           title="Selecciona una cuenta"
-          body="Abre un negocio del mapa para ver su briefing comercial, decidir el ángulo y registrar actividad sin salir del territorio."
+          body="Abre una ficha para ver contexto, acción y actividad sin salir del mapa."
         />
       </aside>
     );
@@ -237,7 +237,7 @@ export function BusinessPanel({
           <div className="min-w-0">
             <p className="pm-kicker">Informe comercial</p>
             <h2 className="pm-title mt-2 text-[1.28rem] leading-tight">{panelTitle}</h2>
-            <p className="pm-muted mt-2 text-sm">{selected.category ?? "Sin categoría"} · {selected.city || "Ubicación sin confirmar"}</p>
+            <p className="pm-muted mt-2 text-sm">{selected.category ?? "Sin categoría"} · {selected.city || "Ubicación pendiente"}</p>
           </div>
           <button
             type="button"
@@ -265,9 +265,9 @@ export function BusinessPanel({
         ) : null}
 
         {selected.mode === "overpass" ? (
-          <div className="mt-4 rounded-[1.35rem] border border-[rgba(239,139,53,0.16)] bg-[linear-gradient(180deg,rgba(239,139,53,0.08),rgba(19,23,30,0.82))] p-4">
+          <div className="pm-editorial-block mt-4 p-4">
             <p className="text-sm leading-6 text-[var(--pm-text)]">
-              Detectado en OpenStreetMap. Guárdalo para convertirlo en una cuenta operativa con estado, prioridad y notas privadas.
+              Detectado en OpenStreetMap. Guárdalo para trabajar estado, prioridad y notas.
             </p>
             <button
               type="button"
@@ -283,7 +283,7 @@ export function BusinessPanel({
 
         {insight ? (
           <div className="mt-5 space-y-4">
-            <div className="rounded-[1.5rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))] px-4 py-4 shadow-[var(--pm-shadow-card)]">
+            <div className="pm-editorial-block px-4 py-4 shadow-[var(--pm-shadow-card)]">
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={cn(
@@ -294,7 +294,7 @@ export function BusinessPanel({
                   {insight.tierLabel}
                 </span>
                 {insight.marketVertical !== insight.effectiveVertical ? (
-                  <PmBadge>Mercado detectado: {insight.marketVerticalLabel}</PmBadge>
+                  <PmBadge>Mercado: {insight.marketVerticalLabel}</PmBadge>
                 ) : null}
                 {showDemoBadges && insight.demoBadges.length > 0
                   ? insight.demoBadges.map((badge) => (
@@ -383,7 +383,7 @@ export function BusinessPanel({
             </div>
 
             <div className="pm-tabs">
-              <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Informe" />
+              <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Resumen" />
               <TabButton active={activeTab === "datos"} onClick={() => setActiveTab("datos")} label="Datos" />
               {isSaved ? <TabButton active={activeTab === "notas"} onClick={() => setActiveTab("notas")} label="Notas" /> : null}
             </div>
@@ -464,7 +464,7 @@ export function BusinessPanel({
               <InsightBlock title="Objeciones probables">
                 <div className="space-y-3">
                   {insight.objections.map((item) => (
-                    <div key={item.objection} className="pm-card-soft p-3.5">
+                    <div key={item.objection} className="pm-list-row rounded-[1rem] px-3.5 py-3.5">
                       <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
                       <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.response}</p>
                     </div>
@@ -492,9 +492,9 @@ export function BusinessPanel({
                       <p className="text-sm font-medium text-[var(--pm-text)]">{item.label}</p>
                       <p
                         className={cn(
-                          "font-mono text-xs",
-                          item.direction === "minus" ? "text-rose-300" : "text-[var(--pm-primary)]",
-                        )}
+                        "font-mono text-xs",
+                        item.direction === "minus" ? "text-[var(--pm-danger)]" : "text-[var(--pm-text)]",
+                      )}
                       >
                         {item.direction === "minus" ? "-" : "+"}
                         {item.value.toFixed(1)} / {item.max}
@@ -734,7 +734,7 @@ export function BusinessPanel({
                   onChange={(event) => setNoteText(event.target.value)}
                   rows={4}
                   className="field resize-y"
-                  placeholder="Qué ha pasado, qué respondió, siguiente paso y cualquier detalle útil para la próxima interacción."
+                  placeholder="Qué pasó, qué respondió y qué conviene hacer después."
                 />
                 <button
                   type="button"
@@ -742,7 +742,7 @@ export function BusinessPanel({
                   disabled={savingNote || !noteText.trim()}
                   className="pm-btn pm-btn-primary w-full"
                 >
-                  {savingNote ? "Guardando nota..." : "Añadir nota"}
+                  {savingNote ? "Guardando..." : "Añadir nota"}
                 </button>
               </div>
             </div>
@@ -752,7 +752,7 @@ export function BusinessPanel({
               <div className="mt-4 space-y-3">
                 {notesLoading ? <p className="text-xs text-[var(--pm-text-tertiary)]">Cargando notas...</p> : null}
                 {!notesLoading && notes.length === 0 ? (
-                  <PmEmpty body="Todavía no hay interacción registrada para esta cuenta." />
+                  <PmEmpty body="Todavía no hay actividad registrada." />
                 ) : null}
                 {notes.map((note) => (
                   <article key={note.id} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3">
@@ -767,8 +767,8 @@ export function BusinessPanel({
       </div>
 
       {panelStatus?.isNonViable ? (
-        <div className="border-t border-[var(--pm-border)] bg-[rgba(213,107,119,0.08)] px-4 py-3 text-xs text-[rgba(255,230,234,0.98)] sm:px-5">
-          Cuenta marcada como no viable. Se recomienda sacarla de campañas activas y del foco diario.
+        <div className="border-t border-[var(--pm-border)] bg-[rgba(154,125,130,0.08)] px-4 py-3 text-xs text-[rgba(245,238,239,0.96)] sm:px-5">
+          Cuenta no viable. Conviene sacarla del foco activo.
         </div>
       ) : null}
 
@@ -797,7 +797,7 @@ function InsightBlock({
     <section
       className={cn(
         "pm-card p-4 sm:p-5",
-        highlight && "border-[rgba(239,139,53,0.12)] bg-[linear-gradient(180deg,rgba(239,139,53,0.06),rgba(18,22,28,0.82))_padding-box]",
+        highlight && "border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(18,22,28,0.82))_padding-box]",
       )}
     >
       <p className="pm-kicker">{title}</p>
@@ -890,11 +890,11 @@ function QuickActionButton({
         tone === "cyan"
           ? "pm-btn-primary"
           : tone === "amber"
-            ? "border-[rgba(217,173,89,0.16)] bg-[linear-gradient(180deg,rgba(217,173,89,0.1),rgba(18,22,28,0.82))] text-[rgba(255,243,214,0.98)]"
+            ? "border-[rgba(161,148,128,0.16)] bg-[linear-gradient(180deg,rgba(161,148,128,0.1),rgba(18,22,28,0.82))] text-[rgba(244,241,234,0.96)]"
             : tone === "violet"
-              ? "border-[rgba(143,130,239,0.16)] bg-[linear-gradient(180deg,rgba(143,130,239,0.1),rgba(18,22,28,0.82))] text-[rgba(239,236,255,0.98)]"
+              ? "border-[rgba(168,171,177,0.16)] bg-[linear-gradient(180deg,rgba(168,171,177,0.08),rgba(18,22,28,0.82))] text-[rgba(240,240,240,0.96)]"
               : tone === "rose"
-                ? "border-[rgba(213,107,119,0.16)] bg-[linear-gradient(180deg,rgba(213,107,119,0.1),rgba(18,22,28,0.82))] text-[rgba(255,230,234,0.98)]"
+                ? "border-[rgba(154,125,130,0.16)] bg-[linear-gradient(180deg,rgba(154,125,130,0.1),rgba(18,22,28,0.82))] text-[rgba(245,238,239,0.96)]"
                 : "pm-btn-secondary",
       )}
     >

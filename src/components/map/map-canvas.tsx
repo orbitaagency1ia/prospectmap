@@ -65,7 +65,7 @@ function getMarkerIcon(status: ProspectStatus, worked: boolean) {
       border-radius: 999px;
       border: 2px solid rgba(15,23,42,0.95);
       background: ${statusColor};
-      box-shadow: 0 0 0 ${worked ? "2px rgba(226,232,240,0.35)" : "0px"};
+      box-shadow: 0 0 0 ${worked ? "2px rgba(255,255,255,0.22)" : "0px"};
       position: relative;
     "></div>`,
     iconSize: [18, 18],
@@ -151,24 +151,24 @@ export function MapCanvas({
               }}
             >
               <Tooltip direction="top" offset={[0, -6]}>
-                <div className="min-w-[220px] space-y-2 text-xs">
+                <div className="min-w-[220px] space-y-2.5 text-xs">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-[var(--pm-text)]">{marker.name}</p>
                       <p className="text-[var(--pm-text-secondary)]">{marker.category ?? "Sin categoría"}</p>
                     </div>
-                    <span className="rounded-full border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 text-[rgba(255,214,179,0.98)]">
+                    <span className="pm-tooltip-chip text-[var(--pm-text)]">
                       {marker.score}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">{marker.opportunityLabel}</span>
-                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">{status.label}</span>
-                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1 text-[var(--pm-text-secondary)]">Urgencia {marker.urgency}</span>
+                    <span className="pm-tooltip-chip">{marker.opportunityLabel}</span>
+                    <span className="pm-tooltip-chip">{status.label}</span>
+                    <span className="pm-tooltip-chip">Urgencia {marker.urgency}</span>
                   </div>
-                  <p className="text-[var(--pm-text-secondary)]">Servicio: {marker.serviceLabel}</p>
-                  <p className="text-[var(--pm-text-secondary)]">Valor estimado: {formatCurrency(marker.estimatedValue)}</p>
-                  <p className="text-[var(--pm-text-tertiary)]">{marker.worked ? "Trabajado" : "Sin trabajar"}</p>
+                  <p className="text-[var(--pm-text-secondary)]">{marker.serviceLabel}</p>
+                  <p className="text-[var(--pm-text-secondary)]">{formatCurrency(marker.estimatedValue)}</p>
+                  <p className="text-[var(--pm-text-tertiary)]">{marker.worked ? "Trabajado" : "Sin tocar"}</p>
                   <p className="line-clamp-2 text-[var(--pm-text-tertiary)]">
                     {marker.latestNote
                       ? `Nota: ${marker.latestNote}`
@@ -184,13 +184,13 @@ export function MapCanvas({
                       <p className="font-semibold">{marker.name}</p>
                       <p>{marker.category ?? "Sin categoría"}</p>
                     </div>
-                    <span className="rounded-full border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-2 py-1 text-[rgba(255,214,179,0.98)]">
-                      Prioridad {marker.score}
+                    <span className="pm-tooltip-chip text-[var(--pm-text)]">
+                      {marker.score}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1">{marker.opportunityLabel}</span>
-                    <span className="rounded-full border border-[var(--pm-border)] px-2 py-1">{status.label}</span>
+                    <span className="pm-tooltip-chip">{marker.opportunityLabel}</span>
+                    <span className="pm-tooltip-chip">{status.label}</span>
                   </div>
                   <p>{marker.serviceLabel}</p>
                   <p>{formatCurrency(marker.estimatedValue)}</p>
@@ -199,9 +199,9 @@ export function MapCanvas({
                   <button
                     type="button"
                     onClick={() => onMarkerSelect(marker.key)}
-                    className="w-full rounded-lg border border-[rgba(242,138,46,0.5)] bg-[rgba(242,138,46,0.12)] px-3 py-2 text-left font-medium text-[rgba(255,221,188,0.98)]"
+                    className="pm-btn pm-btn-secondary w-full justify-start"
                   >
-                    Abrir informe
+                    Abrir ficha
                   </button>
                 </div>
               </Popup>

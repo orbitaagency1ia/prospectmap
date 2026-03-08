@@ -62,7 +62,7 @@ export function OnboardingWorkspace({
               className={cn(
                 "pm-card",
                 active
-                  ? "border-[rgba(239,139,53,0.22)] bg-[linear-gradient(180deg,rgba(239,139,53,0.12),rgba(30,35,44,0.84))]"
+                  ? "border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(30,35,44,0.84))]"
                   : done
                     ? "border-[rgba(78,192,134,0.24)] bg-[linear-gradient(180deg,rgba(78,192,134,0.12),rgba(30,35,44,0.84))]"
                     : "",

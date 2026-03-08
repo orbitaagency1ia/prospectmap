@@ -193,7 +193,7 @@ export function ProspectListsPanel({
                           ? "border-[rgba(78,192,134,0.32)] bg-[rgba(78,192,134,0.12)] text-[rgba(223,255,238,0.98)]"
                           : list.status === "archivada"
                             ? "border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] text-[var(--pm-text-secondary)]"
-                            : "border-[rgba(239,139,53,0.28)] bg-[rgba(239,139,53,0.1)] text-[var(--pm-text)]",
+                            : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[var(--pm-text)]",
                       )}
                     >
                       {LIST_STATUS_LABELS[list.status]}
