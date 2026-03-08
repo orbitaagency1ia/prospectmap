@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -24,6 +24,8 @@ function getLoginErrorMessage(message: string) {
 
 export function LoginForm({ registered = false }: { registered?: boolean }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const localBypassParam = searchParams.get("localBypass");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,6 +63,18 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
       {registered ? (
         <PmNotice tone="emerald">
           Cuenta creada. Ya puedes entrar con tu email y contraseña.
+        </PmNotice>
+      ) : null}
+
+      {localBypassParam === "missing_credentials" ? (
+        <PmNotice tone="amber">
+          Falta configurar `LOCAL_BYPASS_EMAIL` y `LOCAL_BYPASS_PASSWORD` en `.env.local`.
+        </PmNotice>
+      ) : null}
+
+      {localBypassParam === "invalid_credentials" ? (
+        <PmNotice tone="rose">
+          El acceso automático local falló. Revisa email y contraseña en `.env.local`.
         </PmNotice>
       ) : null}
 
