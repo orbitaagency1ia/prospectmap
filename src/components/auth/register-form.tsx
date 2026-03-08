@@ -123,6 +123,25 @@ export function RegisterForm() {
       return;
     }
 
+    // If Email confirmation is enabled in Supabase, signUp may return without session.
+    // Try immediate password login so access keeps working like legacy behavior.
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (!signInError) {
+      router.replace("/today");
+      router.refresh();
+      return;
+    }
+
+    if (signInError.message.toLowerCase().includes("email not confirmed")) {
+      setError("Cuenta creada, pero Supabase pide confirmar email. Para acceso directo desactiva 'Confirm email'.");
+      setLoading(false);
+      return;
+    }
+
     router.replace("/login?registered=1");
   };
 

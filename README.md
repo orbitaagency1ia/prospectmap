@@ -225,8 +225,8 @@ La app abrirá directamente en `/today`.
    - Email activado.
 4. En Authentication > URL Configuration:
    - añade `http://localhost:3000` para local.
-5. Opcional recomendado para pruebas rápidas MVP:
-   - desactivar confirmación de email (si quieres entrar justo tras registro).
+5. Para acceso directo con contraseña (sin validación manual):
+   - desactiva `Confirm email` en Authentication > Providers > Email.
 
 ## 5) Modelo de datos y privacidad
 

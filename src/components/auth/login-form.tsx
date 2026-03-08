@@ -16,7 +16,7 @@ function getLoginErrorMessage(message: string) {
   }
 
   if (normalized.includes("email not confirmed")) {
-    return "Tu acceso aún no está validado. Revisa el correo y vuelve a intentarlo.";
+    return "Esta instancia tiene activada confirmación por email en Supabase. Desactívala para acceso directo con contraseña.";
   }
 
   return "No pude iniciar sesión ahora mismo. Inténtalo de nuevo en unos segundos.";
@@ -60,7 +60,7 @@ export function LoginForm({ registered = false }: { registered?: boolean }) {
 
       {registered ? (
         <PmNotice tone="emerald">
-          Cuenta creada. Si tu acceso requiere validación por email, revisa tu bandeja antes de entrar.
+          Cuenta creada. Ya puedes entrar con tu email y contraseña.
         </PmNotice>
       ) : null}
 

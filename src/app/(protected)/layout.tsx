@@ -20,6 +20,50 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
+  // Legacy-safe bootstrap so old users can enter without manual admin provisioning.
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!existingProfile) {
+    const userMeta = (user.user_metadata ?? {}) as {
+      company_name?: unknown;
+      city_name?: unknown;
+      city_lat?: unknown;
+      city_lng?: unknown;
+    };
+
+    const cityLat = typeof userMeta.city_lat === "number" ? userMeta.city_lat : null;
+    const cityLng = typeof userMeta.city_lng === "number" ? userMeta.city_lng : null;
+
+    await supabase.from("profiles").insert({
+      id: user.id,
+      email: user.email ?? "",
+      company_name: typeof userMeta.company_name === "string" ? userMeta.company_name : "",
+      city_name: typeof userMeta.city_name === "string" ? userMeta.city_name : "",
+      city_lat: cityLat,
+      city_lng: cityLng,
+    });
+  }
+
+  await supabase.from("account_settings").upsert(
+    { user_id: user.id },
+    {
+      onConflict: "user_id",
+      ignoreDuplicates: true,
+    },
+  );
+
+  await supabase.from("account_profiles").upsert(
+    { user_id: user.id },
+    {
+      onConflict: "user_id",
+      ignoreDuplicates: true,
+    },
+  );
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("company_name,city_name")
