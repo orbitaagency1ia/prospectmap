@@ -70,29 +70,30 @@ export default async function ProtectedLayout({
             </div>
 
             <div className="pm-shell-divider mt-5 border-t pt-4 xl:hidden">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-[var(--pm-text-tertiary)]">Navegación principal abajo</p>
-                <div className="flex items-center gap-2">
-                  <Link href="/dashboard" className="pm-utility-button min-h-[2.6rem] px-3">
-                    <BarChart3 className="h-4 w-4" />
-                    <span className="sr-only">Analítica</span>
-                  </Link>
-                  <Link href="/settings" className="pm-utility-button min-h-[2.6rem] px-3">
-                    <Settings className="h-4 w-4" />
-                    <span className="sr-only">Configuración</span>
-                  </Link>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-[var(--pm-text-tertiary)]">Navegación principal</p>
+                  <div className="flex items-center gap-2">
+                    <Link href="/dashboard" className="pm-utility-button min-h-[2.6rem] px-3">
+                      <BarChart3 className="h-4 w-4" />
+                      <span className="sr-only">Analítica</span>
+                    </Link>
+                    <Link href="/settings" className="pm-utility-button min-h-[2.6rem] px-3">
+                      <Settings className="h-4 w-4" />
+                      <span className="sr-only">Configuración</span>
+                    </Link>
+                  </div>
                 </div>
+                <AppNav showDesktop={false} />
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-[1740px] flex-1 flex-col px-3 pb-[6.8rem] pt-4 md:px-5 md:pb-10 md:pt-5 xl:pb-10">
+      <div className="mx-auto flex w-full max-w-[1740px] flex-1 flex-col px-3 pb-8 pt-4 md:px-5 md:pb-10 md:pt-5">
         {children}
       </div>
-
-      <AppNav showDesktop={false} />
     </div>
   );
 }

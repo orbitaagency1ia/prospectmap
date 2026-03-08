@@ -44,22 +44,26 @@ export function AppNav({
         </div>
       </nav>
 
-      <nav className={cn("pm-mobile-dock xl:hidden", !showMobile && "hidden")}>
-        {primaryLinks.map(({ href, label, mobileLabel, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
+      <nav className={cn("xl:hidden", !showMobile && "hidden")}>
+        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="pm-mobile-stage">
+            {primaryLinks.map(({ href, label, mobileLabel, icon: Icon }) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
 
-          return (
-            <Link
-              key={href}
-              href={href}
-              aria-label={label}
-              className={cn("pm-mobile-nav-link", active && "pm-mobile-nav-link-active")}
-            >
-              <Icon className="h-[18px] w-[18px]" />
-              <span className="truncate text-[10px] font-medium tracking-[0.02em]">{mobileLabel}</span>
-            </Link>
-          );
-        })}
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-label={label}
+                  className={cn("pm-mobile-nav-link", active && "pm-mobile-nav-link-active")}
+                >
+                  <Icon className="h-[16px] w-[16px]" />
+                  <span className="truncate text-xs font-medium tracking-[0.01em]">{mobileLabel}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </nav>
     </>
   );

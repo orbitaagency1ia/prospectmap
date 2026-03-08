@@ -453,7 +453,7 @@ export function MapWorkspace({ profile }: Props) {
 
   return (
     <>
-      <div className="grid min-h-[680px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
+      <div className="grid min-h-[680px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[calc(100dvh-13rem)] lg:min-h-[720px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[calc(100dvh-12rem)] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
         <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(8,10,13,0.76)] lg:flex lg:flex-col">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
             <div className="pm-focus-pane p-5">
@@ -661,7 +661,7 @@ export function MapWorkspace({ profile }: Props) {
             ) : null}
           </div>
 
-          <div className="min-h-0 flex-1">
+          <div className="h-[56vh] min-h-[420px] lg:min-h-0 lg:h-full lg:flex-1">
             <MapCanvas
               center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
               markers={mapMarkers}
