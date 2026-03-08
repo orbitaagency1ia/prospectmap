@@ -6,12 +6,14 @@ import { isLocalAuthBypassEnabled } from "@/lib/local-auth-bypass";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ registered?: string }>;
+  searchParams: Promise<{ registered?: string; localBypass?: string }>;
 }) {
-  if (isLocalAuthBypassEnabled()) {
+  const params = await searchParams;
+
+  // If local bypass failed, keep login visible to avoid redirect loops.
+  if (isLocalAuthBypassEnabled() && !params.localBypass) {
     redirect("/auto-login?next=/today");
   }
 
-  const params = await searchParams;
   return <LoginForm registered={params.registered === "1"} />;
 }
