@@ -52,42 +52,33 @@ export function ProspectDetailPanel({
 
   return (
     <>
-      <PmPanel elevated className="space-y-5 p-5">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-          <div>
+      <PmPanel elevated className="space-y-5 p-5 sm:p-6">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-3xl">
             <p className="pm-kicker">Informe comercial</p>
-            <h2 className="pm-title mt-2 text-[1.55rem]">{record.business.name}</h2>
+            <h2 className="pm-title mt-3 text-[1.55rem] leading-tight sm:text-[1.8rem]">{record.business.name}</h2>
             <p className="pm-muted mt-2 text-sm leading-6">
-              {record.insight.sectorLabel} · {record.insight.cityLabel}
+              {record.insight.sectorLabel} · {record.insight.cityLabel} · {record.insight.effectiveVerticalLabel}
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", status.badgeClass)}>{status.label}</span>
+              <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", opportunity.badgeClass)}>
+                {record.insight.tierLabel}
+              </span>
+              <PmBadge tone="cyan">Prioridad comercial {record.insight.score}</PmBadge>
+              <PmBadge>{record.insight.service.fitLabel}</PmBadge>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <button
-              type="button"
-              onClick={() => handleCopy("initial", record.insight.messages.initial)}
-              className="pm-btn pm-btn-secondary w-full sm:w-auto"
-            >
+
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
+            <button type="button" onClick={() => setShowPrep(true)} className="pm-btn pm-btn-primary w-full">
+              Preparar prospección
+            </button>
+            <button type="button" onClick={() => handleCopy("initial", record.insight.messages.initial)} className="pm-btn pm-btn-secondary w-full">
               <Copy className="h-4 w-4" />
               {copied === "initial" ? "Mensaje copiado" : "Copiar mensaje"}
             </button>
-            <button
-              type="button"
-              onClick={() => setShowPrep(true)}
-              className="pm-btn pm-btn-primary w-full sm:w-auto"
-            >
-              Preparar prospección
-            </button>
           </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", status.badgeClass)}>{status.label}</span>
-          <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", opportunity.badgeClass)}>
-            {record.insight.tierLabel}
-          </span>
-          <PmBadge tone="cyan">Prioridad comercial {record.insight.score}</PmBadge>
-          <span className="pm-badge">{record.insight.effectiveVerticalLabel}</span>
-          <span className="pm-badge">{record.insight.service.fitLabel}</span>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -100,114 +91,103 @@ export function ProspectDetailPanel({
         {showDemoBadges && record.insight.demoBadges.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {record.insight.demoBadges.map((badge) => (
-              <PmBadge
-                key={badge.label}
-                tone={badgeToneMap[badge.tone] ?? "neutral"}
-              >
+              <PmBadge key={badge.label} tone={badgeToneMap[badge.tone] ?? "neutral"}>
                 {badge.label}
               </PmBadge>
             ))}
           </div>
         ) : null}
 
-        <InfoBlock title="Resumen ejecutivo" body={record.insight.executiveSummary}>
-          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.fitSummary}</p>
-        </InfoBlock>
-
-        <InfoBlock title="Por qué atacarlo" body={record.insight.attackSummary}>
-          <p className="mt-3 text-sm text-[var(--pm-text-secondary)]">{record.insight.riskSummary}</p>
-        </InfoBlock>
-
-        <InfoBlock title="Dolor principal detectado" body={record.insight.painPoint}>
-          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.commercialFocus}</p>
-        </InfoBlock>
-
-        <InfoBlock title="Siguiente mejor acción" body={record.insight.nextAction.action}>
-          <p className="text-sm text-[var(--pm-text-secondary)]">
-            {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
-          </p>
-          <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">
-            Urgencia: {record.insight.nextAction.urgency} · Probabilidad de cierre:{" "}
-            {Math.round(record.insight.closeProbability * 100)}%
-          </p>
-        </InfoBlock>
-
-        <InfoBlock title="Servicio Órbita recomendado" body={record.insight.service.label}>
-          <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.service.reason}</p>
-          <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-tertiary)]">
-            {record.insight.service.reasons.map((reason) => (
-              <li key={reason}>• {reason}</li>
-            ))}
-          </ul>
-        </InfoBlock>
+        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <InfoBlock title="Por qué atacarlo" body={record.insight.attackSummary} highlight>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.executiveSummary}</p>
+          </InfoBlock>
+          <InfoBlock title="Qué hacer ahora" body={record.insight.nextAction.action}>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+              {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
+            </p>
+            <p className="mt-2 text-xs text-[var(--pm-text-tertiary)]">
+              Urgencia: {record.insight.nextAction.urgency} · Probabilidad de cierre: {Math.round(record.insight.closeProbability * 100)}%
+            </p>
+          </InfoBlock>
+        </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <InfoBlock title="Ángulo comercial recomendado" body={record.insight.commercialAngle}>
-            <p className="text-sm text-[var(--pm-text-secondary)]">{record.insight.ctaSuggestion}</p>
-          </InfoBlock>
-          <InfoBlock title="Qué revisar antes de contactar" body={record.insight.reviewChecklist[0] ?? "Sin checklist adicional"}>
-            <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-tertiary)]">
-              {record.insight.reviewChecklist.slice(1).map((item) => (
-                <li key={item}>• {item}</li>
+          <InfoBlock title="Servicio recomendado" body={record.insight.service.label}>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.service.reason}</p>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-[var(--pm-text-secondary)]">
+              {record.insight.service.reasons.map((reason) => (
+                <li key={reason}>• {reason}</li>
               ))}
             </ul>
           </InfoBlock>
+
+          <InfoBlock title="Ángulo comercial" body={record.insight.commercialAngle}>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.ctaSuggestion}</p>
+          </InfoBlock>
         </div>
 
-        <section className="space-y-2">
-          <p className="pm-caption uppercase tracking-[0.14em]">Mensajes sugeridos</p>
-          <MessageBlock title="Mensaje inicial" content={record.insight.messages.initial} />
-          <MessageBlock title="Follow-up 1" content={record.insight.messages.followUp1} />
-          <MessageBlock title="Follow-up 2" content={record.insight.messages.followUp2} />
-        </section>
+        <div className="pm-card p-4 sm:p-5">
+          <p className="pm-kicker">Mensajes sugeridos</p>
+          <div className="mt-4 grid gap-3">
+            <MessageBlock title="Mensaje inicial" content={record.insight.messages.initial} />
+            <MessageBlock title="Follow-up 1" content={record.insight.messages.followUp1} />
+            <MessageBlock title="Follow-up 2" content={record.insight.messages.followUp2} />
+          </div>
+        </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <section className="space-y-2">
-            <p className="pm-caption uppercase tracking-[0.14em]">Qué lo hace encajar</p>
-            <Checklist items={record.insight.fitSignals} />
+          <section className="pm-card p-4 sm:p-5">
+            <p className="pm-kicker">Qué revisar antes</p>
+            <div className="mt-4 space-y-2">
+              {record.insight.reviewChecklist.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">Sin checklist adicional.</p> : null}
+              {record.insight.reviewChecklist.map((item) => (
+                <p key={item} className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+                  • {item}
+                </p>
+              ))}
+            </div>
+            <div className="pm-section-divider mt-4 pt-4">
+              <p className="pm-caption uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">Qué no decir</p>
+              <div className="mt-3 space-y-2">
+                {record.insight.avoidTalkingPoints.map((item) => (
+                  <p key={item} className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+                    • {item}
+                  </p>
+                ))}
+              </div>
+            </div>
           </section>
-          <section className="space-y-2">
-            <p className="pm-caption uppercase tracking-[0.14em]">Riesgos / qué falta revisar</p>
-            <Checklist items={[...record.insight.riskSignals, ...record.insight.missingData]} />
+
+          <section className="pm-card p-4 sm:p-5">
+            <p className="pm-kicker">Objeciones probables</p>
+            <div className="mt-4 space-y-3">
+              {record.insight.objections.map((item) => (
+                <div key={item.objection} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+                  <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.response}</p>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
 
-        <section className="space-y-2">
-          <p className="pm-caption uppercase tracking-[0.14em]">Objeciones probables</p>
-          {record.insight.objections.map((item) => (
-            <article key={item.objection} className="pm-card-soft">
-              <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
-              <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.response}</p>
-            </article>
-          ))}
-        </section>
-
-        <section className="space-y-2">
-          <p className="pm-caption uppercase tracking-[0.14em]">Lógica del score</p>
-          {record.insight.breakdown.map((item) => (
-            <div key={item.key} className="pm-card-soft">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-[var(--pm-text)]">{item.label}</p>
-                <p
-                  className={cn(
-                    "font-mono text-sm",
-                    item.direction === "minus" ? "text-rose-300" : "text-[var(--pm-primary)]",
-                  )}
-                >
-                  {item.direction === "minus" ? "-" : "+"}
-                  {item.value.toFixed(1)} / {item.max}
-                </p>
-              </div>
-              <p className="mt-1 text-xs text-[var(--pm-text-tertiary)]">{item.reason}</p>
-            </div>
-          ))}
-        </section>
+        <div className="grid gap-4 xl:grid-cols-2">
+          <section className="pm-card p-4 sm:p-5">
+            <p className="pm-kicker">Señales a favor</p>
+            <Checklist items={record.insight.fitSignals} emptyText="Sin señales adicionales." />
+          </section>
+          <section className="pm-card p-4 sm:p-5">
+            <p className="pm-kicker">Riesgos o huecos</p>
+            <Checklist items={[...record.insight.riskSignals, ...record.insight.missingData]} emptyText="No hay alertas relevantes." />
+          </section>
+        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="pm-card-soft text-xs text-[var(--pm-text-tertiary)]">
+          <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
             Última interacción: {formatDateTime(record.business.lastInteractionAt)}
           </div>
-          <div className="pm-card-soft text-xs text-[var(--pm-text-tertiary)]">
+          <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
             Próximo follow-up: {formatDateTime(record.insight.followUpAt)}
           </div>
         </div>
@@ -225,13 +205,13 @@ export function ProspectDetailPanel({
   );
 }
 
-function Checklist({ items }: { items: string[] }) {
+function Checklist({ items, emptyText }: { items: string[]; emptyText: string }) {
   return (
-    <div className="space-y-2">
-      {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">Sin señales adicionales.</p> : null}
+    <div className="mt-4 space-y-2">
+      {items.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">{emptyText}</p> : null}
       {items.map((item) => (
-        <p key={item} className="pm-card-soft px-3 py-2 text-sm text-[var(--pm-text-secondary)]">
-          {item}
+        <p key={item} className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+          • {item}
         </p>
       ))}
     </div>
@@ -242,34 +222,41 @@ function InfoBlock({
   title,
   body,
   children,
+  highlight = false,
 }: {
   title: string;
   body: string;
   children: React.ReactNode;
+  highlight?: boolean;
 }) {
   return (
-    <section className="pm-card-soft p-4">
-      <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
-      <p className="mt-2 text-sm font-medium leading-6 text-[var(--pm-text)]">{body}</p>
-      <div className="mt-2">{children}</div>
+    <section
+      className={cn(
+        "pm-card p-4 sm:p-5",
+        highlight && "border-[rgba(239,139,53,0.12)] bg-[linear-gradient(180deg,rgba(239,139,53,0.06),rgba(18,22,28,0.82))_padding-box]",
+      )}
+    >
+      <p className="pm-kicker">{title}</p>
+      <p className="mt-4 text-sm font-medium leading-7 text-[var(--pm-text)]">{body}</p>
+      <div className="mt-3">{children}</div>
     </section>
   );
 }
 
 function MessageBlock({ title, content }: { title: string; content: string }) {
   return (
-    <article className="pm-card-soft p-3">
-      <p className="pm-caption uppercase tracking-[0.14em]">{title}</p>
-      <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{content}</p>
+    <article className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+      <p className="pm-caption uppercase tracking-[0.16em]">{title}</p>
+      <p className="mt-2 text-sm leading-7 text-[var(--pm-text-secondary)]">{content}</p>
     </article>
   );
 }
 
 function InfoPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="pm-card-soft p-3">
-      <p className="pm-caption uppercase tracking-[0.14em]">{label}</p>
-      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
+    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+      <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
+      <p className="mt-2 text-sm font-medium text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }

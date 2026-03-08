@@ -24,44 +24,40 @@ export function CommercialControlBar({
       : saveState === "saved"
         ? "Cambios guardados"
         : saveState === "local_only"
-          ? "Guardado temporal"
+          ? "Solo en este equipo"
           : saveState === "error"
-            ? "Sincronización pendiente"
+            ? "Revisar sincronización"
             : "Todo al día";
 
   return (
-    <PmPanel className="p-4 sm:p-5">
+    <PmPanel className="px-4 py-4 md:px-5 md:py-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="pm-kicker">Contexto comercial</p>
-          <h2 className="pm-title mt-2 text-[1.35rem]">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
-          <p className="pm-muted mt-2 max-w-2xl text-sm leading-6">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
+        <div className="max-w-3xl">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="pm-kicker">Contexto comercial</span>
+            <PmBadge tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "neutral"}>
+              <Network className="h-3.5 w-3.5" />
+              {saveLabel}
+            </PmBadge>
+          </div>
+          <h2 className="pm-title mt-3 text-[1.15rem] sm:text-[1.35rem]">{VERTICAL_CONFIGS[settings.vertical].label}</h2>
+          <p className="pm-muted mt-2 text-sm leading-6">{VERTICAL_CONFIGS[settings.vertical].heroDescription}</p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end">
-          <label className="space-y-1.5">
-            <span className="pm-caption block uppercase tracking-[0.12em]">Vertical</span>
-            <select
-              value={settings.vertical}
-              onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
-              className="field min-w-[220px] lg:min-w-[250px]"
-            >
-              {Object.values(VERTICAL_CONFIGS).map((vertical) => (
-                <option key={vertical.id} value={vertical.id}>
-                  {vertical.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <PmBadge
-            tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "cyan"}
-            className="min-h-[48px] self-start px-3 py-2 sm:self-auto"
+        <label className="block min-w-[220px] lg:min-w-[250px]">
+          <span className="pm-caption mb-2 block uppercase tracking-[0.16em]">Vertical activa</span>
+          <select
+            value={settings.vertical}
+            onChange={(event) => onVerticalChange(event.target.value as VerticalId)}
+            className="field"
           >
-            <Network className="h-4 w-4" />
-            {saveLabel}
-          </PmBadge>
-        </div>
+            {Object.values(VERTICAL_CONFIGS).map((vertical) => (
+              <option key={vertical.id} value={vertical.id}>
+                {vertical.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </PmPanel>
   );

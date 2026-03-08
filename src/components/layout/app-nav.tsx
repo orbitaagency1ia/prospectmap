@@ -21,30 +21,8 @@ export function AppNav() {
 
   return (
     <>
-      <nav className="pm-toolbar hidden flex-wrap items-center gap-2 rounded-[1.5rem] p-1.5 lg:flex">
-        {links.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
-
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-[1.1rem] border px-3.5 py-2.5 text-sm transition",
-                active
-                  ? "border-[rgba(246,162,76,0.24)] bg-[linear-gradient(180deg,rgba(239,139,53,0.18),rgba(239,139,53,0.08))] text-[var(--pm-text)] shadow-[0_16px_32px_rgba(239,139,53,0.14)]"
-                  : "border-transparent bg-transparent text-[var(--pm-text-secondary)] hover:border-[var(--pm-border)] hover:bg-[rgba(255,255,255,0.03)] hover:text-[var(--pm-text)]",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <nav className="-mx-1 overflow-x-auto pb-1 lg:hidden">
-        <div className="pm-toolbar flex min-w-max gap-2 rounded-[1.4rem] p-1.5">
+      <nav className="hidden items-center justify-between gap-3 xl:flex">
+        <div className="flex min-w-0 items-center gap-1.5">
           {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -53,17 +31,39 @@ export function AppNav() {
                 key={href}
                 href={href}
                 className={cn(
-                  "inline-flex min-h-[48px] items-center gap-2 rounded-[1.05rem] border px-3.5 py-2 text-sm whitespace-nowrap transition",
-                  active
-                    ? "border-[rgba(246,162,76,0.24)] bg-[linear-gradient(180deg,rgba(239,139,53,0.18),rgba(239,139,53,0.08))] text-[var(--pm-text)]"
-                    : "border-transparent bg-transparent text-[var(--pm-text-secondary)] hover:border-[var(--pm-border)] hover:bg-[rgba(255,255,255,0.03)] hover:text-[var(--pm-text)]",
+                  "pm-nav-link group",
+                  active && "pm-nav-link-active",
                 )}
               >
-                <Icon className="h-4 w-4" />
-                {label}
+                <Icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-[1.05]" />
+                <span>{label}</span>
               </Link>
             );
           })}
+        </div>
+      </nav>
+
+      <nav className="xl:hidden">
+        <div className="-mx-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-max items-center gap-2 px-1">
+            {links.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "pm-nav-link min-h-[46px] rounded-[1.05rem] px-3.5 text-sm",
+                    active && "pm-nav-link-active",
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </nav>
     </>

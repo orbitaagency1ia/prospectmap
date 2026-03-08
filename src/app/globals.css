@@ -11,34 +11,36 @@
 :root {
   color-scheme: dark;
 
-  --pm-bg: #0a0b0f;
-  --pm-bg-secondary: #101217;
-  --pm-surface: #171b22;
-  --pm-surface-secondary: #1d222b;
-  --pm-surface-tertiary: #252c36;
-  --pm-surface-float: rgba(20, 24, 31, 0.74);
-  --pm-border: rgba(247, 236, 220, 0.075);
-  --pm-border-strong: rgba(247, 236, 220, 0.14);
-  --pm-text: #f6f1e8;
-  --pm-text-secondary: #c7bcae;
-  --pm-text-tertiary: #8f877b;
+  --pm-bg: #06080c;
+  --pm-bg-secondary: #0b0e13;
+  --pm-surface: #12161d;
+  --pm-surface-secondary: #171c24;
+  --pm-surface-tertiary: #1d2430;
+  --pm-surface-float: rgba(17, 20, 27, 0.74);
+  --pm-border: rgba(244, 236, 224, 0.055);
+  --pm-border-strong: rgba(244, 236, 224, 0.11);
+  --pm-text: #f7f2ea;
+  --pm-text-secondary: #c6bbaf;
+  --pm-text-tertiary: #8c847a;
   --pm-primary: #ef8b35;
-  --pm-primary-hover: #f6a24c;
-  --pm-success: #4ec086;
-  --pm-warning: #ddae55;
-  --pm-danger: #d76f7b;
+  --pm-primary-hover: #f6a14a;
+  --pm-success: #4ebe89;
+  --pm-warning: #d9ad59;
+  --pm-danger: #d56b77;
   --pm-info: #9a93af;
-  --pm-premium: #9b8cf2;
+  --pm-premium: #8f82ef;
 
-  --pm-radius-panel: 1.9rem;
-  --pm-radius-card: 1.4rem;
+  --pm-radius-panel: 2rem;
+  --pm-radius-card: 1.35rem;
   --pm-radius-soft: 1.05rem;
   --pm-radius-pill: 999px;
 
-  --pm-shadow-panel: 0 32px 90px rgba(0, 0, 0, 0.42), 0 10px 26px rgba(0, 0, 0, 0.18);
-  --pm-shadow-card: 0 20px 54px rgba(0, 0, 0, 0.26), 0 8px 18px rgba(0, 0, 0, 0.12);
-  --pm-shadow-float: 0 26px 70px rgba(0, 0, 0, 0.42), 0 12px 24px rgba(0, 0, 0, 0.18);
-  --pm-shadow-warm: 0 22px 54px rgba(239, 139, 53, 0.14);
+  --pm-shadow-panel: 0 26px 72px rgba(0, 0, 0, 0.22), 0 10px 18px rgba(0, 0, 0, 0.08);
+  --pm-shadow-card: 0 14px 32px rgba(0, 0, 0, 0.16), 0 3px 10px rgba(0, 0, 0, 0.06);
+  --pm-shadow-float: 0 34px 90px rgba(0, 0, 0, 0.3), 0 10px 22px rgba(0, 0, 0, 0.1);
+  --pm-shadow-warm: 0 18px 44px rgba(239, 139, 53, 0.12);
+  --pm-shadow-line: inset 0 1px 0 rgba(255, 255, 255, 0.024);
+  --pm-shadow-outline: inset 0 0 0 1px rgba(255, 255, 255, 0.018);
 
   --pm-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --pm-ease-fast: cubic-bezier(0.3, 0.9, 0.4, 1);
@@ -55,12 +57,15 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at top left, rgba(239, 139, 53, 0.14), transparent 28%),
-    radial-gradient(circle at 85% 12%, rgba(155, 140, 242, 0.08), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(239, 139, 53, 0.09), transparent 26%),
-    linear-gradient(180deg, rgba(16, 18, 23, 0.98), rgba(10, 11, 15, 1)),
+    radial-gradient(circle at 14% -6%, rgba(239, 139, 53, 0.11), transparent 23%),
+    radial-gradient(circle at 86% 4%, rgba(143, 130, 239, 0.055), transparent 18%),
+    radial-gradient(circle at 70% 100%, rgba(239, 139, 53, 0.045), transparent 22%),
+    linear-gradient(180deg, rgba(11, 14, 19, 0.98), rgba(6, 8, 12, 1)),
     var(--pm-bg);
   color: var(--pm-text);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -76,13 +81,13 @@ body::after {
 body::before {
   z-index: -2;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 24%),
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.03), transparent 42%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 14%),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.02), transparent 32%);
 }
 
 body::after {
   z-index: -1;
-  opacity: 0.16;
+  opacity: 0.08;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -92,7 +97,7 @@ body::after {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(239, 139, 53, 0.34) rgba(17, 20, 27, 0.66);
+  scrollbar-color: rgba(239, 139, 53, 0.28) rgba(17, 20, 27, 0.4);
 }
 
 *::-webkit-scrollbar {
@@ -107,7 +112,7 @@ body::after {
 *::-webkit-scrollbar-thumb {
   border-radius: 999px;
   border: 2px solid rgba(10, 11, 15, 0.68);
-  background: linear-gradient(180deg, rgba(239, 139, 53, 0.42), rgba(155, 140, 242, 0.26));
+  background: linear-gradient(180deg, rgba(239, 139, 53, 0.4), rgba(143, 130, 239, 0.2));
 }
 
 ::selection {
@@ -196,19 +201,17 @@ textarea:focus-visible {
 
 .field {
   width: 100%;
-  min-height: 3.2rem;
-  border-radius: 1.1rem;
+  min-height: 3.1rem;
+  border-radius: 1rem;
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(23, 27, 34, 0.9), rgba(16, 19, 25, 0.92)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.03)) border-box;
-  padding: 0.82rem 1rem;
+    linear-gradient(180deg, rgba(20, 24, 31, 0.82), rgba(16, 19, 24, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.045), rgba(244, 236, 224, 0.015)) border-box;
+  padding: 0.8rem 0.95rem;
   color: var(--pm-text);
   font-size: 0.92rem;
   line-height: 1.45;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.035),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: var(--pm-shadow-line), var(--pm-shadow-outline);
 }
 
 .field::placeholder {
@@ -217,15 +220,15 @@ textarea:focus-visible {
 
 .field:hover {
   background:
-    linear-gradient(180deg, rgba(28, 33, 41, 0.94), rgba(18, 22, 29, 0.96)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.11), rgba(247, 236, 220, 0.04)) border-box;
+    linear-gradient(180deg, rgba(22, 27, 34, 0.88), rgba(17, 20, 26, 0.95)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.06), rgba(244, 236, 224, 0.02)) border-box;
 }
 
 .field:focus-visible,
 .field:focus {
   background:
-    linear-gradient(180deg, rgba(28, 33, 41, 0.96), rgba(20, 24, 31, 0.98)) padding-box,
-    linear-gradient(180deg, rgba(239, 139, 53, 0.62), rgba(239, 139, 53, 0.18)) border-box;
+    linear-gradient(180deg, rgba(22, 27, 34, 0.98), rgba(17, 20, 26, 1)) padding-box,
+    linear-gradient(180deg, rgba(239, 139, 53, 0.46), rgba(239, 139, 53, 0.12)) border-box;
 }
 
 textarea.field {
@@ -235,8 +238,8 @@ textarea.field {
 .pm-page {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
-  padding: 1rem;
+  gap: 1.7rem;
+  padding: 1.2rem 1rem 1.8rem;
   animation: pm-fade-up 460ms var(--pm-ease);
 }
 
@@ -246,11 +249,11 @@ textarea.field {
   border-radius: var(--pm-radius-panel);
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(24, 28, 36, 0.92), rgba(16, 19, 25, 0.94)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.025)) border-box;
+    linear-gradient(180deg, rgba(19, 23, 30, 0.82), rgba(14, 17, 23, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.05), rgba(244, 236, 224, 0.015)) border-box;
   box-shadow: var(--pm-shadow-panel);
-  backdrop-filter: blur(20px) saturate(115%);
-  padding: 1.35rem;
+  backdrop-filter: blur(20px) saturate(108%);
+  padding: 1.55rem;
   transition:
     transform var(--pm-transition-fast),
     box-shadow var(--pm-transition),
@@ -263,16 +266,16 @@ textarea.field {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 24%);
-  opacity: 0.85;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 26%);
+  opacity: 0.6;
 }
 
 .pm-panel-elevated {
   background:
-    radial-gradient(circle at top left, rgba(239, 139, 53, 0.12), transparent 32%),
-    radial-gradient(circle at 88% 4%, rgba(155, 140, 242, 0.08), transparent 26%),
-    linear-gradient(180deg, rgba(27, 32, 40, 0.96), rgba(17, 20, 27, 0.98)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.1), rgba(247, 236, 220, 0.03)) border-box;
+    radial-gradient(circle at top left, rgba(239, 139, 53, 0.085), transparent 30%),
+    radial-gradient(circle at 92% 4%, rgba(143, 130, 239, 0.05), transparent 20%),
+    linear-gradient(180deg, rgba(21, 25, 32, 0.9), rgba(14, 17, 23, 0.96)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.055), rgba(244, 236, 224, 0.018)) border-box;
 }
 
 .pm-card {
@@ -281,11 +284,11 @@ textarea.field {
   border-radius: var(--pm-radius-card);
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(29, 34, 43, 0.82), rgba(20, 24, 31, 0.86)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.025)) border-box;
+    linear-gradient(180deg, rgba(18, 22, 28, 0.74), rgba(14, 17, 22, 0.82)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.045), rgba(244, 236, 224, 0.016)) border-box;
   box-shadow: var(--pm-shadow-card);
-  padding: 1rem;
-  backdrop-filter: blur(14px) saturate(112%);
+  padding: 1.05rem;
+  backdrop-filter: blur(14px) saturate(108%);
   transition:
     transform var(--pm-transition),
     box-shadow var(--pm-transition),
@@ -294,11 +297,11 @@ textarea.field {
 }
 
 .pm-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.32), var(--pm-shadow-warm);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.18), var(--pm-shadow-warm);
   background:
-    linear-gradient(180deg, rgba(33, 39, 49, 0.88), rgba(22, 26, 34, 0.92)) padding-box,
-    linear-gradient(180deg, rgba(239, 139, 53, 0.18), rgba(247, 236, 220, 0.035)) border-box;
+    linear-gradient(180deg, rgba(20, 25, 32, 0.8), rgba(15, 18, 24, 0.88)) padding-box,
+    linear-gradient(180deg, rgba(239, 139, 53, 0.08), rgba(244, 236, 224, 0.024)) border-box;
 }
 
 .pm-card-soft {
@@ -306,10 +309,10 @@ textarea.field {
   border-radius: var(--pm-radius-soft);
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(24, 28, 35, 0.72), rgba(17, 20, 26, 0.76)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.06), rgba(247, 236, 220, 0.02)) border-box;
-  padding: 0.92rem;
-  backdrop-filter: blur(12px);
+    linear-gradient(180deg, rgba(17, 21, 28, 0.76), rgba(13, 16, 21, 0.82)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.04), rgba(244, 236, 224, 0.012)) border-box;
+  padding: 0.95rem;
+  backdrop-filter: blur(10px) saturate(104%);
   transition:
     transform var(--pm-transition-fast),
     background var(--pm-transition-fast),
@@ -319,38 +322,39 @@ textarea.field {
 .pm-card-soft:hover {
   transform: translateY(-1px);
   background:
-    linear-gradient(180deg, rgba(28, 33, 41, 0.78), rgba(18, 21, 28, 0.84)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.03)) border-box;
+    linear-gradient(180deg, rgba(18, 23, 30, 0.82), rgba(14, 17, 22, 0.88)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.05), rgba(244, 236, 224, 0.018)) border-box;
 }
 
 .pm-empty {
   border-radius: var(--pm-radius-card);
-  border: 1px dashed rgba(247, 236, 220, 0.12);
+  border: 1px dashed rgba(244, 236, 224, 0.085);
   background:
-    linear-gradient(180deg, rgba(18, 21, 28, 0.72), rgba(13, 16, 21, 0.78)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.05), rgba(247, 236, 220, 0.02)) border-box;
-  padding: 1.1rem;
+    linear-gradient(180deg, rgba(16, 20, 26, 0.68), rgba(12, 15, 20, 0.74)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.03), rgba(244, 236, 224, 0.012)) border-box;
+  padding: 1.25rem;
   color: var(--pm-text-secondary);
 }
 
 .pm-kicker {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(246, 162, 76, 0.92);
+  color: rgba(246, 161, 74, 0.86);
 }
 
 .pm-title {
   color: var(--pm-text);
-  font-weight: 620;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
 .pm-caption {
   color: var(--pm-text-tertiary);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
 }
 
 .pm-muted {
@@ -359,17 +363,17 @@ textarea.field {
 
 .pm-btn {
   display: inline-flex;
-  min-height: 2.9rem;
+  min-height: 2.82rem;
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  border-radius: 1.05rem;
+  border-radius: 1rem;
   border: 1px solid transparent;
-  padding: 0.76rem 1rem;
-  font-size: 0.88rem;
+  padding: 0.72rem 0.98rem;
+  font-size: 0.86rem;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  box-shadow: var(--pm-shadow-line);
 }
 
 .pm-btn:hover {
@@ -388,35 +392,36 @@ textarea.field {
 
 .pm-btn-primary {
   background:
-    linear-gradient(180deg, rgba(239, 139, 53, 0.24), rgba(239, 139, 53, 0.16)) padding-box,
-    linear-gradient(180deg, rgba(255, 224, 190, 0.28), rgba(239, 139, 53, 0.24)) border-box;
+    linear-gradient(180deg, rgba(239, 139, 53, 0.2), rgba(239, 139, 53, 0.12)) padding-box,
+    linear-gradient(180deg, rgba(255, 228, 198, 0.2), rgba(239, 139, 53, 0.18)) border-box;
   color: var(--pm-text);
   box-shadow:
-    inset 0 1px 0 rgba(255, 245, 228, 0.08),
-    0 16px 34px rgba(239, 139, 53, 0.18);
+    inset 0 1px 0 rgba(255, 245, 228, 0.05),
+    0 14px 28px rgba(239, 139, 53, 0.12);
 }
 
 .pm-btn-primary:hover {
   background:
-    linear-gradient(180deg, rgba(246, 162, 76, 0.32), rgba(239, 139, 53, 0.22)) padding-box,
-    linear-gradient(180deg, rgba(255, 232, 204, 0.34), rgba(239, 139, 53, 0.3)) border-box;
+    linear-gradient(180deg, rgba(246, 161, 74, 0.28), rgba(239, 139, 53, 0.18)) padding-box,
+    linear-gradient(180deg, rgba(255, 232, 204, 0.24), rgba(239, 139, 53, 0.22)) border-box;
   box-shadow:
-    inset 0 1px 0 rgba(255, 245, 228, 0.1),
-    0 22px 44px rgba(239, 139, 53, 0.2);
+    inset 0 1px 0 rgba(255, 245, 228, 0.07),
+    0 18px 36px rgba(239, 139, 53, 0.14);
 }
 
 .pm-btn-secondary {
   background:
-    linear-gradient(180deg, rgba(25, 29, 37, 0.84), rgba(18, 21, 28, 0.9)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.03)) border-box;
-  color: var(--pm-text);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    linear-gradient(180deg, rgba(18, 22, 28, 0.78), rgba(14, 17, 22, 0.86)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.05), rgba(244, 236, 224, 0.018)) border-box;
+  color: var(--pm-text-secondary);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.09);
 }
 
 .pm-btn-secondary:hover {
   background:
-    linear-gradient(180deg, rgba(29, 34, 43, 0.88), rgba(21, 25, 32, 0.94)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.11), rgba(239, 139, 53, 0.08)) border-box;
+    linear-gradient(180deg, rgba(20, 24, 31, 0.84), rgba(15, 18, 23, 0.92)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.06), rgba(239, 139, 53, 0.04)) border-box;
+  color: var(--pm-text);
 }
 
 .pm-btn-ghost {
@@ -435,12 +440,12 @@ textarea.field {
   display: inline-flex;
   align-items: center;
   gap: 0.38rem;
-  min-height: 1.9rem;
+  min-height: 1.8rem;
   border-radius: var(--pm-radius-pill);
-  border: 1px solid rgba(247, 236, 220, 0.08);
-  background: rgba(24, 28, 35, 0.78);
-  padding: 0.36rem 0.76rem;
-  font-size: 0.72rem;
+  border: 1px solid rgba(244, 236, 224, 0.06);
+  background: rgba(18, 22, 28, 0.72);
+  padding: 0.34rem 0.74rem;
+  font-size: 0.7rem;
   font-weight: 600;
   line-height: 1.2;
   color: var(--pm-text-secondary);
@@ -448,12 +453,12 @@ textarea.field {
 }
 
 .pm-toolbar {
-  border-radius: 1.35rem;
-  border: 1px solid rgba(247, 236, 220, 0.08);
+  border-radius: 1.3rem;
+  border: 1px solid rgba(244, 236, 224, 0.05);
   background:
-    linear-gradient(180deg, rgba(24, 28, 35, 0.84), rgba(17, 20, 27, 0.9)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.08), rgba(247, 236, 220, 0.02)) border-box;
-  box-shadow: var(--pm-shadow-float);
+    linear-gradient(180deg, rgba(18, 21, 27, 0.7), rgba(13, 16, 21, 0.82)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.045), rgba(244, 236, 224, 0.015)) border-box;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(18px);
 }
 
@@ -482,23 +487,23 @@ textarea.field {
 .pm-tabs {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 0.3rem;
+  gap: 0.3rem;
+  padding: 0.24rem;
   border-radius: 999px;
-  border: 1px solid rgba(247, 236, 220, 0.08);
-  background: rgba(21, 25, 32, 0.8);
+  border: 1px solid rgba(244, 236, 224, 0.05);
+  background: rgba(16, 19, 24, 0.78);
   backdrop-filter: blur(14px);
 }
 
 .pm-tab {
   display: inline-flex;
-  min-height: 2.35rem;
+  min-height: 2.2rem;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   border: 1px solid transparent;
-  padding: 0.55rem 0.95rem;
-  font-size: 0.8rem;
+  padding: 0.52rem 0.96rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--pm-text-secondary);
 }
@@ -510,19 +515,127 @@ textarea.field {
 
 .pm-tab-active {
   background:
-    linear-gradient(180deg, rgba(239, 139, 53, 0.18), rgba(239, 139, 53, 0.1)) padding-box,
-    linear-gradient(180deg, rgba(255, 228, 198, 0.24), rgba(239, 139, 53, 0.16)) border-box;
+    linear-gradient(180deg, rgba(239, 139, 53, 0.15), rgba(239, 139, 53, 0.07)) padding-box,
+    linear-gradient(180deg, rgba(255, 228, 198, 0.16), rgba(239, 139, 53, 0.12)) border-box;
   color: var(--pm-text);
-  box-shadow: 0 14px 26px rgba(239, 139, 53, 0.12);
+  box-shadow: 0 10px 20px rgba(239, 139, 53, 0.08);
 }
 
 .pm-floating-sheet {
-  border: 1px solid rgba(247, 236, 220, 0.08);
+  border: 1px solid rgba(244, 236, 224, 0.06);
   background:
-    linear-gradient(180deg, rgba(22, 26, 34, 0.96), rgba(15, 18, 24, 0.98)) padding-box,
-    linear-gradient(180deg, rgba(247, 236, 220, 0.09), rgba(247, 236, 220, 0.02)) border-box;
+    linear-gradient(180deg, rgba(18, 22, 28, 0.88), rgba(13, 16, 21, 0.95)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.05), rgba(244, 236, 224, 0.015)) border-box;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(20px);
+}
+
+.pm-shell {
+  border-radius: 2.2rem;
+  border: 1px solid rgba(244, 236, 224, 0.06);
+  background:
+    linear-gradient(180deg, rgba(14, 17, 23, 0.76), rgba(10, 13, 18, 0.86)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.045), rgba(244, 236, 224, 0.012)) border-box;
   box-shadow: var(--pm-shadow-float);
+  backdrop-filter: blur(22px);
+}
+
+.pm-shell-divider {
+  border-color: rgba(244, 236, 224, 0.06);
+}
+
+.pm-stack-section + .pm-stack-section {
+  margin-top: 1.15rem;
+}
+
+.pm-map-dock {
+  border-radius: 1.55rem;
+  border: 1px solid rgba(244, 236, 224, 0.06);
+  background:
+    linear-gradient(180deg, rgba(17, 21, 27, 0.82), rgba(12, 15, 20, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(244, 236, 224, 0.045), rgba(244, 236, 224, 0.014)) border-box;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.14);
   backdrop-filter: blur(18px);
+}
+
+.pm-map-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pm-subtle-grid {
+  position: relative;
+}
+
+.pm-subtle-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 100% 3.2rem;
+  opacity: 0.35;
+}
+
+.pm-nav-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.72rem 0.94rem;
+  color: var(--pm-text-secondary);
+  transition:
+    background var(--pm-transition-fast),
+    color var(--pm-transition-fast),
+    transform var(--pm-transition-fast);
+}
+
+.pm-nav-link:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--pm-text);
+}
+
+.pm-nav-link-active {
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--pm-text);
+  box-shadow: inset 0 -1px 0 rgba(239, 139, 53, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.pm-nav-link-active::after {
+  content: "";
+  position: absolute;
+  left: 0.94rem;
+  right: 0.94rem;
+  bottom: 0.34rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(239, 139, 53, 0.94), rgba(246, 161, 74, 0.7));
+}
+
+.pm-notice {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
+}
+
+.pm-side-panel {
+  background:
+    linear-gradient(180deg, rgba(18, 21, 27, 0.96), rgba(10, 12, 17, 0.985)),
+    rgba(10, 12, 17, 0.95);
+}
+
+.pm-sheet-backdrop {
+  background: rgba(7, 9, 13, 0.7);
+  backdrop-filter: blur(14px);
+}
+
+.pm-section-divider {
+  border-top: 1px solid rgba(244, 236, 224, 0.06);
+}
+
+.pm-fade-mask {
+  mask-image: linear-gradient(180deg, black 0%, black 88%, transparent 100%);
 }
 
 @keyframes pm-fade-up {
@@ -550,8 +663,8 @@ textarea.field {
 
 @media (max-width: 767px) {
   .pm-page {
-    gap: 1rem;
-    padding: 0.85rem 0.85rem calc(1.2rem + env(safe-area-inset-bottom));
+    gap: 1.1rem;
+    padding: 0.92rem 0.92rem calc(1.3rem + env(safe-area-inset-bottom));
   }
 
   .pm-panel,
@@ -561,21 +674,26 @@ textarea.field {
   }
 
   .pm-card {
-    padding: 0.9rem;
-    border-radius: 1.2rem;
+    padding: 0.95rem;
+    border-radius: 1.15rem;
   }
 
   .pm-btn {
-    min-height: 2.85rem;
+    min-height: 2.95rem;
+  }
+
+  .pm-shell {
+    border-radius: 1.55rem;
+  }
+
+  .pm-nav-link {
+    min-height: 2.95rem;
   }
 }
 
 @media (min-width: 1024px) {
   .pm-page {
     padding-inline: 0;
-  }
-
-  .pm-panel {
-    padding: 1.45rem;
+    gap: 1.9rem;
   }
 }

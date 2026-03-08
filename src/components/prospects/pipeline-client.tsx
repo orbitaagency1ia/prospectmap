@@ -163,9 +163,9 @@ function FocusPanel({
   onSelect: (key: string) => void;
 }) {
   return (
-    <PmPanel className="p-4">
-      <h2 className="pm-title text-sm uppercase tracking-[0.18em]">{title}</h2>
-      <p className="pm-muted mt-2 text-sm">{description}</p>
+    <PmPanel className="p-5">
+      <h2 className="pm-title text-[1rem]">{title}</h2>
+      <p className="pm-muted mt-2 text-sm leading-6">{description}</p>
 
       <div className="mt-4 space-y-3">
         {records.length === 0 ? <PmEmpty body="Sin oportunidades en este bloque." /> : null}
@@ -175,7 +175,7 @@ function FocusPanel({
             key={record.business.key}
             type="button"
             onClick={() => onSelect(record.business.key)}
-            className="pm-card w-full p-3 text-left transition hover:border-[rgba(242,138,46,0.42)]"
+            className="pm-card w-full p-4 text-left transition hover:border-[rgba(242,138,46,0.18)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -202,10 +202,10 @@ function PipelineStageColumn({
   onSelect: (key: string) => void;
 }) {
   return (
-    <PmPanel className="p-4">
+    <PmPanel className="p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="pm-title text-sm uppercase tracking-[0.16em]">{stage.label}</h3>
+          <h3 className="pm-title text-[1rem]">{stage.label}</h3>
           <p className="pm-caption mt-1">
             {stage.count} leads · score medio {stage.averageScore || "0"}
           </p>
@@ -227,10 +227,10 @@ function PipelineStageColumn({
             type="button"
             onClick={() => onSelect(record.business.key)}
             className={cn(
-              "w-full rounded-2xl border p-3 text-left transition",
+              "w-full rounded-[1.25rem] border p-3.5 text-left transition",
               selectedKey === record.business.key
-                ? "border-[rgba(239,139,53,0.3)] bg-[rgba(31,36,45,0.9)] shadow-[0_18px_40px_rgba(239,139,53,0.08)]"
-                : "border-[var(--pm-border)] bg-[rgba(23,28,36,0.74)] hover:border-[rgba(239,139,53,0.18)]",
+                ? "border-[rgba(239,139,53,0.16)] bg-[rgba(24,29,36,0.86)] shadow-[0_18px_40px_rgba(239,139,53,0.06)]"
+                : "border-[var(--pm-border)] bg-[rgba(18,22,28,0.68)] hover:border-[rgba(239,139,53,0.12)]",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -261,7 +261,7 @@ function PipelineStageColumn({
 
 function PipelineSummary({ snapshot }: { snapshot: PipelineSnapshot }) {
   return (
-    <PmPanel className="p-5">
+    <PmPanel className="p-5 sm:p-6">
       <p className="pm-kicker">Resumen ejecutivo</p>
       <div className="mt-4 space-y-3">
         <SummaryRow
@@ -303,9 +303,9 @@ function MetricCard({
 
 function MiniMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="pm-card-soft px-3 py-2">
+    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3">
       <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
-      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
+      <p className="mt-1.5 text-sm text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }
@@ -320,11 +320,11 @@ function SummaryRow({
   detail: string;
 }) {
   return (
-    <div className="pm-card-soft px-4 py-3">
+    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-[var(--pm-text)]">{label}</p>
-          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{detail}</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{detail}</p>
         </div>
         <p className="text-base font-semibold text-[var(--pm-primary)]">{value}</p>
       </div>

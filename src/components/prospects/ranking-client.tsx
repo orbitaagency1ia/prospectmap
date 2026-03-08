@@ -142,7 +142,7 @@ export function RankingClient({ profile }: Props) {
             }
           />
 
-          <PmPanel className="p-4">
+          <PmPanel className="p-5 sm:p-6">
             <PmSectionHeader
               title="Filtros de trabajo"
               description="Recorta la lista por ciudad, sector, estado y prioridad sin perder el informe comercial."
@@ -182,7 +182,7 @@ export function RankingClient({ profile }: Props) {
               </div>
             </div>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <TopMetric label="Filtrados" value={sortedRecords.length} />
               <TopMetric label="Alta oportunidad" value={sortedRecords.filter((record) => record.insight.score >= 75).length} />
               <TopMetric label="Valor filtrado" value={formatCurrency(filteredSummary.estimatedValueTotal)} />
@@ -196,10 +196,10 @@ export function RankingClient({ profile }: Props) {
                 <div
                   key={record.business.key}
                     className={cn(
-                      "rounded-[24px] border transition",
+                      "rounded-[1.4rem] border transition",
                       selected?.business.key === record.business.key
-                      ? "border-[rgba(239,139,53,0.3)] bg-[rgba(30,35,44,0.86)] shadow-[0_18px_40px_rgba(239,139,53,0.08)]"
-                      : "border-[var(--pm-border)] bg-[rgba(23,28,36,0.74)]",
+                      ? "border-[rgba(239,139,53,0.16)] bg-[rgba(24,29,36,0.84)] shadow-[0_18px_40px_rgba(239,139,53,0.06)]"
+                      : "border-[var(--pm-border)] bg-[rgba(18,22,28,0.68)]",
                     )}
                   >
                   <ProspectCard
@@ -214,7 +214,7 @@ export function RankingClient({ profile }: Props) {
 
             <div className="pm-table-wrap hidden lg:block">
               <table className="min-w-full text-left">
-                <thead className="border-b border-[var(--pm-border)] bg-[rgba(255,255,255,0.025)] text-xs uppercase tracking-[0.14em] text-[var(--pm-text-tertiary)]">
+                <thead className="border-b border-[var(--pm-border)] bg-[rgba(255,255,255,0.025)] text-xs uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">
                   <tr>
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">Sector</th>
@@ -238,8 +238,8 @@ export function RankingClient({ profile }: Props) {
                       key={record.business.key}
                       onClick={() => setSelectedKey(record.business.key)}
                       className={cn(
-                        "cursor-pointer border-b border-[var(--pm-border)] text-sm transition hover:bg-[rgba(255,255,255,0.025)]",
-                        selected?.business.key === record.business.key ? "bg-[rgba(255,255,255,0.04)]" : "",
+                        "cursor-pointer border-b border-[var(--pm-border)] text-sm transition hover:bg-[rgba(255,255,255,0.02)]",
+                        selected?.business.key === record.business.key ? "bg-[rgba(255,255,255,0.035)]" : "",
                       )}
                     >
                       <td className="px-4 py-3 align-top">
@@ -301,9 +301,9 @@ export function RankingClient({ profile }: Props) {
             showDemoBadges
             emptyText="Selecciona una fila de prioridades para ver el informe comercial."
           />
-          <PmPanel className="p-4">
+          <PmPanel className="p-5">
             <p className="pm-kicker">Lectura del ranking</p>
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 space-y-3">
               <SidebarStat label="Servicios dominantes" value={filteredSummary.serviceDistribution[0]?.label ?? "Sin señal"} />
               <SidebarStat label="Vertical dominante" value={filteredSummary.marketVerticalDistribution[0]?.label ?? "Sin señal"} />
               <SidebarStat label="Sector dominante" value={filteredSummary.sectorDistribution[0]?.label ?? "Sin señal"} />
@@ -332,8 +332,8 @@ function FilterSelect({
   const optionLabels = ["Todos", ...options];
 
   return (
-    <label className="space-y-1">
-      <span className="pm-caption block uppercase tracking-[0.12em]">{label}</span>
+    <label className="space-y-1.5">
+      <span className="pm-caption block uppercase tracking-[0.16em]">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -355,9 +355,9 @@ function TopMetric({ label, value }: { label: string; value: number | string }) 
 
 function SidebarStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="pm-card-soft">
-      <p className="pm-caption uppercase tracking-[0.12em]">{label}</p>
-      <p className="mt-1 text-sm text-[var(--pm-text)]">{value}</p>
+    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+      <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--pm-text)]">{value}</p>
     </div>
   );
 }

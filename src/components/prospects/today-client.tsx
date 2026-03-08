@@ -282,14 +282,14 @@ function ProspectSection({
   onSelect: (record: ProspectRecord) => void;
 }) {
   return (
-    <PmPanel className="p-4">
+    <PmPanel className="p-5">
       <div className="flex items-start gap-3">
-        <div className="rounded-[1rem] border border-[rgba(239,139,53,0.2)] bg-[rgba(239,139,53,0.1)] p-2 text-[var(--pm-primary)] shadow-[0_12px_24px_rgba(239,139,53,0.1)]">
+        <div className="rounded-[1rem] border border-[rgba(239,139,53,0.14)] bg-[rgba(239,139,53,0.08)] p-2.5 text-[var(--pm-primary)] shadow-[0_10px_24px_rgba(239,139,53,0.08)]">
           <Icon className="h-4 w-4" />
         </div>
         <div>
-          <h2 className="pm-title text-sm uppercase tracking-[0.1em]">{title}</h2>
-          <p className="pm-muted mt-1 text-sm">{description}</p>
+          <h2 className="pm-title text-[1rem]">{title}</h2>
+          <p className="pm-muted mt-2 text-sm leading-6">{description}</p>
         </div>
       </div>
 
@@ -311,7 +311,7 @@ function ProspectSection({
 
 function ActionSummaryPanel({ summary }: { summary: CommandCenterSummary }) {
   return (
-    <PmPanel className="p-5">
+    <PmPanel className="p-5 sm:p-6">
       <PmSectionHeader
         eyebrow="Resumen accionable"
         title="Qué mover hoy para acercarte al cierre"
@@ -320,8 +320,8 @@ function ActionSummaryPanel({ summary }: { summary: CommandCenterSummary }) {
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         {summary.actionSummary.map((item) => (
-          <article key={item} className="pm-card-soft">
-            <p className="pm-muted text-sm leading-6">{item}</p>
+          <article key={item} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+            <p className="pm-muted text-sm leading-7">{item}</p>
           </article>
         ))}
       </div>
@@ -343,9 +343,9 @@ function DistributionPanel({
   const max = Math.max(...items.map((item) => item.value), 1);
 
   return (
-    <PmPanel className="p-4">
-      <h2 className="pm-title text-sm uppercase tracking-[0.1em]">{title}</h2>
-      <p className="pm-muted mt-1 text-sm">{description}</p>
+    <PmPanel className="p-5">
+      <h2 className="pm-title text-[1rem]">{title}</h2>
+      <p className="pm-muted mt-2 text-sm leading-6">{description}</p>
 
       <div className="mt-4 space-y-3">
         {items.length === 0 ? <PmEmpty body={emptyText} /> : null}
@@ -355,9 +355,9 @@ function DistributionPanel({
               <span className="text-[var(--pm-text)]">{item.label}</span>
               <span className="pm-caption">{item.value}</span>
             </div>
-            <div className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]">
+            <div className="h-2 rounded-full bg-[rgba(255,255,255,0.04)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.96)] via-[rgba(246,162,76,0.96)] to-[rgba(155,140,242,0.82)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.94)] via-[rgba(246,162,76,0.88)] to-[rgba(143,130,239,0.58)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -372,24 +372,24 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
   const max = Math.max(...summary.pipelineMoments.map((item) => item.value), 1);
 
   return (
-    <PmPanel className="p-5">
+    <PmPanel className="p-5 sm:p-6">
       <p className="pm-kicker">Pipeline</p>
-      <h2 className="pm-title mt-2 text-xl">Lectura rápida del momento comercial</h2>
-      <p className="pm-muted mt-2 text-sm">
+      <h2 className="pm-title mt-3 text-[1.35rem]">Lectura rápida del momento comercial</h2>
+      <p className="pm-muted mt-3 text-sm leading-6">
         Valor abierto {formatCurrency(summary.estimatedValueTotal)} · {summary.staleCount} oportunidades perdiendo
         timing.
       </p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         {summary.pipelineMoments.map((item) => (
-          <article key={item.label} className="pm-card-soft">
+          <article key={item.label} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
             <div className="flex items-center justify-between gap-3">
               <p className="pm-muted text-sm">{item.label}</p>
               <span className="pm-title text-lg">{item.value}</span>
             </div>
-            <div className="mt-3 h-2 rounded-full bg-[rgba(255,255,255,0.05)]">
+            <div className="mt-4 h-2 rounded-full bg-[rgba(255,255,255,0.04)]">
               <div
-                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.96)] via-[rgba(246,162,76,0.96)] to-[rgba(155,140,242,0.82)]"
+                className="h-2 rounded-full bg-gradient-to-r from-[rgba(239,139,53,0.94)] via-[rgba(246,162,76,0.88)] to-[rgba(143,130,239,0.58)]"
                 style={{ width: `${(item.value / max) * 100}%` }}
               />
             </div>
@@ -402,23 +402,25 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
 
 function RightRailSummary({ summary }: { summary: CommandCenterSummary }) {
   return (
-    <PmPanel className="p-4">
+    <PmPanel className="p-5">
       <p className="pm-kicker">Foco ejecutivo</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <div className="pm-card-soft">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
           <p className="pm-caption uppercase tracking-[0.14em]">Valor bruto</p>
           <p className="pm-title mt-1 text-base">{formatCurrency(summary.estimatedValueTotal)}</p>
         </div>
-        <div className="pm-card-soft">
+        <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
           <p className="pm-caption uppercase tracking-[0.14em]">Valor ponderado</p>
           <p className="pm-title mt-1 text-base">{formatCurrency(summary.weightedValueTotal)}</p>
         </div>
       </div>
-      <div className="mt-3 space-y-3">
+      <div className="mt-4 space-y-3">
         {summary.actionSummary.map((item) => (
-          <div key={item} className="pm-card-soft flex gap-3">
+          <div key={item} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+            <div className="flex gap-3">
             <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[var(--pm-primary)]" />
             <p className="pm-muted text-sm">{item}</p>
+            </div>
           </div>
         ))}
       </div>

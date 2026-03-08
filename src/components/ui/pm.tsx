@@ -7,21 +7,21 @@ import { cn } from "@/lib/utils";
 export type PmTone = "neutral" | "cyan" | "amber" | "emerald" | "rose" | "violet";
 
 const badgeToneClass: Record<PmTone, string> = {
-  neutral: "border-[rgba(247,236,220,0.08)] bg-[rgba(28,33,41,0.74)] text-[var(--pm-text-secondary)]",
-  cyan: "border-[rgba(239,139,53,0.28)] bg-[rgba(239,139,53,0.11)] text-[var(--pm-text)]",
-  amber: "border-[rgba(221,174,85,0.3)] bg-[rgba(221,174,85,0.11)] text-[rgba(255,243,214,0.98)]",
-  emerald: "border-[rgba(78,192,134,0.28)] bg-[rgba(78,192,134,0.11)] text-[rgba(223,255,238,0.98)]",
-  rose: "border-[rgba(215,111,123,0.3)] bg-[rgba(215,111,123,0.1)] text-[rgba(255,230,234,0.98)]",
-  violet: "border-[rgba(155,140,242,0.28)] bg-[rgba(155,140,242,0.12)] text-[rgba(239,236,255,0.98)]",
+  neutral: "border-[rgba(244,236,224,0.06)] bg-[rgba(255,255,255,0.03)] text-[var(--pm-text-secondary)]",
+  cyan: "border-[rgba(240,138,47,0.18)] bg-[rgba(240,138,47,0.09)] text-[rgba(255,239,220,0.98)]",
+  amber: "border-[rgba(217,173,89,0.18)] bg-[rgba(217,173,89,0.1)] text-[rgba(255,244,223,0.98)]",
+  emerald: "border-[rgba(78,190,137,0.18)] bg-[rgba(78,190,137,0.1)] text-[rgba(232,255,244,0.98)]",
+  rose: "border-[rgba(213,107,119,0.18)] bg-[rgba(213,107,119,0.1)] text-[rgba(255,234,238,0.98)]",
+  violet: "border-[rgba(143,130,239,0.18)] bg-[rgba(143,130,239,0.1)] text-[rgba(239,236,255,0.98)]",
 };
 
 const metricToneClass: Record<PmTone, string> = {
-  neutral: "bg-[linear-gradient(180deg,rgba(30,35,44,0.8),rgba(19,22,28,0.82))]",
-  cyan: "bg-[linear-gradient(180deg,rgba(239,139,53,0.14),rgba(23,28,36,0.86))]",
-  amber: "bg-[linear-gradient(180deg,rgba(221,174,85,0.14),rgba(23,28,36,0.86))]",
-  emerald: "bg-[linear-gradient(180deg,rgba(78,192,134,0.14),rgba(23,28,36,0.86))]",
-  rose: "bg-[linear-gradient(180deg,rgba(215,111,123,0.14),rgba(23,28,36,0.86))]",
-  violet: "bg-[linear-gradient(180deg,rgba(155,140,242,0.14),rgba(23,28,36,0.86))]",
+  neutral: "before:bg-[linear-gradient(135deg,rgba(255,255,255,0.06),transparent_58%)]",
+  cyan: "before:bg-[linear-gradient(135deg,rgba(240,138,47,0.14),transparent_60%)]",
+  amber: "before:bg-[linear-gradient(135deg,rgba(217,173,89,0.16),transparent_60%)]",
+  emerald: "before:bg-[linear-gradient(135deg,rgba(78,190,137,0.14),transparent_60%)]",
+  rose: "before:bg-[linear-gradient(135deg,rgba(213,107,119,0.14),transparent_60%)]",
+  violet: "before:bg-[linear-gradient(135deg,rgba(143,130,239,0.14),transparent_60%)]",
 };
 
 export function PmPanel({
@@ -52,15 +52,15 @@ export function PmHero({
   className?: string;
 }) {
   return (
-    <PmPanel elevated className={className}>
-      <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-        <div className="max-w-4xl">
+    <PmPanel elevated className={cn("overflow-hidden", className)}>
+      <div className="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+        <div className="relative z-[1] max-w-4xl">
           {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-          <h1 className="pm-title mt-3 text-[1.85rem] leading-tight sm:text-[2.4rem]">{title}</h1>
-          {description ? <p className="pm-muted mt-3 max-w-3xl text-sm leading-6 sm:text-[0.96rem]">{description}</p> : null}
-          {children ? <div className="mt-5">{children}</div> : null}
+          <h1 className="pm-title mt-4 text-[2rem] leading-[1.02] sm:text-[2.7rem] xl:text-[3.2rem]">{title}</h1>
+          {description ? <p className="pm-muted mt-4 max-w-3xl text-[0.98rem] leading-7">{description}</p> : null}
+          {children ? <div className="mt-6">{children}</div> : null}
         </div>
-        {actions ? <div className="flex w-full flex-col gap-3 xl:w-auto xl:min-w-[320px] xl:items-end">{actions}</div> : null}
+        {actions ? <div className="relative z-[1] w-full xl:max-w-[540px] xl:shrink-0">{actions}</div> : null}
       </div>
     </PmPanel>
   );
@@ -82,16 +82,16 @@ export function PmMetric({
   className?: string;
 }) {
   return (
-    <article className={cn("pm-card", metricToneClass[tone], className)}>
-      <div className="flex items-start justify-between gap-4">
+    <article className={cn("pm-card relative overflow-hidden before:absolute before:inset-0 before:opacity-100", metricToneClass[tone], className)}>
+      <div className="relative z-[1] flex items-start justify-between gap-5">
         <div className="min-w-0">
-          <p className="pm-caption uppercase tracking-[0.18em]">{label}</p>
-          <p className="pm-title mt-3 text-[1.8rem] leading-none sm:text-[2rem]">{value}</p>
-          {helper ? <p className="pm-muted mt-2 text-sm leading-6">{helper}</p> : null}
+          <p className="pm-caption text-[0.68rem] uppercase tracking-[0.22em]">{label}</p>
+          <p className="pm-title mt-4 text-[2rem] leading-none sm:text-[2.2rem]">{value}</p>
+          {helper ? <p className="pm-muted mt-3 text-sm leading-6">{helper}</p> : null}
         </div>
         {Icon ? (
-          <div className="rounded-[1.1rem] border border-[rgba(247,236,220,0.08)] bg-[rgba(255,255,255,0.03)] p-2.5 text-[var(--pm-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <Icon className="h-4 w-4" />
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgba(244,236,224,0.07)] bg-[rgba(255,255,255,0.035)] text-[var(--pm-primary)] shadow-[var(--pm-shadow-line)]">
+            <Icon className="h-[18px] w-[18px]" />
           </div>
         ) : null}
       </div>
@@ -120,7 +120,11 @@ export function PmNotice({
   tone?: PmTone;
   className?: string;
 }) {
-  return <div className={cn("pm-card text-sm", badgeToneClass[tone], className)}>{children}</div>;
+  return (
+    <div className={cn("pm-card pm-notice px-4 py-3 text-sm leading-6", badgeToneClass[tone], className)}>
+      {children}
+    </div>
+  );
 }
 
 export function PmEmpty({
@@ -154,13 +158,13 @@ export function PmSectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", className)}>
-      <div>
+    <div className={cn("flex flex-col gap-4 md:flex-row md:items-end md:justify-between", className)}>
+      <div className="max-w-3xl">
         {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-        <h2 className="pm-title mt-2 text-[1.15rem]">{title}</h2>
-        {description ? <p className="pm-muted mt-2 max-w-3xl text-sm leading-6">{description}</p> : null}
+        <h2 className="pm-title mt-3 text-[1.2rem] leading-tight sm:text-[1.45rem]">{title}</h2>
+        {description ? <p className="pm-muted mt-3 text-sm leading-6">{description}</p> : null}
       </div>
-      {action ? <div className="sm:shrink-0 sm:self-start">{action}</div> : null}
+      {action ? <div className="md:shrink-0">{action}</div> : null}
     </div>
   );
 }

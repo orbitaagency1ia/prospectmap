@@ -11,7 +11,7 @@ export function LogoutButton() {
   return (
     <button
       type="button"
-      className="pm-btn pm-btn-secondary rounded-[1.05rem] px-3.5"
+      className="pm-btn pm-btn-secondary rounded-[1rem] px-3.5"
       onClick={async () => {
         const supabase = createClient();
         await supabase.auth.signOut();

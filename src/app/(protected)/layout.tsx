@@ -26,33 +26,40 @@ export default async function ProtectedLayout({
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 px-3 pt-3 lg:px-5 lg:pt-5">
-        <div className="mx-auto flex w-full max-w-[1620px] flex-col gap-3 rounded-[2rem] border border-[var(--pm-border)] bg-[rgba(14,17,22,0.74)] px-4 py-4 shadow-[var(--pm-shadow-float)] backdrop-blur-2xl lg:gap-4 lg:px-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-center">
-              <div className="min-w-0 rounded-[1.8rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(30,35,44,0.72),rgba(19,22,28,0.78))] px-4 py-3 shadow-[0_16px_36px_rgba(0,0,0,0.24)]">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-[rgba(246,162,76,0.92)]">ProspectMap</p>
-                  <span className="pm-badge hidden sm:inline-flex">Sistema operativo comercial</span>
-                </div>
-                <p className="mt-1 truncate text-base font-semibold text-[var(--pm-text)]">{profile?.company_name || "Empresa"}</p>
-                <p className="text-sm text-[var(--pm-text-secondary)]">
+      <header className="sticky top-0 z-40 px-3 pt-3 md:px-5 md:pt-5">
+        <div className="pm-shell mx-auto max-w-[1680px] overflow-hidden px-4 py-4 md:px-5 md:py-5 xl:px-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div className="min-w-0 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="pm-kicker">ProspectMap</span>
+                <span className="rounded-full border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] px-2.5 py-1 text-[11px] font-medium text-[var(--pm-text-tertiary)]">
+                  Sistema operativo comercial
+                </span>
+              </div>
+              <div className="min-w-0">
+                <p className="pm-title truncate text-[1.3rem] sm:text-[1.55rem]">
+                  {profile?.company_name || "Empresa"}
+                </p>
+                <p className="pm-muted mt-1 text-sm">
                   {profile?.city_name ? `${profile.city_name} · ` : ""}
-                  Operación diaria con foco y cierre
+                  Prospección diaria con foco, claridad y cierre.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-end">
+            <div className="flex flex-wrap items-center gap-2 self-start xl:self-auto">
+              <span className="pm-badge hidden md:inline-flex">{profile?.city_name || "Ciudad principal"}</span>
               <LogoutButton />
             </div>
           </div>
 
-          <AppNav />
+          <div className="pm-shell-divider mt-5 border-t pt-4">
+            <AppNav />
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-[1620px] flex-1 flex-col px-0 pb-8 pt-3 lg:px-5 lg:pb-10 lg:pt-5">
+      <div className="mx-auto flex w-full max-w-[1680px] flex-1 flex-col px-3 pb-8 pt-4 md:px-5 md:pb-10 md:pt-5">
         {children}
       </div>
     </div>

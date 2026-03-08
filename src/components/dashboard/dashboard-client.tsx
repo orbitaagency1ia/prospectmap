@@ -19,7 +19,7 @@ import { STATUS_META } from "@/lib/constants";
 import type { DashboardData } from "@/lib/dashboard";
 import { formatDateTime, formatPercent } from "@/lib/utils";
 
-import { PmMetric, PmPanel, PmSectionHeader } from "../ui/pm";
+import { PmHero, PmMetric, PmPanel } from "../ui/pm";
 
 type Props = {
   data: DashboardData;
@@ -28,13 +28,11 @@ type Props = {
 export function DashboardClient({ data }: Props) {
   return (
     <div className="pm-page">
-      <PmPanel elevated>
-        <PmSectionHeader
-          eyebrow="Analítica"
-          title="Lectura clara del pipeline y la actividad comercial"
-          description="Mide cuánto estás avanzando, dónde se acumulan los negocios y qué parte del embudo necesita atención."
-        />
-      </PmPanel>
+      <PmHero
+        eyebrow="Analítica"
+        title="Lectura clara del pipeline y de la actividad comercial"
+        description="Menos paneles sueltos y más narrativa. Aquí se ve cuánto avanza la prospección, dónde se atasca el embudo y qué parte del territorio merece atención."
+      />
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard title="Total prospectados" value={`${data.cards.totalProspected}`} helper="Estado distinto de sin contactar" />
@@ -174,8 +172,8 @@ function MetricCard({
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <PmPanel className="p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--pm-text)]">{title}</h2>
+    <PmPanel className="p-5">
+      <h2 className="mb-4 text-[1rem] font-semibold tracking-[-0.02em] text-[var(--pm-text)]">{title}</h2>
       {children}
     </PmPanel>
   );

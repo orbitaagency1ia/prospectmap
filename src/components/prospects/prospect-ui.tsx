@@ -17,7 +17,7 @@ type ProspectCardProps = {
 
 export function OpportunityBadge({ record }: { record: ProspectRecord }) {
   return (
-    <span className={cn("inline-flex items-center rounded-full px-2 py-1 text-xs font-medium", OPPORTUNITY_META[record.insight.tier].badgeClass)}>
+    <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium", OPPORTUNITY_META[record.insight.tier].badgeClass)}>
       {record.insight.tierLabel}
     </span>
   );
@@ -40,83 +40,49 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
   } as const;
 
   return (
-    <article className="pm-card p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-[var(--pm-text)]">{record.business.name}</p>
-          <p className="mt-1 text-xs text-[var(--pm-text-secondary)]">
-            {record.insight.sectorLabel} · {record.insight.cityLabel}
+    <article className="pm-card px-4 py-4 sm:px-5 sm:py-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", status.badgeClass)}>{status.label}</span>
+            <OpportunityBadge record={record} />
+            <UrgencyBadge urgency={record.insight.nextAction.urgency} />
+          </div>
+          <h3 className="pm-title mt-3 text-[1.08rem] leading-tight">{record.business.name}</h3>
+          <p className="pm-muted mt-2 text-sm">
+            {record.insight.sectorLabel} · {record.insight.cityLabel} · {record.insight.effectiveVerticalLabel}
           </p>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.painPoint}</p>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--pm-text-secondary)]">{record.insight.attackSummary}</p>
         </div>
-        <div className="rounded-[1.2rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] px-3 py-2 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:min-w-[88px] sm:text-right">
-          <p className="text-xs uppercase tracking-[0.12em] text-[var(--pm-text-tertiary)]">Prioridad</p>
-          <p className="text-2xl font-semibold text-[var(--pm-text)]">{record.insight.score}</p>
+
+        <div className="rounded-[1.15rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.03)] px-3.5 py-3 text-right shadow-[var(--pm-shadow-line)]">
+          <p className="pm-caption uppercase tracking-[0.16em]">Prioridad</p>
+          <p className="pm-title mt-2 text-[1.75rem] leading-none">{record.insight.score}</p>
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", status.badgeClass)}>{status.label}</span>
-        <OpportunityBadge record={record} />
-        <UrgencyBadge urgency={record.insight.nextAction.urgency} />
-        <span className="pm-badge">
-          {record.insight.effectiveVerticalLabel}
-        </span>
-        <span className="pm-badge">
-          {record.insight.service.shortLabel}
-        </span>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <PmBadge>{record.insight.service.shortLabel}</PmBadge>
+        <PmBadge tone="amber">{record.insight.estimatedValueLabel}</PmBadge>
         {showDemoBadges
           ? record.insight.demoBadges.slice(0, 2).map((badge) => (
-              <PmBadge
-                key={`${record.business.key}-${badge.label}`}
-                tone={badgeToneMap[badge.tone] ?? "neutral"}
-              >
+              <PmBadge key={`${record.business.key}-${badge.label}`} tone={badgeToneMap[badge.tone] ?? "neutral"}>
                 {badge.label}
               </PmBadge>
             ))
           : null}
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="pm-card-soft">
-          <p className="pm-caption uppercase tracking-[0.12em]">Servicio Órbita</p>
-          <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{record.insight.service.label}</p>
-          <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.service.reason}</p>
-        </div>
-        <div className="pm-card-soft">
-          <p className="pm-caption uppercase tracking-[0.12em]">Qué hacer ahora</p>
-          <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{record.insight.nextAction.action}</p>
-          <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">
-            {record.insight.nextAction.channel} · {record.insight.nextAction.reason}
-          </p>
-        </div>
+      <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_0.9fr_0.8fr]">
+        <InfoSlice label="Qué hacer ahora" value={record.insight.nextAction.action} detail={`${record.insight.nextAction.channel} · ${record.insight.nextAction.reason}`} />
+        <InfoSlice label="Servicio recomendado" value={record.insight.service.label} detail={record.insight.service.reason} />
+        <InfoSlice label="Valor y timing" value={formatCurrency(record.insight.estimatedValue)} detail={`${formatDaysSince(record.insight.daysSinceTouch)} sin tocar`} />
       </div>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <div className="pm-card-soft">
-          <p className="pm-caption uppercase tracking-[0.12em]">Foco comercial</p>
-          <p className="mt-1 text-sm leading-6 text-[var(--pm-text-secondary)]">{record.insight.commercialFocus}</p>
-        </div>
-        <div className="pm-card-soft">
-          <p className="pm-caption uppercase tracking-[0.12em]">Valor estimado</p>
-          <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{formatCurrency(record.insight.estimatedValue)}</p>
-          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{record.insight.estimatedValueLabel}</p>
-        </div>
-        <div className="pm-card-soft">
-          <p className="pm-caption uppercase tracking-[0.12em]">Atención</p>
-          <p className="mt-1 text-sm font-medium text-[var(--pm-text)]">{record.insight.attentionLabel}</p>
-          <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{formatDaysSince(record.insight.daysSinceTouch)} sin tocar</p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-4 flex flex-col gap-3 border-t border-[var(--pm-border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-[var(--pm-text-tertiary)]">Última interacción: {formatDateTime(record.business.lastInteractionAt)}</p>
         {onSelect ? (
-          <button
-            type="button"
-            onClick={() => onSelect(record)}
-            className="pm-btn pm-btn-secondary w-full sm:w-auto"
-          >
+          <button type="button" onClick={() => onSelect(record)} className="pm-btn pm-btn-secondary w-full sm:w-auto">
             <span className="inline-flex items-center gap-2">
               <Icon className="h-4 w-4" />
               {actionLabel}
@@ -125,5 +91,15 @@ export function ProspectCard({ record, onSelect, actionLabel = "Abrir", showDemo
         ) : null}
       </div>
     </article>
+  );
+}
+
+function InfoSlice({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+      <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
+      <p className="mt-2 text-sm font-medium leading-6 text-[var(--pm-text)]">{value}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{detail}</p>
+    </div>
   );
 }
