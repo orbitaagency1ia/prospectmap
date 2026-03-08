@@ -127,8 +127,8 @@ export function RankingClient({ profile }: Props) {
         <div className="space-y-5">
           <PmHero
             eyebrow="Prioridades"
-            title="Decide con claridad."
-            description="La cola más valiosa del territorio, ordenada por encaje, timing y valor."
+            title="Prioriza sin dudas."
+            description="Las cuentas con mejor encaje, mejor momento y más valor."
             actions={
               <div className="space-y-4">
                 <div className="space-y-1">
@@ -142,7 +142,7 @@ export function RankingClient({ profile }: Props) {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link href="/attack?source=priorities" className="pm-btn pm-btn-primary">
-                    Abrir Ataque
+                    Empezar ataque
                   </Link>
                   <button type="button" onClick={() => setDescending((value) => !value)} className="pm-btn pm-btn-secondary">
                     {descending ? <ArrowDownWideNarrow className="h-4 w-4" /> : <ArrowUpWideNarrow className="h-4 w-4" />}

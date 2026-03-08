@@ -579,9 +579,9 @@ export function MapWorkspace({ profile }: Props) {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="pm-kicker">Territorio</p>
-                  <h1 className="pm-title mt-2 text-[1.3rem]">Explora y decide</h1>
+                  <h1 className="pm-title mt-2 text-[1.3rem]">Explora y actúa</h1>
                   <p className="pm-muted mt-2 text-sm leading-6">
-                    Mapa vivo para detectar qué merece barrido, ataque o seguimiento.
+                    Detecta cuentas, prioriza y abre ficha sin perder contexto.
                   </p>
                 </div>
                 <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
@@ -624,7 +624,7 @@ export function MapWorkspace({ profile }: Props) {
                 </Link>
                 <button type="button" onClick={() => setShowSweepMode(true)} className="pm-btn pm-btn-secondary w-full justify-start">
                   <ScanSearch className="h-4 w-4" />
-                  Barrido
+                  Barrido rápido
                 </button>
                 <button type="button" onClick={() => setShowConquestMode(true)} className="pm-btn pm-btn-secondary w-full justify-start">
                   <Radar className="h-4 w-4" />
@@ -706,7 +706,7 @@ export function MapWorkspace({ profile }: Props) {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="pm-kicker">Territorio</p>
-                <h1 className="pm-title mt-1 text-[1.05rem]">Explora y decide</h1>
+                <h1 className="pm-title mt-1 text-[1.05rem]">Explora y actúa</h1>
                 <p className="pm-muted mt-1 text-xs">{profile.city_name}</p>
               </div>
               <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} compact />

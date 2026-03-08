@@ -52,11 +52,11 @@ export function PmHero({
   className?: string;
 }) {
   return (
-    <PmPanel elevated className={cn("pm-scene-hero pm-texture-soft overflow-hidden", className)}>
+    <PmPanel elevated className={cn("pm-scene-hero pm-hero-shell pm-texture-soft overflow-hidden", className)}>
       <div className="relative z-[1] grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] xl:items-end">
         <div className="min-w-0 max-w-4xl pl-3 sm:pl-4">
           {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-          <h1 className="pm-title mt-4 text-[1.95rem] leading-[0.98] sm:text-[2.6rem] xl:text-[3.15rem]">{title}</h1>
+          <h1 className="pm-title mt-4 text-[1.92rem] leading-[0.98] sm:text-[2.55rem] xl:text-[3.05rem]">{title}</h1>
           {description ? <p className="pm-muted mt-4 max-w-3xl text-[0.94rem] leading-7 sm:text-[0.98rem]">{description}</p> : null}
           {children ? <div className="mt-6">{children}</div> : null}
         </div>
@@ -86,7 +86,7 @@ export function PmMetric({
   className?: string;
 }) {
   return (
-    <article className={cn("pm-card relative overflow-hidden before:absolute before:inset-0 before:opacity-100", metricToneClass[tone], className)}>
+    <article className={cn("pm-card pm-metric-card relative overflow-hidden before:absolute before:inset-0 before:opacity-100", metricToneClass[tone], className)}>
       <div className="relative z-[1] flex items-start justify-between gap-5">
         <div className="min-w-0">
           <p className="pm-caption text-[0.68rem] uppercase tracking-[0.22em]">{label}</p>
