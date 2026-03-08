@@ -52,15 +52,19 @@ export function PmHero({
   className?: string;
 }) {
   return (
-    <PmPanel elevated className={cn("overflow-hidden", className)}>
-      <div className="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-        <div className="relative z-[1] max-w-4xl">
+    <PmPanel elevated className={cn("pm-scene-hero pm-texture-soft overflow-hidden", className)}>
+      <div className="relative z-[1] grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] xl:items-end">
+        <div className="min-w-0 max-w-4xl pl-3 sm:pl-4">
           {eyebrow ? <p className="pm-kicker">{eyebrow}</p> : null}
-          <h1 className="pm-title mt-4 text-[2rem] leading-[1.02] sm:text-[2.7rem] xl:text-[3.2rem]">{title}</h1>
-          {description ? <p className="pm-muted mt-4 max-w-3xl text-[0.98rem] leading-7">{description}</p> : null}
+          <h1 className="pm-title mt-4 text-[1.95rem] leading-[0.98] sm:text-[2.6rem] xl:text-[3.15rem]">{title}</h1>
+          {description ? <p className="pm-muted mt-4 max-w-3xl text-[0.94rem] leading-7 sm:text-[0.98rem]">{description}</p> : null}
           {children ? <div className="mt-6">{children}</div> : null}
         </div>
-        {actions ? <div className="relative z-[1] w-full xl:max-w-[540px] xl:shrink-0">{actions}</div> : null}
+        {actions ? (
+          <div className="relative z-[1] xl:justify-self-end xl:min-w-[320px] xl:max-w-[420px] xl:self-stretch">
+            <div className="pm-focus-pane px-4 py-4 sm:px-5 sm:py-5">{actions}</div>
+          </div>
+        ) : null}
       </div>
     </PmPanel>
   );
@@ -90,7 +94,7 @@ export function PmMetric({
           {helper ? <p className="pm-muted mt-3 text-sm leading-6">{helper}</p> : null}
         </div>
         {Icon ? (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgba(244,236,224,0.07)] bg-[rgba(255,255,255,0.035)] text-[var(--pm-primary)] shadow-[var(--pm-shadow-line)]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.035)] text-[var(--pm-text)] shadow-[var(--pm-shadow-line)]">
             <Icon className="h-[18px] w-[18px]" />
           </div>
         ) : null}

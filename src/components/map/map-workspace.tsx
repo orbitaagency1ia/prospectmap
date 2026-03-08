@@ -452,238 +452,266 @@ export function MapWorkspace({ profile }: Props) {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-148px)] min-h-[640px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[calc(100vh-120px)] lg:rounded-[2.35rem]">
-      <div className="absolute inset-x-3 top-3 z-[450] hidden grid-cols-[minmax(0,1fr)_300px] gap-3 xl:grid">
-        <div className="pm-map-dock pm-sheet-shell p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="pm-kicker">Territorio</p>
-              <h1 className="pm-title mt-2 text-[1.3rem]">Prospección en mapa</h1>
-              <p className="pm-muted mt-2 max-w-2xl text-sm leading-6">{profile.city_name}. Filtra, barre y ataca sin perder el contexto.</p>
+    <>
+      <div className="grid min-h-[680px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
+        <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(8,10,13,0.76)] lg:flex lg:flex-col">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+            <div className="pm-focus-pane p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="pm-kicker">Territorio</p>
+                  <h1 className="pm-title mt-2 text-[1.3rem]">Explora y decide</h1>
+                  <p className="pm-muted mt-2 text-sm leading-6">
+                    Mapa vivo para detectar qué merece barrido, ataque o seguimiento.
+                  </p>
+                </div>
+                <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
+              </div>
+
+              <div className="pm-map-chip-row mt-4">
+                <PmBadge>{profile.city_name}</PmBadge>
+                <PmBadge>{mapBounds ? "Zona visible" : "Ciudad completa"}</PmBadge>
+                <PmBadge>{conquestSnapshot.openCount} abiertas</PmBadge>
+              </div>
             </div>
-            <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} />
-          </div>
 
-          <div className="pm-map-chip-row mt-4">
-            <PmBadge tone="neutral">{profile.city_name}</PmBadge>
-            <CommercialContextInline
-              ready={ready && profileReady}
-              vertical={settings.vertical}
-              saveState={saveState}
-              onVerticalChange={setVertical}
-            />
-          </div>
+            <div className="pm-control-surface p-4">
+              <p className="pm-kicker">Filtros</p>
+              <div className="mt-4">
+                <FiltersRow
+                  filters={filters}
+                  categories={categoryOptions}
+                  onChange={setFilters}
+                  onReset={() => setFilters(DEFAULT_FILTERS)}
+                  stacked
+                />
+              </div>
+              <div className="pm-stage-divider mt-4 pt-4">
+                <CommercialContextInline
+                  ready={ready && profileReady}
+                  vertical={settings.vertical}
+                  saveState={saveState}
+                  onVerticalChange={setVertical}
+                  mobile
+                />
+              </div>
+            </div>
 
-          <div className="pm-section-divider mt-4 pt-4">
-            <FiltersRow
-              filters={filters}
-              categories={categoryOptions}
-              onChange={setFilters}
-              onReset={() => setFilters(DEFAULT_FILTERS)}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="pm-map-dock pm-sheet-shell p-3.5">
-            <div className="grid gap-2">
-              <Link href={attackZoneHref} className="pm-btn pm-btn-primary w-full">
-                Atacar zona
-              </Link>
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+            <div className="pm-control-surface p-4">
+              <p className="pm-kicker">Acciones</p>
+              <div className="mt-4 space-y-2">
+                <Link href={attackZoneHref} className="pm-btn pm-btn-primary w-full">
+                  Atacar zona
+                </Link>
                 <button type="button" onClick={() => setShowSweepMode(true)} className="pm-btn pm-btn-secondary w-full justify-start">
                   <ScanSearch className="h-4 w-4" />
-                  Barrido de zona
+                  Barrido
                 </button>
                 <button type="button" onClick={() => setShowConquestMode(true)} className="pm-btn pm-btn-secondary w-full justify-start">
                   <Radar className="h-4 w-4" />
-                  Modo conquista
+                  Conquista
                 </button>
-                <button type="button" onClick={() => setShowCsvImport(true)} className="pm-btn pm-btn-secondary w-full justify-start sm:col-span-2 xl:col-span-1">
+                <button type="button" onClick={() => setShowCsvImport(true)} className="pm-btn pm-btn-secondary w-full justify-start">
                   <Upload className="h-4 w-4" />
                   Importar CSV
                 </button>
               </div>
             </div>
-          </div>
 
-          <div className="pm-map-dock pm-sheet-shell p-3.5">
-            <p className="pm-caption uppercase tracking-[0.18em]">Lectura</p>
-            <div className="mt-3 grid gap-2">
-              <InlineStat label="Zona visible" value={mapBounds ? "Activa" : "Ciudad completa"} />
-              <InlineStat label="Vertical" value={VERTICAL_CONFIGS[settings.vertical].shortLabel} />
-              <InlineStat label="Oportunidad" value={`${conquestSnapshot.openCount} abiertas`} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute inset-x-3 top-3 z-[450] space-y-2 xl:hidden">
-        <div className="pm-map-dock pm-sheet-shell p-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="pm-kicker">Territorio</p>
-              <h1 className="pm-title mt-1 text-[1.05rem]">Prospección en mapa</h1>
-              <p className="pm-muted mt-1 text-xs">{profile.city_name}</p>
-            </div>
-            <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} compact />
-          </div>
-
-          <div className="mt-3 flex items-center gap-2">
-            <button
-              type="button"
-              className="pm-btn pm-btn-secondary min-h-0 flex-1 px-3 py-2 text-xs"
-              onClick={() => setShowMobileFilters((value) => !value)}
-            >
-              <Filter className="h-4 w-4" />
-              Filtros
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowCsvImport(true)}
-              className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
-            >
-              <Upload className="h-4 w-4" />
-              CSV
-            </button>
-          </div>
-        </div>
-
-        <div className="pm-map-dock pm-sheet-shell overflow-x-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex min-w-max items-center gap-2">
-            <Link href={attackZoneHref} className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs">
-              Ataque
-            </Link>
-            <button type="button" onClick={() => setShowSweepMode(true)} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
-              <ScanSearch className="h-4 w-4" />
-              Barrido
-            </button>
-            <button type="button" onClick={() => setShowConquestMode(true)} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
-              <Radar className="h-4 w-4" />
-              Conquista
-            </button>
-            <PmBadge className="text-[11px]">
-              {ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Preparando vertical"}
-            </PmBadge>
-          </div>
-        </div>
-
-        {showMobileFilters ? (
-          <div className="pm-map-dock pm-sheet-shell p-3">
-            <FiltersRow
-              filters={filters}
-              categories={categoryOptions}
-              onChange={setFilters}
-              onReset={() => setFilters(DEFAULT_FILTERS)}
-            />
-            <div className="pm-section-divider mt-3 pt-3">
-              <CommercialContextInline
-                ready={ready && profileReady}
-                vertical={settings.vertical}
-                saveState={saveState}
-                onVerticalChange={setVertical}
-                mobile
-              />
-            </div>
-          </div>
-        ) : null}
-
-        {message ? (
-          <PmNotice tone={message.type === "success" ? "emerald" : "rose"} className="text-xs">
-            {message.text}
-          </PmNotice>
-        ) : null}
-      </div>
-
-      <div className="relative flex-1">
-        {(loadingSaved || loadingOverpass) && (
-          <div className="pm-map-dock pm-overlay-shell pointer-events-none absolute right-3 top-3 z-[430] px-3 py-2 text-xs text-[var(--pm-text-secondary)]">
-            <span className="inline-flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {loadingSaved ? "Cargando guardados" : "Cargando reales"}
-            </span>
-          </div>
-        )}
-
-        {conquestSnapshot.totalCount > 0 ? (
-          <div className="pointer-events-none absolute bottom-4 left-4 z-[430] hidden max-w-[320px] lg:block">
-            <div className="pm-map-dock pm-sheet-shell pointer-events-auto p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="pm-kicker">Modo conquista</p>
-                  <h3 className="pm-title mt-1 text-base">{conquestSnapshot.scopeLabel}</h3>
-                  <p className="pm-muted mt-1 text-sm">
-                    {conquestSnapshot.coveragePercent}% trabajado · {conquestSnapshot.openCount} oportunidades vivas
-                  </p>
-                </div>
-                <button type="button" className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs" onClick={() => setShowConquestMode(true)}>
-                  Ver
-                </button>
-              </div>
-
+            <div className="pm-control-surface p-4">
+              <p className="pm-kicker">Lectura</p>
               <div className="mt-4 grid gap-2">
-                <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
-                  <p className="pm-caption uppercase tracking-[0.16em]">Zona caliente</p>
-                  <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.hotZones[0]?.label ?? "Sin señal dominante"}</p>
-                </div>
-                <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
-                  <p className="pm-caption uppercase tracking-[0.16em]">Territorio pendiente</p>
-                  <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.untouchedCount} negocios sin tocar</p>
-                </div>
+                <InlineStat label="Ámbito" value={mapBounds ? "Zona visible" : profile.city_name} />
+                <InlineStat label="Vertical" value={VERTICAL_CONFIGS[settings.vertical].shortLabel} />
+                <InlineStat label="Oportunidad" value={`${conquestSnapshot.openCount} activas`} />
               </div>
             </div>
+
+            {conquestSnapshot.totalCount > 0 ? (
+              <div className="pm-control-surface p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="pm-kicker">Conquista</p>
+                    <h3 className="pm-title mt-1 text-base">{conquestSnapshot.scopeLabel}</h3>
+                    <p className="pm-muted mt-1 text-sm">
+                      {conquestSnapshot.coveragePercent}% trabajado · {conquestSnapshot.openCount} vivas
+                    </p>
+                  </div>
+                  <button type="button" className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs" onClick={() => setShowConquestMode(true)}>
+                    Ver
+                  </button>
+                </div>
+
+                <div className="mt-4 grid gap-2">
+                  <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
+                    <p className="pm-caption uppercase tracking-[0.16em]">Zona caliente</p>
+                    <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.hotZones[0]?.label ?? "Sin señal dominante"}</p>
+                  </div>
+                  <div className="pm-list-row rounded-[1rem] px-3.5 py-3">
+                    <p className="pm-caption uppercase tracking-[0.16em]">Pendiente</p>
+                    <p className="mt-1 text-sm text-[var(--pm-text)]">{conquestSnapshot.untouchedCount} negocios sin tocar</p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {message ? (
+              <PmNotice tone={message.type === "success" ? "emerald" : "rose"} className="text-xs">
+                {message.text}
+              </PmNotice>
+            ) : null}
           </div>
-        ) : null}
+        </aside>
 
-        <MapCanvas
-          center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
-          markers={mapMarkers}
-          selectedKey={selectedKey}
-          onMarkerSelect={(key) => {
-            setSelectedKey(key);
-            setShowMobilePanel(true);
-          }}
-          onBoundsChange={setMapBounds}
-        />
-      </div>
+        <section className="flex min-h-0 flex-col">
+          <div className="hidden items-center justify-between gap-4 border-b border-[var(--pm-border)] px-4 py-4 lg:flex">
+            <div>
+              <p className="pm-kicker">Mapa</p>
+              <p className="pm-muted mt-2 text-sm">
+                {profile.city_name} · {mapBounds ? "Zona visible" : "Ciudad completa"}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {(loadingSaved || loadingOverpass) ? (
+                <span className="pm-map-status">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {loadingSaved ? "Cargando guardados" : "Cargando reales"}
+                </span>
+              ) : null}
+              <PmBadge>{VERTICAL_CONFIGS[settings.vertical].shortLabel}</PmBadge>
+              <PmBadge>{conquestSnapshot.openCount} oportunidades</PmBadge>
+            </div>
+          </div>
 
-      <div className="hidden h-full w-[468px] shrink-0 border-l border-[var(--pm-border)] bg-[rgba(9,11,15,0.22)] lg:block">
-        <BusinessPanel
-          key={selectedRecord?.business.key ?? "none-desktop"}
-          selected={selectedBusiness}
-          insight={selectedInsight}
-          showDemoBadges
-          notes={selectedNotes}
-          notesLoading={loadingNotes}
-          busy={busy}
-          savingNote={savingNote}
-          onClose={() => setSelectedKey(null)}
-          onSaveOverpass={handleSaveOverpass}
-          onUpdateBusiness={handleUpdateBusiness}
-          onAddNote={handleAddNote}
-        />
+          <div className="flex flex-col gap-3 border-b border-[var(--pm-border)] p-3 lg:hidden">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="pm-kicker">Territorio</p>
+                <h1 className="pm-title mt-1 text-[1.05rem]">Explora y decide</h1>
+                <p className="pm-muted mt-1 text-xs">{profile.city_name}</p>
+              </div>
+              <SummaryTag total={prospectRecords.length} filtered={filteredRecords.length} compact />
+            </div>
+
+            <div className="grid grid-cols-[1fr_auto] gap-2">
+              <button
+                type="button"
+                className="pm-btn pm-btn-secondary min-h-0 flex-1 px-3 py-2 text-xs"
+                onClick={() => setShowMobileFilters((value) => !value)}
+              >
+                <Filter className="h-4 w-4" />
+                Refinar
+              </button>
+              <Link href={attackZoneHref} className="pm-btn pm-btn-primary min-h-0 px-3 py-2 text-xs">
+                Ataque
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => setShowSweepMode(true)} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+                <ScanSearch className="h-4 w-4" />
+                Barrido
+              </button>
+              <button type="button" onClick={() => setShowConquestMode(true)} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+                <Radar className="h-4 w-4" />
+                Conquista
+              </button>
+              <button type="button" onClick={() => setShowCsvImport(true)} className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs">
+                <Upload className="h-4 w-4" />
+                CSV
+              </button>
+            </div>
+
+            {showMobileFilters ? (
+              <div className="pm-control-surface p-3">
+                <FiltersRow
+                  filters={filters}
+                  categories={categoryOptions}
+                  onChange={setFilters}
+                  onReset={() => setFilters(DEFAULT_FILTERS)}
+                  stacked
+                />
+                <div className="pm-section-divider mt-3 pt-3">
+                  <CommercialContextInline
+                    ready={ready && profileReady}
+                    vertical={settings.vertical}
+                    saveState={saveState}
+                    onVerticalChange={setVertical}
+                    mobile
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            <div className="flex flex-wrap items-center gap-2">
+              <PmBadge className="text-[11px]">{ready ? VERTICAL_CONFIGS[settings.vertical].shortLabel : "Preparando vertical"}</PmBadge>
+              <PmBadge className="text-[11px]">{mapBounds ? "Zona visible" : "Ciudad"}</PmBadge>
+              {(loadingSaved || loadingOverpass) ? (
+                <span className="pm-map-status text-[11px]">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {loadingSaved ? "Guardados" : "Reales"}
+                </span>
+              ) : null}
+            </div>
+
+            {message ? (
+              <PmNotice tone={message.type === "success" ? "emerald" : "rose"} className="text-xs">
+                {message.text}
+              </PmNotice>
+            ) : null}
+          </div>
+
+          <div className="min-h-0 flex-1">
+            <MapCanvas
+              center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
+              markers={mapMarkers}
+              selectedKey={selectedKey}
+              onMarkerSelect={(key) => {
+                setSelectedKey(key);
+                setShowMobilePanel(true);
+              }}
+              onBoundsChange={setMapBounds}
+            />
+          </div>
+        </section>
+
+        <aside className="hidden min-h-0 border-l border-[var(--pm-border)] bg-[rgba(9,11,15,0.22)] xl:block">
+          <BusinessPanel
+            key={selectedRecord?.business.key ?? "none-desktop"}
+            selected={selectedBusiness}
+            insight={selectedInsight}
+            showDemoBadges
+            notes={selectedNotes}
+            notesLoading={loadingNotes}
+            busy={busy}
+            savingNote={savingNote}
+            onClose={() => setSelectedKey(null)}
+            onSaveOverpass={handleSaveOverpass}
+            onUpdateBusiness={handleUpdateBusiness}
+            onAddNote={handleAddNote}
+          />
+        </aside>
       </div>
 
       {showMobilePanel && selectedRecord ? (
-        <div className="pm-sheet-backdrop pm-overlay-shell fixed inset-0 z-[500] lg:hidden" onClick={() => setShowMobilePanel(false)}>
-          <div
-            className="pm-side-panel pm-sheet-shell absolute inset-x-0 bottom-0 top-[10%] overflow-hidden rounded-t-[2rem] border-t border-[var(--pm-border)] shadow-[0_-28px_64px_rgba(3,6,10,0.42)]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <BusinessPanel
-              key={selectedRecord.business.key}
-              selected={selectedBusiness}
-              insight={selectedInsight}
-              showDemoBadges
-              notes={selectedNotes}
-              notesLoading={loadingNotes}
-              busy={busy}
-              savingNote={savingNote}
-              onClose={() => setShowMobilePanel(false)}
-              onSaveOverpass={handleSaveOverpass}
-              onUpdateBusiness={handleUpdateBusiness}
-              onAddNote={handleAddNote}
-            />
+        <div className="xl:hidden">
+          <div className="pm-stage-divider mt-4 border-t pt-4">
+            <div className="pm-panel overflow-hidden p-0">
+              <BusinessPanel
+                key={selectedRecord.business.key}
+                selected={selectedBusiness}
+                insight={selectedInsight}
+                showDemoBadges
+                notes={selectedNotes}
+                notesLoading={loadingNotes}
+                busy={busy}
+                savingNote={savingNote}
+                onClose={() => setShowMobilePanel(false)}
+                onSaveOverpass={handleSaveOverpass}
+                onUpdateBusiness={handleUpdateBusiness}
+                onAddNote={handleAddNote}
+              />
+            </div>
           </div>
         </div>
       ) : null}
@@ -722,7 +750,7 @@ export function MapWorkspace({ profile }: Props) {
         onClose={() => setShowCsvImport(false)}
         onImported={loadSavedBusinesses}
       />
-    </div>
+    </>
   );
 }
 
@@ -790,18 +818,23 @@ function FiltersRow({
   categories,
   onChange,
   onReset,
+  stacked = false,
 }: {
   filters: BusinessFilters;
   categories: string[];
   onChange: (filters: BusinessFilters) => void;
   onReset: () => void;
+  stacked?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
+    <div className={cn(stacked ? "grid gap-2.5" : "flex flex-wrap items-center gap-2.5")}>
       <select
         value={filters.category}
         onChange={(event) => onChange({ ...filters, category: event.target.value })}
-        className="field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs sm:!w-[190px] xl:!w-[205px]"
+        className={cn(
+          "field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs",
+          stacked ? "" : "sm:!w-[190px] xl:!w-[205px]",
+        )}
       >
         <option value="all">Sector: todos</option>
         {categories.map((category) => (
@@ -819,7 +852,10 @@ function FiltersRow({
             status: event.target.value as ProspectStatus | "all",
           })
         }
-        className="field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs sm:!w-[190px] xl:!w-[205px]"
+        className={cn(
+          "field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs",
+          stacked ? "" : "sm:!w-[190px] xl:!w-[205px]",
+        )}
       >
         <option value="all">Estado: todos</option>
         {PROSPECT_STATUS_ORDER.map((status) => (
@@ -837,7 +873,10 @@ function FiltersRow({
             priority: event.target.value as PriorityLevel | "all",
           })
         }
-        className="field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs sm:!w-[160px] xl:!w-[170px]"
+        className={cn(
+          "field min-h-0 w-full rounded-[1rem] px-3 py-2 text-xs",
+          stacked ? "" : "sm:!w-[160px] xl:!w-[170px]",
+        )}
       >
         <option value="all">Prioridad: todas</option>
         {PRIORITY_OPTIONS.map((priority) => (
@@ -850,7 +889,7 @@ function FiltersRow({
       <button
         type="button"
         onClick={onReset}
-        className="pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs"
+        className={cn("pm-btn pm-btn-secondary min-h-0 px-3 py-2 text-xs", stacked && "w-full")}
       >
         Limpiar
       </button>

@@ -669,18 +669,30 @@ function AttackWorkspaceScreen({
 
       <PmHero
         eyebrow="Attack Workspace"
-        title="La cola diaria para ejecutar prospección sin pensar de más."
-        description="Aquí ProspectMap deja de sugerir y pasa a acompañar la ejecución: foco del día, lead en contexto, resultado rápido y siguiente paso listo."
+        title="Ejecución diaria, sin fricción."
+        description="La cola del día, el lead en foco y el siguiente paso listos para trabajar sin perder ritmo."
         actions={
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <PmMetric label="En sesión" value={sessionProgress.total} helper={`${sessionProgress.pending} por trabajar`} tone="amber" />
-            <PmMetric label="Trabajados hoy" value={sessionKpis.workedToday} helper={`${sessionKpis.sessionAdvance}% de avance`} />
-            <PmMetric label="Follow-ups" value={sessionKpis.followUpsScheduled} helper="Programados hoy" tone="violet" />
-            <PmMetric label="Valor tocado" value={formatCurrency(sessionKpis.workedValue)} helper={sessionKpis.averagePaceMinutes ? `${sessionKpis.averagePaceMinutes} min por lead` : "Sin ritmo todavía"} tone="emerald" />
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <p className="pm-caption">Estado de la sesión</p>
+              <p className="text-sm leading-6 text-[var(--pm-text)]">
+                {attack.session ? `${sessionProgress.pending} pendientes · ${sessionProgress.percent}% completado` : `${previewQueue.length} leads detectados`}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <PmMetric label="En sesión" value={sessionProgress.total} helper={`${sessionProgress.pending} pendientes`} tone="amber" />
+              <PmMetric label="Valor tocado" value={formatCurrency(sessionKpis.workedValue)} helper={sessionKpis.averagePaceMinutes ? `${sessionKpis.averagePaceMinutes} min por lead` : "Sin ritmo todavía"} tone="emerald" />
+            </div>
           </div>
         }
       >
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="pm-hero-metrics">
+          <PmMetric label="Trabajados hoy" value={sessionKpis.workedToday} helper={`${sessionKpis.sessionAdvance}% de avance`} />
+          <PmMetric label="Follow-ups" value={sessionKpis.followUpsScheduled} helper="Programados hoy" tone="violet" />
+          <PmMetric label="Reuniones potenciales" value={sessionKpis.meetingsUnlocked} helper="Desbloqueadas hoy" tone="emerald" />
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-2">
           <PmBadge tone="amber">{ATTACK_SOURCE_LABELS[attack.session?.source ?? intent.source]}</PmBadge>
           {attack.session ? <PmBadge>{attack.session.status === "paused" ? "Sesión pausada" : "Sesión en curso"}</PmBadge> : null}
           {intent.territoryLabel ? <PmBadge>{intent.territoryLabel}</PmBadge> : null}
@@ -689,8 +701,8 @@ function AttackWorkspaceScreen({
         </div>
       </PmHero>
 
-      <div className="grid gap-4 xl:grid-cols-[0.92fr_1.38fr]">
-        <div className="space-y-4">
+      <div className="grid gap-5 xl:grid-cols-[0.92fr_1.38fr]">
+        <div className="space-y-5">
           <SessionControlPanel
             sourceLabel={ATTACK_SOURCE_LABELS[attack.session?.source ?? intent.source]}
             sessionName={attack.session?.name ?? buildDefaultAttackSessionName(intent.source, intent.territoryLabel)}
@@ -734,7 +746,7 @@ function AttackWorkspaceScreen({
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 xl:sticky xl:top-[7.75rem] xl:self-start">
           <LeadBriefingPanel
             record={currentLead}
             suggestion={suggestion}
@@ -833,7 +845,7 @@ function QueueFiltersPanel({
     <PmPanel className="p-4">
       <PmSectionHeader
         eyebrow="Cola de ataque"
-        title="Qué entra hoy en foco"
+        title="Qué entra en foco"
         description={disabled ? "Los filtros de esta sesión ya están fijados. Se aplicarán al arrancar la siguiente." : "Recorta la cola por ciudad, vertical, campaña, servicio, urgencia y zona."}
         action={<PmBadge tone={disabled ? "amber" : "neutral"}>{disabled ? "Sesión bloqueada" : "Filtros listos"}</PmBadge>}
       />
@@ -932,7 +944,7 @@ function QueuePanel({
   return (
     <PmPanel className="p-4">
       <PmSectionHeader
-        title={hasActiveSession ? "Sesión en marcha" : "Preview de ataque"}
+        title={hasActiveSession ? "Cola activa" : "Preview de sesión"}
         description={
           hasActiveSession
             ? "Cada lead ya está ordenado para ejecutar, registrar resultado y seguir con el siguiente."
@@ -949,10 +961,10 @@ function QueuePanel({
           <article
             key={entry.business.key}
             className={cn(
-              "rounded-[24px] border p-4 transition",
+              "pm-list-row rounded-[24px] p-4 text-left",
               selectedKey === entry.business.key
-                ? "border-[rgba(255,255,255,0.09)] bg-[rgba(23,28,36,0.96)] shadow-[0_18px_42px_rgba(3,9,18,0.24)]"
-                : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.86)] hover:border-[rgba(255,255,255,0.08)]",
+                ? "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] shadow-[0_18px_42px_rgba(3,9,18,0.24)]"
+                : "",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -1057,10 +1069,10 @@ function LeadBriefingPanel({
   }
 
   return (
-    <PmPanel className="space-y-4 p-5">
+    <PmPanel elevated className="pm-texture-soft space-y-4 p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="pm-kicker">Lead actual</p>
+          <p className="pm-kicker">Lead en foco</p>
           <h2 className="pm-title mt-2 text-2xl">{record.business.name}</h2>
           <p className="pm-muted mt-2 text-sm">
             {record.insight.sectorLabel} · {record.insight.cityLabel} · {record.zoneLabel}
@@ -1085,7 +1097,7 @@ function LeadBriefingPanel({
 
       <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-4">
-          <BriefBlock title="Resumen ejecutivo" body={record.insight.executiveSummary} />
+          <BriefBlock title="Resumen" body={record.insight.executiveSummary} />
           <BriefBlock title="Por qué atacarlo" body={record.insight.attackSummary}>
             <ul className="mt-2 space-y-1 text-sm text-[var(--pm-text-secondary)]">
               {record.whyToday.map((item) => (
@@ -1195,7 +1207,7 @@ function SessionControlPanel({
         action={<PmBadge tone={attackStatus === "paused" ? "amber" : "neutral"}>{sourceLabel}</PmBadge>}
       />
 
-      <div className="mt-4 rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.84)] p-4">
+      <div className="pm-focus-pane mt-4 p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-[var(--pm-text)]">
@@ -1276,8 +1288,8 @@ function ResultPanel({
     <PmPanel className="p-4">
       <PmSectionHeader
         eyebrow="Resultado"
-        title="Registrar resultado sin salir del foco"
-        description="Actualiza el lead, deja nota, programa el siguiente paso y sigue con el siguiente."
+        title="Registrar resultado"
+        description="Actualiza el lead, deja nota y sigue con el siguiente."
       />
 
       <div className="mt-4 space-y-4">
@@ -1288,10 +1300,10 @@ function ResultPanel({
               type="button"
               onClick={() => onChangeResult(option.id)}
               className={cn(
-                "rounded-[20px] border p-3 text-left transition",
+                "pm-list-row rounded-[20px] p-3 text-left",
                 resultDraft.result === option.id
                   ? "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)]"
-                  : "border-[rgba(42,52,66,0.88)] bg-[rgba(17,20,27,0.84)] hover:border-[rgba(255,255,255,0.08)]",
+                  : "",
               )}
             >
               <p className="text-sm font-medium text-[var(--pm-text)]">{option.label}</p>
@@ -1301,7 +1313,7 @@ function ResultPanel({
         </div>
 
         {suggestion ? (
-          <div className="rounded-[20px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+          <div className="pm-list-row rounded-[20px] p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="pm-caption uppercase tracking-[0.14em]">Siguiente paso recomendado</p>
@@ -1380,7 +1392,7 @@ function ResultPanel({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
+          <label className="pm-list-row inline-flex items-center gap-2 rounded-[18px] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
             <input
               type="checkbox"
               checked={resultDraft.moveToPipeline}
@@ -1389,7 +1401,7 @@ function ResultPanel({
             />
             Mover a pipeline
           </label>
-          <label className="inline-flex items-center gap-2 rounded-[18px] border border-[rgba(255,255,255,0.06)] bg-[rgba(17,20,27,0.76)] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
+          <label className="pm-list-row inline-flex items-center gap-2 rounded-[18px] px-3 py-3 text-sm text-[var(--pm-text-secondary)]">
             <input
               type="checkbox"
               checked={resultDraft.discard}
@@ -1439,7 +1451,7 @@ function QuickActionsPanel({
       <PmSectionHeader
         eyebrow="Acciones rápidas"
         title="Operar sin salir del flujo"
-        description="Ajustes de uso diario para preparar, mover o limpiar el lead actual en un par de clics."
+        description="Preparar, mover o limpiar el lead actual en un par de clics."
       />
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -1469,7 +1481,7 @@ function KpiRail({
     <PmPanel className="p-4">
       <PmSectionHeader
         eyebrow="KPIs de ejecución"
-        title="Ritmo real de la sesión"
+        title="Ritmo de la sesión"
         description="Solo métricas que ayudan a mantener foco y empujar la máquina comercial."
       />
 
@@ -1514,8 +1526,8 @@ function ObjectionsPanel({ record }: { record: AttackQueueEntry }) {
     <PmPanel className="p-4">
       <PmSectionHeader
         eyebrow="Objeciones"
-        title="Qué te pueden decir y cómo responder"
-        description="Respuesta corta y operativa para no perder el hilo de la conversación."
+        title="Qué te pueden decir"
+        description="Respuesta corta y operativa para no perder el hilo."
       />
 
       <div className="mt-4 space-y-3">

@@ -52,11 +52,11 @@ export function ProspectDetailPanel({
 
   return (
     <>
-      <PmPanel elevated className="space-y-5 p-5 sm:p-6">
+      <PmPanel elevated className="pm-texture-soft space-y-5 p-5 sm:p-6">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-3xl">
-            <p className="pm-kicker">Informe comercial</p>
-            <h2 className="pm-title mt-3 text-[1.55rem] leading-tight sm:text-[1.8rem]">{record.business.name}</h2>
+            <p className="pm-kicker">Lead en foco</p>
+            <h2 className="pm-title mt-3 text-[1.5rem] leading-tight sm:text-[1.78rem]">{record.business.name}</h2>
             <p className="pm-muted mt-2 text-sm leading-6">
               {record.insight.sectorLabel} · {record.insight.cityLabel} · {record.insight.effectiveVerticalLabel}
             </p>
@@ -70,7 +70,7 @@ export function ProspectDetailPanel({
             </div>
           </div>
 
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
+          <div className="pm-focus-pane flex w-full flex-col gap-2 px-4 py-4 sm:w-auto sm:min-w-[240px]">
             <button type="button" onClick={() => setShowPrep(true)} className="pm-btn pm-btn-primary w-full">
               Preparar prospección
             </button>
@@ -128,7 +128,7 @@ export function ProspectDetailPanel({
         </div>
 
         <div className="pm-card p-4 sm:p-5">
-          <p className="pm-kicker">Mensajes sugeridos</p>
+          <p className="pm-kicker">Mensajes</p>
           <div className="mt-4 grid gap-3">
             <MessageBlock title="Mensaje inicial" content={record.insight.messages.initial} />
             <MessageBlock title="Follow-up 1" content={record.insight.messages.followUp1} />
@@ -138,7 +138,7 @@ export function ProspectDetailPanel({
 
         <div className="grid gap-4 xl:grid-cols-2">
           <section className="pm-card p-4 sm:p-5">
-            <p className="pm-kicker">Qué revisar antes</p>
+            <p className="pm-kicker">Qué revisar</p>
             <div className="mt-4 space-y-2">
               {record.insight.reviewChecklist.length === 0 ? <p className="text-sm text-[var(--pm-text-tertiary)]">Sin checklist adicional.</p> : null}
               {record.insight.reviewChecklist.map((item) => (
@@ -160,10 +160,10 @@ export function ProspectDetailPanel({
           </section>
 
           <section className="pm-card p-4 sm:p-5">
-            <p className="pm-kicker">Objeciones probables</p>
+            <p className="pm-kicker">Objeciones</p>
             <div className="mt-4 space-y-3">
               {record.insight.objections.map((item) => (
-                <div key={item.objection} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+                <div key={item.objection} className="pm-list-row rounded-[1rem] px-3.5 py-3.5">
                   <p className="text-sm font-medium text-[var(--pm-text)]">{item.objection}</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.response}</p>
                 </div>
@@ -184,10 +184,10 @@ export function ProspectDetailPanel({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
+          <div className="pm-list-row rounded-[1rem] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
             Última interacción: {formatDateTime(record.business.lastInteractionAt)}
           </div>
-          <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
+          <div className="pm-list-row rounded-[1rem] px-3.5 py-3 text-xs text-[var(--pm-text-tertiary)]">
             Próximo follow-up: {formatDateTime(record.insight.followUpAt)}
           </div>
         </div>
@@ -245,7 +245,7 @@ function InfoBlock({
 
 function MessageBlock({ title, content }: { title: string; content: string }) {
   return (
-    <article className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+    <article className="pm-list-row rounded-[1rem] px-3.5 py-3.5">
       <p className="pm-caption uppercase tracking-[0.16em]">{title}</p>
       <p className="mt-2 text-sm leading-7 text-[var(--pm-text-secondary)]">{content}</p>
     </article>
@@ -254,7 +254,7 @@ function MessageBlock({ title, content }: { title: string; content: string }) {
 
 function InfoPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3.5">
+    <div className="pm-list-row rounded-[1rem] px-3.5 py-3.5">
       <p className="pm-caption uppercase tracking-[0.16em]">{label}</p>
       <p className="mt-2 text-sm font-medium text-[var(--pm-text)]">{value}</p>
     </div>

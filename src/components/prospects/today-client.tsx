@@ -137,26 +137,33 @@ export function TodayClient({ profile }: Props) {
         <>
           <PmHero
             eyebrow="Centro de control"
-            title="Foco del día."
-            description="Lo urgente, lo valioso y lo que merece atención ahora."
+            title="Control del día."
+            description="Lo urgente, lo valioso y lo que merece movimiento ahora."
             actions={
-              <div className="space-y-3">
-                <Link href="/attack?source=alerts" className="pm-btn pm-btn-primary w-full sm:w-auto">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="pm-caption">Siguiente foco</p>
+                  <p className="text-sm leading-6 text-[var(--pm-text)]">
+                    {summary.actionSummary[0] ?? "La cola del día ya está lista."}
+                  </p>
+                </div>
+                <Link href="/attack?source=alerts" className="pm-btn pm-btn-primary w-full">
                   <ArrowRight className="h-4 w-4" />
                   Abrir Ataque del día
                 </Link>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <PmMetric label="Prioritarios hoy" value={summary.prioritizedCount} tone="cyan" className="min-w-[170px]" />
-                  <PmMetric label="Seguimientos vencidos" value={summary.followUpCount} tone="amber" className="min-w-[170px]" />
-                  <PmMetric label="Valor pipeline" value={formatCurrency(summary.estimatedValueTotal)} tone="rose" className="min-w-[170px]" />
-                  <PmMetric label="Leads enfriándose" value={summary.staleCount} tone="emerald" className="min-w-[170px]" />
-                </div>
               </div>
             }
-          />
+          >
+            <div className="pm-hero-metrics">
+              <PmMetric label="Prioritarios hoy" value={summary.prioritizedCount} className="min-w-[170px]" />
+              <PmMetric label="Seguimientos" value={summary.followUpCount} tone="amber" className="min-w-[170px]" />
+              <PmMetric label="Valor abierto" value={formatCurrency(summary.estimatedValueTotal)} tone="violet" className="min-w-[170px]" />
+              <PmMetric label="Enfriándose" value={summary.staleCount} tone="emerald" className="min-w-[170px]" />
+            </div>
+          </PmHero>
 
-          <div className="grid gap-4 2xl:grid-cols-[1.45fr_0.95fr]">
-            <div className="space-y-4">
+          <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.36fr)_430px]">
+            <div className="space-y-5">
               <ActionSummaryPanel summary={summary} />
               <OpportunityAlertsPanel
                 alerts={alertFeed}
@@ -247,7 +254,7 @@ export function TodayClient({ profile }: Props) {
               />
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 2xl:sticky 2xl:top-[7.75rem] 2xl:self-start">
               <ProspectDetailPanel
                 record={selected}
                 showDemoBadges
@@ -280,7 +287,7 @@ function ProspectSection({
   return (
     <PmPanel className="p-5">
       <div className="flex items-start gap-3">
-        <div className="rounded-[1rem] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] p-2.5 text-[var(--pm-text)] shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
+        <div className="pm-focus-pane flex h-11 w-11 items-center justify-center rounded-[1rem] p-0 text-[var(--pm-text)] shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
           <Icon className="h-4 w-4" />
         </div>
         <div>
@@ -310,13 +317,13 @@ function ActionSummaryPanel({ summary }: { summary: CommandCenterSummary }) {
     <PmPanel className="p-5 sm:p-6">
       <PmSectionHeader
         eyebrow="Resumen accionable"
-        title="Qué mover hoy para acercarte al cierre"
-        action={<span className="pm-badge">Valor ponderado {formatCurrency(summary.weightedValueTotal)}</span>}
+        title="Qué mover hoy"
+        action={<span className="pm-badge">Ponderado {formatCurrency(summary.weightedValueTotal)}</span>}
       />
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         {summary.actionSummary.map((item) => (
-          <article key={item} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+          <article key={item} className="pm-list-row rounded-[1rem] px-4 py-4">
             <p className="pm-muted text-sm leading-7">{item}</p>
           </article>
         ))}
@@ -370,7 +377,7 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
   return (
     <PmPanel className="p-5 sm:p-6">
       <p className="pm-kicker">Pipeline</p>
-      <h2 className="pm-title mt-3 text-[1.35rem]">Lectura rápida del momento comercial</h2>
+      <h2 className="pm-title mt-3 text-[1.35rem]">Estado del cierre</h2>
       <p className="pm-muted mt-3 text-sm leading-6">
         Valor abierto {formatCurrency(summary.estimatedValueTotal)} · {summary.staleCount} oportunidades perdiendo
         timing.
@@ -378,7 +385,7 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-4">
         {summary.pipelineMoments.map((item) => (
-          <article key={item.label} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+          <article key={item.label} className="pm-list-row rounded-[1rem] px-4 py-4">
             <div className="flex items-center justify-between gap-3">
               <p className="pm-muted text-sm">{item.label}</p>
               <span className="pm-title text-lg">{item.value}</span>
@@ -399,23 +406,23 @@ function PipelinePanel({ summary }: { summary: CommandCenterSummary }) {
 function RightRailSummary({ summary }: { summary: CommandCenterSummary }) {
   return (
     <PmPanel className="p-5">
-      <p className="pm-kicker">Foco ejecutivo</p>
+      <p className="pm-kicker">Radar ejecutivo</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+        <div className="pm-list-row rounded-[1rem] px-4 py-4">
           <p className="pm-caption uppercase tracking-[0.14em]">Valor bruto</p>
           <p className="pm-title mt-1 text-base">{formatCurrency(summary.estimatedValueTotal)}</p>
         </div>
-        <div className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+        <div className="pm-list-row rounded-[1rem] px-4 py-4">
           <p className="pm-caption uppercase tracking-[0.14em]">Valor ponderado</p>
           <p className="pm-title mt-1 text-base">{formatCurrency(summary.weightedValueTotal)}</p>
         </div>
       </div>
       <div className="mt-4 space-y-3">
         {summary.actionSummary.map((item) => (
-          <div key={item} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-4 py-4">
+          <div key={item} className="pm-list-row rounded-[1rem] px-4 py-4">
             <div className="flex gap-3">
-            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[var(--pm-primary)]" />
-            <p className="pm-muted text-sm">{item}</p>
+              <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-[var(--pm-text)]" />
+              <p className="pm-muted text-sm">{item}</p>
             </div>
           </div>
         ))}

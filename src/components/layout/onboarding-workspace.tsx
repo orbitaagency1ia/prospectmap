@@ -3,7 +3,7 @@
 import { AccountCommercialProfileForm } from "@/components/commercial/account-commercial-profile-form";
 import { cn } from "@/lib/utils";
 
-import { PmPanel } from "../ui/pm";
+import { PmBadge, PmHero, PmPanel } from "../ui/pm";
 
 import { AccountProfileForm } from "./account-profile-form";
 
@@ -42,14 +42,22 @@ export function OnboardingWorkspace({
 }: Props) {
   return (
     <div className="pm-page">
-      <PmPanel elevated className="p-6 sm:p-7">
-        <p className="pm-kicker">Onboarding</p>
-        <h1 className="pm-title mt-3 max-w-4xl text-[2rem] leading-tight sm:text-[2.7rem]">Configura ProspectMap como sistema operativo comercial.</h1>
-        <p className="pm-muted mt-4 max-w-3xl text-sm leading-6">
-          En dos pasos queda ajustado: primero contexto de empresa y territorio; luego perfil comercial para afinar
-          scoring, mensajes, recomendaciones e informe por negocio.
-        </p>
-      </PmPanel>
+      <PmHero
+        eyebrow="Onboarding"
+        title="Configura ProspectMap una sola vez."
+        description="Empresa, territorio y playbook comercial. Después, el producto ya trabaja con criterio propio."
+        actions={
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <PmBadge>{profileComplete ? "Paso 1 completo" : "Paso 1 en curso"}</PmBadge>
+              <PmBadge tone={profileComplete ? "emerald" : "neutral"}>{profileComplete ? "Perfil comercial listo" : "Perfil comercial pendiente"}</PmBadge>
+            </div>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+              Dos pasos. Sin fricción. Sin salir del flujo.
+            </p>
+          </div>
+        }
+      />
 
       <section className="grid gap-3 lg:grid-cols-3">
         {STEPS.map((step, index) => {
@@ -64,7 +72,7 @@ export function OnboardingWorkspace({
                 active
                   ? "border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(30,35,44,0.84))]"
                   : done
-                    ? "border-[rgba(78,192,134,0.24)] bg-[linear-gradient(180deg,rgba(78,192,134,0.12),rgba(30,35,44,0.84))]"
+                    ? "border-[rgba(141,157,146,0.18)] bg-[linear-gradient(180deg,rgba(141,157,146,0.08),rgba(30,35,44,0.84))]"
                     : "",
               )}
             >
@@ -88,10 +96,10 @@ export function OnboardingWorkspace({
           />
           <PmPanel className="p-6">
             <p className="pm-kicker">Siguiente</p>
-            <h2 className="pm-title mt-2 text-xl">Después configurarás el playbook comercial</h2>
+            <h2 className="pm-title mt-2 text-xl">Después ajustarás el playbook comercial</h2>
             <p className="pm-muted mt-3 text-sm leading-6">
               Cuando guardes empresa y ciudad, esta misma pantalla pasará al perfil comercial guiado con ICP, oferta,
-              ticket, objeciones y conocimiento base por PDF o texto.
+              ticket, objeciones y conocimiento base.
             </p>
           </PmPanel>
         </div>

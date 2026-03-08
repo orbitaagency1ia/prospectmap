@@ -235,7 +235,7 @@ export function BusinessPanel({
       <header className="pm-fade-mask border-b border-[var(--pm-border)] px-4 py-5 sm:px-5">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="pm-kicker">Informe comercial</p>
+            <p className="pm-kicker">Ficha</p>
             <h2 className="pm-title mt-2 text-[1.28rem] leading-tight">{panelTitle}</h2>
             <p className="pm-muted mt-2 text-sm">{selected.category ?? "Sin categoría"} · {selected.city || "Ubicación pendiente"}</p>
           </div>
@@ -264,134 +264,142 @@ export function BusinessPanel({
           </div>
         ) : null}
 
-        {selected.mode === "overpass" ? (
-          <div className="pm-editorial-block mt-4 p-4">
-            <p className="text-sm leading-6 text-[var(--pm-text)]">
-              Detectado en OpenStreetMap. Guárdalo para trabajar estado, prioridad y notas.
-            </p>
-            <button
-              type="button"
-              disabled={busy}
-              className="pm-btn pm-btn-primary mt-3"
-              onClick={() => onSaveOverpass(selected)}
-            >
-              <Save className="h-4 w-4" />
-              {busy ? "Guardando..." : "Guardar negocio"}
-            </button>
+        <div className="mt-5">
+          <div className="pm-tabs">
+            <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Resumen" />
+            <TabButton active={activeTab === "datos"} onClick={() => setActiveTab("datos")} label="Datos" />
+            {isSaved ? <TabButton active={activeTab === "notas"} onClick={() => setActiveTab("notas")} label="Notas" /> : null}
           </div>
-        ) : null}
-
-        {insight ? (
-          <div className="mt-5 space-y-4">
-            <div className="pm-editorial-block px-4 py-4 shadow-[var(--pm-shadow-card)]">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-xs font-medium",
-                    OPPORTUNITY_META[insight.tier].badgeClass,
-                  )}
-                >
-                  {insight.tierLabel}
-                </span>
-                {insight.marketVertical !== insight.effectiveVertical ? (
-                  <PmBadge>Mercado: {insight.marketVerticalLabel}</PmBadge>
-                ) : null}
-                {showDemoBadges && insight.demoBadges.length > 0
-                  ? insight.demoBadges.map((badge) => (
-                      <PmBadge key={badge.label} tone={demoBadgeToneMap[badge.tone] ?? "neutral"}>
-                        {badge.label}
-                      </PmBadge>
-                    ))
-                  : null}
-              </div>
-              <p className="mt-4 text-sm leading-7 text-[var(--pm-text)]">{insight.executiveSummary}</p>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2">
-              <QuickActionButton onClick={() => setShowPrep(true)} icon={Sparkles} label="Preparar prospección" tone="cyan" />
-              <QuickActionButton
-                onClick={() => handleCopy("initial", insight.messages.initial)}
-                icon={Copy}
-                label={copiedKey === "initial" ? "Mensaje copiado" : "Copiar mensaje inicial"}
-              />
-              {isSaved ? (
-                <>
-                  <QuickActionButton
-                    onClick={() =>
-                      handleQuickUpdate(
-                        {
-                          prospect_status: selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
-                          priority: "alta",
-                          next_follow_up_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-                        },
-                        "notas",
-                      )
-                    }
-                    icon={Flag}
-                    label="Trabajar ahora"
-                  />
-                  <QuickActionButton
-                    onClick={() =>
-                      handleQuickUpdate(
-                        {
-                          prospect_status: "contactado",
-                          last_contact_at: new Date().toISOString().slice(0, 16),
-                        },
-                        "notas",
-                      )
-                    }
-                    icon={Flag}
-                    label="Marcar llamada hecha"
-                    tone="cyan"
-                  />
-                  <QuickActionButton
-                    onClick={() =>
-                      handleQuickUpdate(
-                        {
-                          next_follow_up_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-                        },
-                        "notas",
-                      )
-                    }
-                    icon={Flag}
-                    label="Programar follow-up"
-                    tone="amber"
-                  />
-                  <QuickActionButton
-                    onClick={() =>
-                      handleQuickUpdate(
-                        {
-                          prospect_status:
-                            selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
-                          priority: "alta",
-                        },
-                        "informe",
-                      )
-                    }
-                    icon={Flag}
-                    label="Mover a pipeline"
-                    tone="violet"
-                  />
-                  <QuickActionButton
-                    onClick={() => handleQuickUpdate({ prospect_status: "perdido" }, "informe")}
-                    icon={CircleSlash}
-                    label="Descartar"
-                    tone="rose"
-                  />
-                </>
-              ) : null}
-            </div>
-
-            <div className="pm-tabs">
-              <TabButton active={activeTab === "informe"} onClick={() => setActiveTab("informe")} label="Resumen" />
-              <TabButton active={activeTab === "datos"} onClick={() => setActiveTab("datos")} label="Datos" />
-              {isSaved ? <TabButton active={activeTab === "notas"} onClick={() => setActiveTab("notas")} label="Notas" /> : null}
-            </div>
-          </div>
-        ) : null}
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-5">
+        <div className="space-y-4">
+          {selected.mode === "overpass" ? (
+            <div className="pm-editorial-block p-4 shadow-[var(--pm-shadow-card)]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="pm-kicker">Capturado en el mapa</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--pm-text)]">
+                    Guárdalo para trabajar estado, prioridad y seguimiento.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={busy}
+                  className="pm-btn pm-btn-primary"
+                  onClick={() => onSaveOverpass(selected)}
+                >
+                  <Save className="h-4 w-4" />
+                  {busy ? "Guardando..." : "Guardar"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {insight ? (
+            <>
+              <section className="pm-focus-pane px-4 py-4 sm:px-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={cn(
+                      "inline-flex rounded-full px-2.5 py-1 text-xs font-medium",
+                      OPPORTUNITY_META[insight.tier].badgeClass,
+                    )}
+                  >
+                    {insight.tierLabel}
+                  </span>
+                  {insight.marketVertical !== insight.effectiveVertical ? (
+                    <PmBadge>Mercado {insight.marketVerticalLabel}</PmBadge>
+                  ) : null}
+                  {showDemoBadges && insight.demoBadges.length > 0
+                    ? insight.demoBadges.map((badge) => (
+                        <PmBadge key={badge.label} tone={demoBadgeToneMap[badge.tone] ?? "neutral"}>
+                          {badge.label}
+                        </PmBadge>
+                      ))
+                    : null}
+                </div>
+                <p className="mt-4 text-sm leading-7 text-[var(--pm-text)]">{insight.executiveSummary}</p>
+              </section>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <QuickActionButton onClick={() => setShowPrep(true)} icon={Sparkles} label="Preparar prospección" tone="cyan" />
+                <QuickActionButton
+                  onClick={() => handleCopy("initial", insight.messages.initial)}
+                  icon={Copy}
+                  label={copiedKey === "initial" ? "Mensaje copiado" : "Copiar mensaje"}
+                />
+                {isSaved ? (
+                  <>
+                    <QuickActionButton
+                      onClick={() =>
+                        handleQuickUpdate(
+                          {
+                            prospect_status: selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
+                            priority: "alta",
+                            next_follow_up_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                          },
+                          "notas",
+                        )
+                      }
+                      icon={Flag}
+                      label="Trabajar ahora"
+                    />
+                    <QuickActionButton
+                      onClick={() =>
+                        handleQuickUpdate(
+                          {
+                            prospect_status: "contactado",
+                            last_contact_at: new Date().toISOString().slice(0, 16),
+                          },
+                          "notas",
+                        )
+                      }
+                      icon={Flag}
+                      label="Llamada hecha"
+                      tone="cyan"
+                    />
+                    <QuickActionButton
+                      onClick={() =>
+                        handleQuickUpdate(
+                          {
+                            next_follow_up_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                          },
+                          "notas",
+                        )
+                      }
+                      icon={Flag}
+                      label="Programar follow-up"
+                      tone="amber"
+                    />
+                    <QuickActionButton
+                      onClick={() =>
+                        handleQuickUpdate(
+                          {
+                            prospect_status:
+                              selected.status === "sin_contactar" ? "intento_contacto" : selected.status,
+                            priority: "alta",
+                          },
+                          "informe",
+                        )
+                      }
+                      icon={Flag}
+                      label="Mover a pipeline"
+                      tone="violet"
+                    />
+                    <QuickActionButton
+                      onClick={() => handleQuickUpdate({ prospect_status: "perdido" }, "informe")}
+                      icon={CircleSlash}
+                      label="Descartar"
+                      tone="rose"
+                    />
+                  </>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+
         {activeTab === "informe" && insight ? (
           <section className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
@@ -764,6 +772,7 @@ export function BusinessPanel({
             </div>
           </section>
         ) : null}
+        </div>
       </div>
 
       {panelStatus?.isNonViable ? (
@@ -890,11 +899,11 @@ function QuickActionButton({
         tone === "cyan"
           ? "pm-btn-primary"
           : tone === "amber"
-            ? "border-[rgba(161,148,128,0.16)] bg-[linear-gradient(180deg,rgba(161,148,128,0.1),rgba(18,22,28,0.82))] text-[rgba(244,241,234,0.96)]"
+            ? "border-[rgba(161,148,128,0.12)] bg-[linear-gradient(180deg,rgba(161,148,128,0.06),rgba(18,22,28,0.82))] text-[var(--pm-text)]"
             : tone === "violet"
-              ? "border-[rgba(168,171,177,0.16)] bg-[linear-gradient(180deg,rgba(168,171,177,0.08),rgba(18,22,28,0.82))] text-[rgba(240,240,240,0.96)]"
+              ? "border-[rgba(168,171,177,0.12)] bg-[linear-gradient(180deg,rgba(168,171,177,0.06),rgba(18,22,28,0.82))] text-[var(--pm-text)]"
               : tone === "rose"
-                ? "border-[rgba(154,125,130,0.16)] bg-[linear-gradient(180deg,rgba(154,125,130,0.1),rgba(18,22,28,0.82))] text-[rgba(245,238,239,0.96)]"
+                ? "border-[rgba(154,125,130,0.12)] bg-[linear-gradient(180deg,rgba(154,125,130,0.06),rgba(18,22,28,0.82))] text-[var(--pm-text)]"
                 : "pm-btn-secondary",
       )}
     >

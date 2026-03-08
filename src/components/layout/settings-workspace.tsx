@@ -5,7 +5,7 @@ import { AccountProfileForm } from "@/components/layout/account-profile-form";
 import { AccountCommercialProfileForm } from "../commercial/account-commercial-profile-form";
 import { CommercialSettingsPanel } from "../commercial/commercial-settings-panel";
 import { useCommercialConfig } from "../commercial/use-commercial-config";
-import { PmPanel, PmSectionHeader } from "../ui/pm";
+import { PmBadge, PmHero, PmPanel } from "../ui/pm";
 
 type Props = {
   userId: string;
@@ -28,15 +28,26 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
 
   return (
     <div className="pm-page">
-      <PmPanel elevated className="p-6 sm:p-7">
-        <PmSectionHeader
-          eyebrow="Configuración"
-          title="Cuenta, territorio y criterio comercial"
-          description="Ajusta la información base de la cuenta y el motor de prospección sin salir del flujo operativo."
-        />
-      </PmPanel>
+      <PmHero
+        eyebrow="Configuración"
+        title="Cuenta, territorio y criterio."
+        description="Ajusta la base de la cuenta y el motor comercial sin romper el flujo operativo."
+        actions={
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <PmBadge>{settings.vertical ? "Vertical lista" : "Vertical pendiente"}</PmBadge>
+              <PmBadge tone={saveState === "error" ? "rose" : saveState === "local_only" ? "amber" : "neutral"}>
+                {saveState === "saving" ? "Guardando" : saveState === "saved" ? "Actualizado" : saveState === "local_only" ? "Local" : saveState === "error" ? "Revisar" : "Estable"}
+              </PmBadge>
+            </div>
+            <p className="text-sm leading-6 text-[var(--pm-text-secondary)]">
+              Cuenta base, playbook y scoring viven aquí.
+            </p>
+          </div>
+        }
+      />
 
-      <div className="grid gap-4 2xl:grid-cols-[0.9fr_1.1fr]">
+      <div className="grid gap-5 2xl:grid-cols-[0.84fr_1.16fr]">
         <div>
           <AccountProfileForm
             mode="settings"
@@ -49,11 +60,10 @@ export function SettingsWorkspace({ userId, email, initialCompany, initialCity }
 
         <div className="space-y-4">
           <PmPanel className="p-5 sm:p-6">
-            <p className="pm-kicker">Configuración comercial</p>
-            <h1 className="pm-title mt-2 text-[1.7rem]">Motor de prospección de Órbita</h1>
+            <p className="pm-kicker">Motor comercial</p>
+            <h1 className="pm-title mt-2 text-[1.7rem]">Cómo piensa la cuenta</h1>
             <p className="pm-muted mt-3 max-w-2xl text-sm leading-6">
-              Aquí defines la vertical principal, el criterio de scoring y las preferencias que usa la cuenta en
-              territorio, centro de control y prioridades.
+              Vertical, scoring y preferencias que alimentan territorio, prioridades y ataque.
             </p>
           </PmPanel>
 
