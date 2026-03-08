@@ -137,8 +137,8 @@ export function TodayClient({ profile }: Props) {
         <>
           <PmHero
             eyebrow="Centro de control"
-            title="Qué mover hoy."
-            description="Lo urgente, lo valioso y el siguiente paso claro."
+            title="Control del día."
+            description="Lo urgente, lo valioso y lo que merece movimiento ahora."
             actions={
               <div className="space-y-4">
                 <div className="space-y-1">
@@ -149,7 +149,7 @@ export function TodayClient({ profile }: Props) {
                 </div>
                 <Link href="/attack?source=alerts" className="pm-btn pm-btn-primary w-full">
                   <ArrowRight className="h-4 w-4" />
-                  Empezar ataque
+                  Abrir Ataque del día
                 </Link>
               </div>
             }
@@ -219,8 +219,8 @@ export function TodayClient({ profile }: Props) {
 
               <div className="grid gap-4 xl:grid-cols-3">
                 <DistributionPanel
-                  title="Servicios con mejor encaje"
-                  description="Qué ofrecer primero hoy."
+                  title="Servicios con más encaje"
+                  description="Dónde hay más encaje hoy."
                   items={summary.serviceDistribution.map((item) => ({
                     label: item.label,
                     value: item.value,
@@ -229,7 +229,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <DistributionPanel
                   title="Oportunidad por vertical"
-                  description="Dónde está el foco ahora."
+                  description="Concentración actual del pipeline."
                   items={summary.marketVerticalDistribution.map((item) => ({
                     label: item.label,
                     value: item.value,
@@ -238,7 +238,7 @@ export function TodayClient({ profile }: Props) {
                 />
                 <DistributionPanel
                   title="Sectores dominantes"
-                  description="Dónde hay más volumen útil."
+                  description="Sectores con más volumen útil."
                   items={summary.sectorDistribution}
                   emptyText="Sin sectores dominantes todavía."
                 />

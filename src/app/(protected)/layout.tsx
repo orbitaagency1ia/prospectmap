@@ -91,8 +91,8 @@ export default async function ProtectedLayout({
                       <MapPin className="h-3.5 w-3.5 text-[var(--pm-text-tertiary)]" />
                       {profile?.city_name || "Ciudad principal"}
                     </span>
-                  <span className="hidden h-1 w-1 rounded-full bg-[var(--pm-text-tertiary)] sm:inline-block" />
-                    <span className="pm-muted">Qué mover hoy, dónde atacar y qué cerrar.</span>
+                    <span className="hidden h-1 w-1 rounded-full bg-[var(--pm-text-tertiary)] sm:inline-block" />
+                    <span className="pm-muted">Foco diario, territorio y cierre.</span>
                   </div>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default async function ProtectedLayout({
             <div className="pm-shell-divider mt-5 border-t pt-4 xl:hidden">
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-[var(--pm-text-tertiary)]">Ir a</p>
+                  <p className="text-xs text-[var(--pm-text-tertiary)]">Navegación principal</p>
                   <div className="flex items-center gap-2">
                     <Link href="/dashboard" className="pm-utility-button min-h-[2.6rem] px-3">
                       <BarChart3 className="h-4 w-4" />

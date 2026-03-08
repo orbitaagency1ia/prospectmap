@@ -78,12 +78,12 @@ export function PipelineClient({ profile }: Props) {
 
       <PmHero
         eyebrow="Pipeline de cierre"
-        title="Cierra con foco."
-        description="Qué está cerca de avanzar y qué se está enfriando."
+        title="Cierre en marcha."
+        description="Qué está más cerca de avanzar y qué se enfría."
         actions={
           <div className="space-y-3">
             <Link href="/attack?source=pipeline" className="pm-btn pm-btn-primary w-full sm:w-auto">
-              Atacar desde pipeline
+              Abrir sesión desde pipeline
             </Link>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard icon={Euro} label="Valor abierto" value={formatCurrency(snapshot.openValue)} />

@@ -11,17 +11,17 @@
 :root {
   color-scheme: dark;
 
-  --pm-bg: #060607;
-  --pm-bg-secondary: #0d0d0f;
-  --pm-surface: #131315;
-  --pm-surface-secondary: #19191c;
-  --pm-surface-tertiary: #222227;
-  --pm-surface-float: rgba(16, 15, 14, 0.78);
+  --pm-bg: #070707;
+  --pm-bg-secondary: #0f0f10;
+  --pm-surface: #151516;
+  --pm-surface-secondary: #1b1b1d;
+  --pm-surface-tertiary: #232326;
+  --pm-surface-float: rgba(18, 17, 15, 0.76);
   --pm-border: rgba(255, 255, 255, 0.05);
   --pm-border-strong: rgba(255, 255, 255, 0.11);
-  --pm-text: #f7f5f0;
-  --pm-text-secondary: #c7beb2;
-  --pm-text-tertiary: #8f877b;
+  --pm-text: #f7f4ee;
+  --pm-text-secondary: #c2b9ae;
+  --pm-text-tertiary: #8f867b;
   --pm-primary: #f49a3e;
   --pm-primary-hover: #ffb15a;
   --pm-success: #70b68f;
@@ -57,10 +57,10 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 12% -8%, rgba(244, 154, 62, 0.11), transparent 25%),
-    radial-gradient(circle at 86% 0%, rgba(255, 255, 255, 0.032), transparent 20%),
-    radial-gradient(circle at 74% 100%, rgba(244, 154, 62, 0.055), transparent 28%),
-    linear-gradient(180deg, rgba(12, 11, 10, 0.995), rgba(6, 6, 7, 1)),
+    radial-gradient(circle at 14% -6%, rgba(244, 154, 62, 0.1), transparent 24%),
+    radial-gradient(circle at 86% 3%, rgba(255, 255, 255, 0.03), transparent 18%),
+    radial-gradient(circle at 72% 100%, rgba(244, 154, 62, 0.05), transparent 26%),
+    linear-gradient(180deg, rgba(13, 12, 11, 0.99), rgba(7, 7, 7, 1)),
     var(--pm-bg);
   color: var(--pm-text);
   font-size: 15px;
@@ -81,8 +81,8 @@ body::after {
 body::before {
   z-index: -2;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent 18%),
-    radial-gradient(circle at top, rgba(244, 154, 62, 0.065), transparent 36%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 16%),
+    radial-gradient(circle at top, rgba(244, 154, 62, 0.06), transparent 34%);
 }
 
 body::after {
@@ -238,7 +238,7 @@ textarea.field {
 .pm-page {
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 1.7rem;
   padding: 1.2rem 1rem 1.8rem;
   animation: pm-fade-up 460ms var(--pm-ease);
 }
@@ -249,10 +249,10 @@ textarea.field {
   border-radius: var(--pm-radius-panel);
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(27, 24, 21, 0.8), rgba(16, 15, 13, 0.9)) padding-box,
-    linear-gradient(180deg, rgba(255, 183, 109, 0.18), rgba(244, 154, 62, 0.03)) border-box;
+    linear-gradient(180deg, rgba(27, 23, 20, 0.82), rgba(18, 16, 14, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(255, 183, 109, 0.2), rgba(244, 154, 62, 0.04)) border-box;
   box-shadow: var(--pm-shadow-panel);
-  backdrop-filter: blur(20px) saturate(110%);
+  backdrop-filter: blur(20px) saturate(108%);
   padding: 1.55rem;
   transition:
     transform var(--pm-transition-fast),
@@ -266,8 +266,8 @@ textarea.field {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent 28%);
-  opacity: 0.62;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 26%);
+  opacity: 0.6;
 }
 
 .pm-panel-elevated {
@@ -284,8 +284,8 @@ textarea.field {
   border-radius: var(--pm-radius-card);
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(26, 23, 20, 0.76), rgba(16, 15, 13, 0.86)) padding-box,
-    linear-gradient(180deg, rgba(255, 181, 106, 0.15), rgba(244, 154, 62, 0.03)) border-box;
+    linear-gradient(180deg, rgba(25, 22, 19, 0.74), rgba(17, 15, 13, 0.84)) padding-box,
+    linear-gradient(180deg, rgba(255, 181, 106, 0.16), rgba(244, 154, 62, 0.035)) border-box;
   box-shadow: var(--pm-shadow-card);
   padding: 1.05rem;
   backdrop-filter: blur(14px) saturate(108%);
@@ -297,7 +297,7 @@ textarea.field {
 }
 
 .pm-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: 0 20px 42px rgba(0, 0, 0, 0.18), var(--pm-shadow-warm);
   background:
     linear-gradient(180deg, rgba(30, 25, 21, 0.82), rgba(20, 18, 16, 0.9)) padding-box,
@@ -678,11 +678,11 @@ textarea.field {
   gap: 0.28rem;
   padding: 0.24rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 177, 98, 0.12);
+  border: 1px solid rgba(255, 177, 98, 0.14);
   background:
-    linear-gradient(180deg, rgba(24, 21, 18, 0.78), rgba(14, 12, 10, 0.84)) padding-box,
-    linear-gradient(180deg, rgba(255, 177, 98, 0.1), rgba(244, 154, 62, 0.02)) border-box;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.14);
+    linear-gradient(180deg, rgba(24, 21, 18, 0.8), rgba(14, 12, 10, 0.86)) padding-box,
+    linear-gradient(180deg, rgba(255, 177, 98, 0.12), rgba(244, 154, 62, 0.03)) border-box;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
 .pm-nav-link:hover {
@@ -739,11 +739,11 @@ textarea.field {
   gap: 0.35rem;
   padding: 0.25rem;
   border-radius: 1.2rem;
-  border: 1px solid rgba(255, 177, 98, 0.11);
+  border: 1px solid rgba(255, 177, 98, 0.13);
   background:
-    linear-gradient(180deg, rgba(19, 17, 15, 0.78), rgba(12, 11, 9, 0.88)) padding-box,
-    linear-gradient(180deg, rgba(255, 177, 98, 0.1), rgba(244, 154, 62, 0.02)) border-box;
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.14);
+    linear-gradient(180deg, rgba(19, 17, 15, 0.8), rgba(12, 11, 9, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(255, 177, 98, 0.12), rgba(244, 154, 62, 0.03)) border-box;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
 }
 
 .pm-mobile-nav-link {
@@ -787,16 +787,6 @@ textarea.field {
   padding: 1.6rem 1.7rem;
 }
 
-.pm-hero-shell::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 84% 10%, rgba(255, 201, 145, 0.13), transparent 25%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%);
-}
-
 .pm-scene-hero::before {
   content: "";
   position: absolute;
@@ -812,14 +802,6 @@ textarea.field {
   grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
 }
 
-.pm-metric-card {
-  transform: translateZ(0);
-}
-
-.pm-metric-card:hover {
-  transform: translateY(-2px);
-}
-
 .pm-stage-divider {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -827,12 +809,12 @@ textarea.field {
 .pm-focus-pane {
   position: relative;
   border-radius: 1.6rem;
-  border: 1px solid rgba(255, 177, 98, 0.12);
+  border: 1px solid rgba(255, 177, 98, 0.14);
   background:
-    radial-gradient(circle at top left, rgba(255, 191, 127, 0.1), transparent 34%),
-    linear-gradient(180deg, rgba(29, 24, 20, 0.76), rgba(15, 13, 11, 0.9)) padding-box,
-    linear-gradient(180deg, rgba(255, 177, 98, 0.12), rgba(244, 154, 62, 0.02)) border-box;
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.16);
+    radial-gradient(circle at top left, rgba(255, 191, 127, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(29, 24, 20, 0.78), rgba(15, 13, 11, 0.92)) padding-box,
+    linear-gradient(180deg, rgba(255, 177, 98, 0.14), rgba(244, 154, 62, 0.03)) border-box;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.15);
 }
 
 .pm-focus-pane::after {
@@ -846,11 +828,11 @@ textarea.field {
 
 .pm-control-surface {
   border-radius: 1.35rem;
-  border: 1px solid rgba(255, 177, 98, 0.1);
+  border: 1px solid rgba(255, 177, 98, 0.12);
   background:
-    linear-gradient(180deg, rgba(24, 21, 18, 0.72), rgba(14, 12, 11, 0.82)) padding-box,
-    linear-gradient(180deg, rgba(255, 177, 98, 0.09), rgba(244, 154, 62, 0.02)) border-box;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
+    linear-gradient(180deg, rgba(24, 21, 18, 0.74), rgba(14, 12, 11, 0.84)) padding-box,
+    linear-gradient(180deg, rgba(255, 177, 98, 0.11), rgba(244, 154, 62, 0.02)) border-box;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
 .pm-texture-soft {
@@ -978,7 +960,6 @@ textarea.field {
   isolation: isolate;
   overflow: clip;
   contain: layout paint;
-  clip-path: inset(0 round 1.2rem);
   border: 1px solid rgba(255, 177, 98, 0.16);
   background:
     radial-gradient(circle at 6% 0%, rgba(255, 191, 127, 0.12), transparent 30%),

@@ -26,7 +26,7 @@ export function AppNav({
   return (
     <>
       <nav className={cn("xl:items-center xl:justify-center", showDesktop ? "hidden xl:flex" : "hidden")}>
-        <div className="pm-nav-stage pm-animate-rise">
+        <div className="pm-nav-stage">
           {primaryLinks.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -46,7 +46,7 @@ export function AppNav({
 
       <nav className={cn("xl:hidden", !showMobile && "hidden")}>
         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="pm-mobile-stage pm-animate-rise">
+          <div className="pm-mobile-stage">
             {primaryLinks.map(({ href, label, mobileLabel, icon: Icon }) => {
               const active = pathname === href || pathname.startsWith(`${href}/`);
 
