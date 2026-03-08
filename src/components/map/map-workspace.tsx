@@ -41,7 +41,7 @@ import type { MapBounds } from "./map-canvas";
 const MapCanvas = dynamic(() => import("./map-canvas").then((mod) => mod.MapCanvas), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(13,16,20,0.94),rgba(7,9,12,0.98))] text-sm text-[var(--pm-text-secondary)]">
+    <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(24,21,18,0.94),rgba(12,10,9,0.98))] text-sm text-[var(--pm-text-secondary)]">
       Cargando mapa...
     </div>
   ),
@@ -453,8 +453,8 @@ export function MapWorkspace({ profile }: Props) {
 
   return (
     <>
-      <div className="grid min-h-[620px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[68dvh] lg:min-h-[620px] lg:max-h-[780px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[70dvh] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
-        <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(8,10,13,0.76)] lg:flex lg:flex-col">
+      <div className="grid min-h-[620px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(16,14,12,0.97),rgba(9,8,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[68dvh] lg:min-h-[620px] lg:max-h-[780px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[70dvh] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
+        <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(14,12,11,0.76)] lg:flex lg:flex-col">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 pm-animate-left pm-stagger">
             <div className="pm-focus-pane p-5">
               <div className="flex items-start justify-between gap-4">
@@ -677,7 +677,7 @@ export function MapWorkspace({ profile }: Props) {
           </div>
         </section>
 
-        <aside className="hidden min-h-0 border-l border-[var(--pm-border)] bg-[rgba(9,11,15,0.22)] xl:block pm-animate-right">
+        <aside className="hidden min-h-0 border-l border-[var(--pm-border)] bg-[rgba(16,14,12,0.28)] xl:block pm-animate-right">
           <BusinessPanel
             key={selectedRecord?.business.key ?? "none-desktop"}
             selected={selectedBusiness}
