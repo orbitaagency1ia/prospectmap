@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import L from "leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
 import {
   MAP_DEFAULT_ZOOM,
@@ -111,6 +111,43 @@ function BoundsWatcher({ onBoundsChange }: { onBoundsChange: (bounds: MapBounds)
   return null;
 }
 
+function ResizeWatcher({
+  markerCount,
+  selectedKey,
+}: {
+  markerCount: number;
+  selectedKey: string | null;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    const invalidate = () => map.invalidateSize({ animate: false });
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => {
+      window.requestAnimationFrame(invalidate);
+    });
+
+    observer.observe(container);
+    window.requestAnimationFrame(invalidate);
+    window.addEventListener("resize", invalidate);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", invalidate);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    const raf = window.requestAnimationFrame(() => {
+      map.invalidateSize({ animate: false });
+    });
+
+    return () => window.cancelAnimationFrame(raf);
+  }, [map, markerCount, selectedKey]);
+
+  return null;
+}
+
 export function MapCanvas({
   center,
   markers,
@@ -136,6 +173,7 @@ export function MapCanvas({
       />
 
       <BoundsWatcher onBoundsChange={onBoundsChange} />
+      <ResizeWatcher markerCount={markers.length} selectedKey={selectedKey} />
 
       <MarkerClusterGroup chunkedLoading>
         {markers.map((marker) => {
