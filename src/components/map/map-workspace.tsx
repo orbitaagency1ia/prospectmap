@@ -453,9 +453,9 @@ export function MapWorkspace({ profile }: Props) {
 
   return (
     <>
-      <div className="grid min-h-[640px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[74dvh] lg:min-h-[640px] lg:max-h-[860px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[76dvh] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
+      <div className="grid min-h-[620px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[68dvh] lg:min-h-[620px] lg:max-h-[780px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[70dvh] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
         <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(8,10,13,0.76)] lg:flex lg:flex-col">
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 pm-animate-left">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 pm-animate-left pm-stagger">
             <div className="pm-focus-pane p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -563,7 +563,7 @@ export function MapWorkspace({ profile }: Props) {
           </div>
         </aside>
 
-        <section className="flex min-h-0 flex-col pm-animate-rise">
+        <section className="flex min-h-0 flex-col overflow-hidden pm-animate-rise">
           <div className="hidden items-center justify-between gap-4 border-b border-[var(--pm-border)] px-4 py-4 lg:flex">
             <div>
               <p className="pm-kicker">Mapa</p>
@@ -661,17 +661,19 @@ export function MapWorkspace({ profile }: Props) {
             ) : null}
           </div>
 
-          <div className="h-[56vh] min-h-[420px] lg:min-h-0 lg:h-full lg:flex-1">
-            <MapCanvas
-              center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
-              markers={mapMarkers}
-              selectedKey={selectedKey}
-              onMarkerSelect={(key) => {
-                setSelectedKey(key);
-                setShowMobilePanel(true);
-              }}
-              onBoundsChange={setMapBounds}
-            />
+          <div className="px-3 pb-3 pt-0 lg:flex-1 lg:px-4 lg:pb-4">
+            <div className="pm-map-stage h-[50vh] min-h-[340px] overflow-hidden rounded-[1.2rem] lg:h-full lg:min-h-0">
+              <MapCanvas
+                center={[profile.city_lat ?? 40.4168, profile.city_lng ?? -3.7038]}
+                markers={mapMarkers}
+                selectedKey={selectedKey}
+                onMarkerSelect={(key) => {
+                  setSelectedKey(key);
+                  setShowMobilePanel(true);
+                }}
+                onBoundsChange={setMapBounds}
+              />
+            </div>
           </div>
         </section>
 

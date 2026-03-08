@@ -391,6 +391,8 @@ textarea.field {
 }
 
 .pm-btn-primary {
+  position: relative;
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgba(212, 208, 200, 0.16), rgba(212, 208, 200, 0.1)) padding-box,
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(212, 208, 200, 0.14)) border-box;
@@ -407,6 +409,21 @@ textarea.field {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
     0 18px 36px rgba(0, 0, 0, 0.16);
+}
+
+.pm-btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 28%, rgba(255, 255, 255, 0.34) 50%, transparent 72%);
+  transform: translateX(-115%) rotate(2deg);
+  opacity: 0;
+}
+
+.pm-btn-primary:hover::after {
+  opacity: 0.95;
+  animation: pm-cta-glide 900ms var(--pm-ease);
 }
 
 .pm-btn-secondary {
@@ -681,6 +698,7 @@ textarea.field {
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: pm-active-settle 240ms var(--pm-ease);
 }
 
 .pm-nav-link-active::after {
@@ -751,6 +769,7 @@ textarea.field {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 10px 22px rgba(0, 0, 0, 0.08);
+  animation: pm-active-settle 220ms var(--pm-ease);
 }
 
 .pm-mobile-nav-link-active::after {
@@ -936,6 +955,23 @@ textarea.field {
   color: var(--pm-text-secondary);
 }
 
+.pm-map-stage {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    radial-gradient(circle at 6% 0%, rgba(255, 255, 255, 0.04), transparent 28%),
+    linear-gradient(180deg, rgba(17, 21, 27, 0.82), rgba(10, 12, 16, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 44px rgba(0, 0, 0, 0.14);
+  animation: pm-rise-soft 320ms var(--pm-ease);
+}
+
+.pm-map-stage .leaflet-container {
+  border-radius: inherit;
+}
+
 .pm-tooltip-chip {
   display: inline-flex;
   align-items: center;
@@ -1015,6 +1051,26 @@ textarea.field {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes pm-cta-glide {
+  0% {
+    transform: translateX(-115%) rotate(2deg);
+  }
+
+  100% {
+    transform: translateX(118%) rotate(2deg);
+  }
+}
+
+@keyframes pm-active-settle {
+  from {
+    transform: scale(0.985);
+  }
+
+  to {
+    transform: scale(1);
   }
 }
 
