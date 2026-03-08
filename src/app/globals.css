@@ -958,6 +958,8 @@ textarea.field {
 .pm-map-stage {
   position: relative;
   isolation: isolate;
+  overflow: clip;
+  contain: layout paint;
   border: 1px solid rgba(255, 177, 98, 0.16);
   background:
     radial-gradient(circle at 6% 0%, rgba(255, 191, 127, 0.12), transparent 30%),
@@ -970,6 +972,8 @@ textarea.field {
 
 .pm-map-stage .leaflet-container {
   border-radius: inherit;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .pm-tooltip-chip {
@@ -1101,6 +1105,10 @@ textarea.field {
 
   .pm-app-header {
     padding: 1rem;
+  }
+
+  .pm-map-stage {
+    min-height: 280px;
   }
 
   .pm-scene-hero {

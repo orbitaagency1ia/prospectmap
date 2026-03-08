@@ -724,7 +724,7 @@ function AttackWorkspaceScreen({
 
       {!attack.tableAvailable ? (
         <PmNotice tone="amber">
-          Attack Workspace necesita activar la migración `0006_attack_workspace.sql` en Supabase para guardar sesiones y resultados.
+          La sesión de ataque aún no está lista en esta instalación. Activa la base de datos de ataque para guardar progreso y resultados.
         </PmNotice>
       ) : null}
 
