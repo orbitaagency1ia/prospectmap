@@ -453,9 +453,9 @@ export function MapWorkspace({ profile }: Props) {
 
   return (
     <>
-      <div className="grid min-h-[680px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[calc(100dvh-13rem)] lg:min-h-[720px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[calc(100dvh-12rem)] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
+      <div className="grid min-h-[640px] flex-1 overflow-hidden rounded-[2rem] border border-[var(--pm-border)] bg-[linear-gradient(180deg,rgba(10,12,15,0.96),rgba(5,6,8,0.99))] shadow-[var(--pm-shadow-float)] lg:h-[74dvh] lg:min-h-[640px] lg:max-h-[860px] lg:grid-cols-[360px_minmax(0,1fr)] xl:h-[76dvh] xl:grid-cols-[360px_minmax(0,1fr)_468px] lg:rounded-[2.35rem]">
         <aside className="hidden min-h-0 border-r border-[var(--pm-border)] bg-[rgba(8,10,13,0.76)] lg:flex lg:flex-col">
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 pm-animate-left">
             <div className="pm-focus-pane p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -563,7 +563,7 @@ export function MapWorkspace({ profile }: Props) {
           </div>
         </aside>
 
-        <section className="flex min-h-0 flex-col">
+        <section className="flex min-h-0 flex-col pm-animate-rise">
           <div className="hidden items-center justify-between gap-4 border-b border-[var(--pm-border)] px-4 py-4 lg:flex">
             <div>
               <p className="pm-kicker">Mapa</p>
@@ -675,7 +675,7 @@ export function MapWorkspace({ profile }: Props) {
           </div>
         </section>
 
-        <aside className="hidden min-h-0 border-l border-[var(--pm-border)] bg-[rgba(9,11,15,0.22)] xl:block">
+        <aside className="hidden min-h-0 border-l border-[var(--pm-border)] bg-[rgba(9,11,15,0.22)] xl:block pm-animate-right">
           <BusinessPanel
             key={selectedRecord?.business.key ?? "none-desktop"}
             selected={selectedBusiness}

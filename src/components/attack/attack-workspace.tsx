@@ -701,7 +701,7 @@ function AttackWorkspaceScreen({
         </div>
       </PmHero>
 
-      <div className="grid gap-5 xl:grid-cols-[0.92fr_1.38fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.92fr_1.38fr] pm-animate-rise">
         <div className="space-y-5">
           <SessionControlPanel
             sourceLabel={ATTACK_SOURCE_LABELS[attack.session?.source ?? intent.source]}
@@ -952,7 +952,7 @@ function QueuePanel({
         }
       />
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-3 pm-stagger">
         {entries.length === 0 ? (
           <PmEmpty body="No hay leads que encajen con este foco ahora mismo." />
         ) : null}

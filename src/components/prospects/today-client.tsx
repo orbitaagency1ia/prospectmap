@@ -162,7 +162,7 @@ export function TodayClient({ profile }: Props) {
             </div>
           </PmHero>
 
-          <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.36fr)_430px]">
+          <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.36fr)_430px] pm-animate-rise">
             <div className="space-y-5">
               <ActionSummaryPanel summary={summary} />
               <OpportunityAlertsPanel
@@ -182,7 +182,7 @@ export function TodayClient({ profile }: Props) {
                 onOpenBusiness={setSelectedKey}
               />
 
-              <div className="grid gap-4 xl:grid-cols-2">
+              <div className="grid gap-4 xl:grid-cols-2 pm-stagger">
                 <ProspectSection
                   title="Negocios prioritarios de hoy"
                   description="Alta prioridad o seguimiento vencido."
