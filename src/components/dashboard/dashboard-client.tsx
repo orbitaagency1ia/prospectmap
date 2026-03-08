@@ -147,7 +147,9 @@ export function DashboardClient({ data }: Props) {
               <p className="mt-1 text-sm text-[var(--pm-text)]">
                 <span className="font-semibold">{activity.businessName}</span>
                 {" · "}
-                <span className="text-[var(--pm-text-secondary)]">{activity.type === "note" ? "Nota" : "Actualización"}</span>
+                <span className="text-[var(--pm-text-secondary)]">
+                  {activity.type === "note" ? "Nota" : activity.type === "event" ? "Evento" : "Actualización"}
+                </span>
               </p>
               <p className="mt-1 text-sm text-[var(--pm-text-secondary)]">{activity.text}</p>
             </article>

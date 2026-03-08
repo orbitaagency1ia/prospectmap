@@ -10,8 +10,14 @@ import {
   type PriorityLevel,
   type ProspectStatus,
 } from "@/lib/constants";
-import { OPPORTUNITY_META, VERTICAL_CONFIGS, type ProspectInsight, type VerticalId } from "@/lib/prospect-intelligence";
-import type { CombinedBusiness, NoteRow } from "@/lib/types";
+import {
+  OPPORTUNITY_META,
+  VERTICAL_CONFIGS,
+  type ProspectInsight,
+  type VerticalId,
+} from "@/lib/prospect-intelligence";
+import type { BusinessEventType } from "@/lib/commercial/business-events";
+import type { BusinessEventRow, CombinedBusiness, NoteRow } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
 import { PmBadge, PmEmpty } from "../ui/pm";
@@ -45,6 +51,8 @@ type Props = {
   showDemoBadges?: boolean;
   notes: NoteRow[];
   notesLoading: boolean;
+  events: BusinessEventRow[];
+  eventsLoading: boolean;
   busy: boolean;
   savingNote: boolean;
   onClose: () => void;
@@ -130,6 +138,8 @@ export function BusinessPanel({
   showDemoBadges = false,
   notes,
   notesLoading,
+  events,
+  eventsLoading,
   busy,
   savingNote,
   onClose,
@@ -168,6 +178,30 @@ export function BusinessPanel({
       </span>
     );
   }, [selected]);
+
+  const activityTimeline = useMemo(() => {
+    const eventItems = events
+      .filter((event) => event.event_type !== "note_added")
+      .map((event) => ({
+        id: `event-${event.id}`,
+        kind: "event" as const,
+        eventType: event.event_type as BusinessEventType,
+        title: event.title,
+        text: event.details,
+        createdAt: event.created_at,
+      }));
+
+    const noteItems = notes.map((note) => ({
+      id: `note-${note.id}`,
+      kind: "note" as const,
+      eventType: "note_added" as const,
+      title: "Nota añadida",
+      text: note.note_text,
+      createdAt: note.created_at,
+    }));
+
+    return [...eventItems, ...noteItems].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+  }, [events, notes]);
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -756,16 +790,22 @@ export function BusinessPanel({
             </div>
 
             <div className="pm-card p-4 sm:p-5">
-              <p className="pm-kicker">Timeline</p>
+              <p className="pm-kicker">Timeline comercial</p>
               <div className="mt-4 space-y-3">
-                {notesLoading ? <p className="text-xs text-[var(--pm-text-tertiary)]">Cargando notas...</p> : null}
-                {!notesLoading && notes.length === 0 ? (
+                {(notesLoading || eventsLoading) ? <p className="text-xs text-[var(--pm-text-tertiary)]">Cargando actividad...</p> : null}
+                {!notesLoading && !eventsLoading && activityTimeline.length === 0 ? (
                   <PmEmpty body="Todavía no hay actividad registrada." />
                 ) : null}
-                {notes.map((note) => (
-                  <article key={note.id} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">{formatDateTime(note.created_at)}</p>
-                    <p className="mt-2 text-sm leading-6 text-[var(--pm-text)]">{note.note_text}</p>
+                {activityTimeline.map((item) => (
+                  <article key={item.id} className="rounded-[1rem] border border-[var(--pm-border)] bg-[rgba(255,255,255,0.02)] px-3.5 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--pm-text-tertiary)]">{formatDateTime(item.createdAt)}</p>
+                      <span className={cn("inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium", getEventToneClass(item.eventType))}>
+                        {item.kind === "note" ? "Nota" : "Evento"}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm font-medium text-[var(--pm-text)]">{item.title}</p>
+                    {item.text ? <p className="mt-2 text-sm leading-6 text-[var(--pm-text-secondary)]">{item.text}</p> : null}
                   </article>
                 ))}
               </div>
@@ -924,4 +964,20 @@ function ListPanel({ items, emptyText }: { items: string[]; emptyText: string })
       ))}
     </div>
   );
+}
+
+function getEventToneClass(type: BusinessEventType) {
+  if (type === "attack_result_logged") {
+    return "border-[rgba(141,157,146,0.22)] bg-[rgba(141,157,146,0.12)] text-[rgba(240,244,241,0.96)]";
+  }
+
+  if (type === "status_changed" || type === "priority_changed" || type === "follow_up_scheduled") {
+    return "border-[rgba(161,148,128,0.24)] bg-[rgba(161,148,128,0.12)] text-[rgba(244,241,234,0.96)]";
+  }
+
+  if (type === "business_saved") {
+    return "border-[rgba(168,171,177,0.24)] bg-[rgba(168,171,177,0.12)] text-[rgba(240,240,240,0.96)]";
+  }
+
+  return "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] text-[var(--pm-text)]";
 }

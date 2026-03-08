@@ -35,7 +35,8 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - briefing operativo del lead,
   - registro rapido de resultado,
   - siguiente paso recomendado,
-  - progreso y KPIs de ejecucion.
+  - progreso y KPIs de ejecucion,
+  - atajos de teclado para ejecutar mas rapido (`Ctrl/Cmd + Enter`, `J/K`, `S`, `D`, `P`, `E`).
 - Onboarding comercial guiado.
 - Configuración comercial desde formulario estructurado + texto/PDF opcional.
 - Perfil comercial de cuenta persistente en Supabase.
@@ -90,7 +91,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
   - prioridad,
   - siguiente follow-up,
   - datos de decisor,
-  - timeline de notas,
+  - timeline comercial unificado (notas + eventos),
   - informe comercial,
   - score,
   - dolor principal detectado,
@@ -127,6 +128,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `src/components/ui/pm.tsx` primitivas del design system interno (`PmPanel`, `PmHero`, `PmMetric`, `PmBadge`, `PmNotice`, `PmEmpty`, `PmSectionHeader`).
 - `src/app/globals.css` tokens visuales, capas, motion, superficies y estilos base reutilizables.
 - `src/lib/commercial/account-profile.ts` saneado, persistencia local y resumen heurístico del perfil comercial.
+- `src/lib/commercial/business-events.ts` helper de registro de actividad comercial (`business_events`) con fallback seguro.
 - `src/lib/commercial/types.ts` tipos del dominio comercial.
 - `src/lib/commercial/verticals.ts` configuracion centralizada de verticales, presets y librerias.
 - `src/lib/commercial/scoring.ts` capa de scoring.
@@ -146,6 +148,7 @@ ProspectMap es un SaaS de prospección B2B sobre mapa construido para **coste 0 
 - `supabase/migrations/0004_phase5_pipeline_lists.sql` migracion incremental para follow-ups y listas/campañas.
 - `supabase/migrations/0005_fix_missing_account_settings.sql` reparacion idempotente para proyectos donde falta `account_settings` o el trigger de alta de usuario quedó roto.
 - `supabase/migrations/0006_attack_workspace.sql` migracion incremental para sesiones de ataque y registro de resultados.
+- `supabase/migrations/0007_business_events.sql` migracion incremental para timeline comercial unificado y actividad reciente por eventos.
 
 ## 2.1) Sistema visual y UX
 
@@ -219,7 +222,7 @@ La app abrirá directamente en `/today`.
 1. Crea un proyecto en Supabase Free.
 2. Ve a SQL Editor y ejecuta:
    - proyecto nuevo desde cero: `supabase/migrations/0001_init.sql`
-   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql`, despues `supabase/migrations/0004_phase5_pipeline_lists.sql` y despues `supabase/migrations/0006_attack_workspace.sql`
+   - proyecto ya existente con Phase 1/2: `supabase/migrations/0002_phase3_commercial_settings.sql`, despues `supabase/migrations/0003_phase4_account_profiles.sql`, despues `supabase/migrations/0004_phase5_pipeline_lists.sql`, despues `supabase/migrations/0006_attack_workspace.sql` y despues `supabase/migrations/0007_business_events.sql`
    - si la UI muestra `Error guardando` en configuracion comercial o el registro devuelve `Database error saving new user`: ejecuta `supabase/migrations/0005_fix_missing_account_settings.sql`
 3. En Authentication > Providers:
    - Email activado.
@@ -242,6 +245,7 @@ Tablas implementadas:
 - `attack_sessions`
 - `attack_session_items`
 - `attack_results`
+- `business_events`
 
 RLS:
 - cada operación valida `auth.uid()` contra `id`/`user_id`.
@@ -251,6 +255,7 @@ RLS:
 - el perfil comercial de cuenta (ICP, oferta, ticket, texto base y resumen estructurado) tambien es privado por cuenta.
 - las listas/campañas y sus elementos tambien son privadas por cuenta.
 - las sesiones de ataque y sus resultados tambien son privadas por cuenta.
+- los eventos comerciales y el timeline tambien son privados por cuenta.
 
 Datos públicos (Overpass/OSM):
 - solo se consumen para mostrar oportunidades.
@@ -572,6 +577,7 @@ El guardado actualiza:
 - `businesses.next_follow_up_at`
 - notas en `business_notes`
 - resultado de ataque en `attack_results`
+- evento comercial en `business_events` (resultado, cambio de estado, prioridad y follow-up)
 - estado del item dentro de la sesion
 
 #### Siguiente paso recomendado
@@ -599,6 +605,16 @@ El usuario puede aceptar la sugerencia o sobrescribirla manualmente.
 - `attack_sessions`: cabecera de sesion.
 - `attack_session_items`: cola persistida de negocios por sesion.
 - `attack_results`: resultado registrado tras trabajar cada lead.
+- `business_events`: timeline comercial de cambios, resultados y seguimiento.
+
+#### Atajos de teclado en Ataque
+
+- `Ctrl/Cmd + Enter`: guardar resultado del lead en foco.
+- `J` / `K`: siguiente o anterior lead en la cola.
+- `S`: saltar lead (si esta en sesion).
+- `D`: descartar lead rapido.
+- `P`: fijar o desfijar lead para hoy (si esta en sesion).
+- `E`: mover lead al final de la cola (si esta en sesion).
 
 ## 7) Dashboard y fórmulas usadas
 
@@ -610,9 +626,9 @@ El usuario puede aceptar la sugerencia o sobrescribirla manualmente.
 Gráficos:
 - embudo por estado,
 - distribución por estado,
-- evolución temporal (30 días por `updated_at`),
+- evolución temporal (30 días por `updated_at` + eventos comerciales),
 - distribución por sector,
-- actividad reciente (notas + actualizaciones).
+- actividad reciente (eventos + notas + actualizaciones).
 
 ## 8) CSV import
 

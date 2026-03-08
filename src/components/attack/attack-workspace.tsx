@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentType, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowDownToLine,
@@ -562,7 +562,7 @@ function AttackWorkspaceScreen({
     }
   };
 
-  const handleQuickDismiss = async (entry: AttackQueueEntry) => {
+  const handleQuickDismiss = useCallback(async (entry: AttackQueueEntry) => {
     const result = await attack.saveResult({
       record: entry,
       result: "no_encaja",
@@ -580,9 +580,9 @@ function AttackWorkspaceScreen({
       setManualSelectedKey(null);
       await reload();
     }
-  };
+  }, [attack, reload]);
 
-  const handleSkip = async (entry: AttackQueueEntry) => {
+  const handleSkip = useCallback(async (entry: AttackQueueEntry) => {
     if (!entry.sessionItemId) {
       return;
     }
@@ -592,9 +592,9 @@ function AttackWorkspaceScreen({
     if (result.ok) {
       setManualSelectedKey(null);
     }
-  };
+  }, [attack]);
 
-  const handleMoveToEnd = async (entry: AttackQueueEntry) => {
+  const handleMoveToEnd = useCallback(async (entry: AttackQueueEntry) => {
     if (!entry.sessionItemId) {
       return;
     }
@@ -604,18 +604,18 @@ function AttackWorkspaceScreen({
     if (result.ok) {
       setManualSelectedKey(null);
     }
-  };
+  }, [attack]);
 
-  const handlePin = async (entry: AttackQueueEntry) => {
+  const handlePin = useCallback(async (entry: AttackQueueEntry) => {
     if (!entry.sessionItemId) {
       return;
     }
 
     const result = await attack.togglePin(entry.sessionItemId, !entry.pinnedForToday);
     setFeedback(result.ok ? (entry.pinnedForToday ? "Lead desfijado." : "Lead fijado para hoy.") : result.error);
-  };
+  }, [attack]);
 
-  const handleSubmitResult = async () => {
+  const handleSubmitResult = useCallback(async () => {
     if (!currentLead) {
       return;
     }
@@ -641,7 +641,74 @@ function AttackWorkspaceScreen({
       });
       await reload();
     }
-  };
+  }, [attack, currentLead, reload, resultDraft, suggestion]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName?.toLowerCase();
+
+      if (
+        target?.isContentEditable ||
+        tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select"
+      ) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        event.preventDefault();
+        void handleSubmitResult();
+        return;
+      }
+
+      if (!currentLead) {
+        return;
+      }
+
+      if (key === "s" && currentLead.sessionItemId) {
+        event.preventDefault();
+        void handleSkip(currentLead);
+        return;
+      }
+
+      if (key === "d") {
+        event.preventDefault();
+        void handleQuickDismiss(currentLead);
+        return;
+      }
+
+      if (key === "p" && currentLead.sessionItemId) {
+        event.preventDefault();
+        void handlePin(currentLead);
+        return;
+      }
+
+      if (key === "e" && currentLead.sessionItemId) {
+        event.preventDefault();
+        void handleMoveToEnd(currentLead);
+        return;
+      }
+
+      const currentIndex = queue.findIndex((entry) => entry.business.key === currentLead.business.key);
+      if (key === "j" && currentIndex >= 0 && queue[currentIndex + 1]) {
+        event.preventDefault();
+        setManualSelectedKey(queue[currentIndex + 1].business.key);
+        return;
+      }
+
+      if (key === "k" && currentIndex > 0 && queue[currentIndex - 1]) {
+        event.preventDefault();
+        setManualSelectedKey(queue[currentIndex - 1].business.key);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [currentLead, handleMoveToEnd, handlePin, handleQuickDismiss, handleSkip, handleSubmitResult, queue]);
 
   if (loading || !ready || !profileReady || listsLoading || attack.loading) {
     return <PageState text="Montando Attack Workspace..." />;
@@ -696,6 +763,7 @@ function AttackWorkspaceScreen({
           <PmBadge tone="amber">{ATTACK_SOURCE_LABELS[attack.session?.source ?? intent.source]}</PmBadge>
           {attack.session ? <PmBadge>{attack.session.status === "paused" ? "Sesión pausada" : "Sesión en curso"}</PmBadge> : null}
           {intent.territoryLabel ? <PmBadge>{intent.territoryLabel}</PmBadge> : null}
+          <PmBadge>Atajos: Ctrl/⌘+Enter guardar · J/K navegar · S saltar · D descartar</PmBadge>
           {feedback ? <PmBadge tone="emerald">{feedback}</PmBadge> : null}
           {attack.error ? <PmBadge tone="rose">{attack.error}</PmBadge> : null}
         </div>

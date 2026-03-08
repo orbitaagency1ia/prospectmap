@@ -3,7 +3,7 @@ import type { BusinessRow } from "@/lib/types";
 
 export type DashboardActivity = {
   id: string;
-  type: "note" | "status_update";
+  type: "note" | "status_update" | "event";
   businessName: string;
   text: string;
   createdAt: string;
@@ -57,8 +57,17 @@ export function buildDashboardData(input: {
     created_at: string;
     business_name?: string;
   }[];
+  events?: {
+    id: string;
+    business_id: string;
+    event_type: string;
+    title: string;
+    details: string | null;
+    created_at: string;
+    business_name?: string;
+  }[];
 }): DashboardData {
-  const { businesses, notes } = input;
+  const { businesses, notes, events = [] } = input;
 
   const statuses = businesses.map((business) => getStatus(business.prospect_status));
 
@@ -99,6 +108,15 @@ export function buildDashboardData(input: {
     timelineMap.set(key, (timelineMap.get(key) ?? 0) + 1);
   });
 
+  events.forEach((event) => {
+    const date = new Date(event.created_at);
+    if (Number.isNaN(date.getTime())) return;
+    if (today - date.getTime() > THIRTY_DAYS_MS) return;
+
+    const key = date.toISOString().slice(0, 10);
+    timelineMap.set(key, (timelineMap.get(key) ?? 0) + 1);
+  });
+
   const timeline = Array.from(timelineMap.entries())
     .sort(([a], [b]) => (a > b ? 1 : -1))
     .map(([date, updates]) => ({
@@ -121,6 +139,16 @@ export function buildDashboardData(input: {
     }));
 
   const activity: DashboardActivity[] = [];
+
+  events.slice(0, 40).forEach((event) => {
+    activity.push({
+      id: `event-${event.id}`,
+      type: "event",
+      businessName: event.business_name ?? "Negocio",
+      text: event.details ? `${event.title} · ${event.details}` : event.title,
+      createdAt: event.created_at,
+    });
+  });
 
   notes.slice(0, 20).forEach((note) => {
     activity.push({

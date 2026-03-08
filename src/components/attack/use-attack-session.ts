@@ -3,11 +3,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  ATTACK_RESULT_OPTIONS,
   buildBusinessUpdateFromAttackResult,
   type AttackNextStepSuggestion,
   type AttackQueueEntry,
   type AttackResultKind,
 } from "@/lib/prospect-intelligence";
+import {
+  buildPriorityChangeText,
+  buildStatusChangeText,
+  logBusinessEvent,
+} from "@/lib/commercial/business-events";
 import type { Database, Json } from "@/lib/database.types";
 import { createClient } from "@/lib/supabase/client";
 import { isMissingTableError } from "@/lib/supabase/error-helpers";
@@ -375,6 +381,64 @@ export function useAttackSession(userId: string) {
       if (resultError) {
         setBusy(false);
         return { ok: false as const, error: "No pude registrar el resultado de este lead." };
+      }
+
+      const resultLabel = ATTACK_RESULT_OPTIONS.find((option) => option.id === input.result)?.label ?? "Resultado";
+      const previousStatus = input.record.business.status;
+      const nextStatus = patch.prospect_status ?? previousStatus;
+      const previousPriority = input.record.business.priority ?? null;
+      const nextPriority = patch.priority ?? previousPriority;
+
+      await logBusinessEvent(supabase, {
+        userId,
+        businessId: input.record.businessId,
+        type: "attack_result_logged",
+        title: `Ataque · ${resultLabel}`,
+        details: input.suggestion?.label ?? "Resultado guardado desde Attack Workspace.",
+        metadata: {
+          result: input.result,
+          suggestion: input.suggestion?.label ?? null,
+          moved_to_pipeline: Boolean(input.moveToPipeline || input.suggestion?.moveToPipeline),
+          discarded: Boolean(input.discard || input.suggestion?.archive),
+        },
+      });
+
+      if (previousStatus !== nextStatus) {
+        await logBusinessEvent(supabase, {
+          userId,
+          businessId: input.record.businessId,
+          type: "status_changed",
+          details: buildStatusChangeText(previousStatus, nextStatus),
+          metadata: {
+            previous_status: previousStatus,
+            next_status: nextStatus,
+          },
+        });
+      }
+
+      if (previousPriority !== nextPriority) {
+        await logBusinessEvent(supabase, {
+          userId,
+          businessId: input.record.businessId,
+          type: "priority_changed",
+          details: buildPriorityChangeText(previousPriority, nextPriority),
+          metadata: {
+            previous_priority: previousPriority,
+            next_priority: nextPriority,
+          },
+        });
+      }
+
+      if (patch.next_follow_up_at) {
+        await logBusinessEvent(supabase, {
+          userId,
+          businessId: input.record.businessId,
+          type: "follow_up_scheduled",
+          details: "Seguimiento programado tras resultado de ataque.",
+          metadata: {
+            next_follow_up_at: patch.next_follow_up_at,
+          },
+        });
       }
 
       if (sessionItem) {

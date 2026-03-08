@@ -11,6 +11,7 @@ export type AttackSessionRow = Database["public"]["Tables"]["attack_sessions"]["
 export type AttackSessionItemRow = Database["public"]["Tables"]["attack_session_items"]["Row"];
 export type AttackResultRow = Database["public"]["Tables"]["attack_results"]["Row"];
 export type NoteRow = Database["public"]["Tables"]["business_notes"]["Row"];
+export type BusinessEventRow = Database["public"]["Tables"]["business_events"]["Row"];
 
 export type OverpassBusiness = {
   source: "overpass";

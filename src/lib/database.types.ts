@@ -635,6 +635,62 @@ export type Database = {
           }
         ];
       };
+      business_events: {
+        Row: {
+          id: string;
+          user_id: string;
+          business_id: string;
+          event_type:
+            | "business_saved"
+            | "business_updated"
+            | "status_changed"
+            | "priority_changed"
+            | "follow_up_scheduled"
+            | "note_added"
+            | "attack_result_logged";
+          title: string;
+          details: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          business_id: string;
+          event_type:
+            | "business_saved"
+            | "business_updated"
+            | "status_changed"
+            | "priority_changed"
+            | "follow_up_scheduled"
+            | "note_added"
+            | "attack_result_logged";
+          title: string;
+          details?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          details?: string | null;
+          metadata?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "business_events_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "business_events_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       csv_import_errors: {
         Row: {
           id: string;

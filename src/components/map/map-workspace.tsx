@@ -24,7 +24,13 @@ import {
   type VerticalId,
 } from "@/lib/prospect-intelligence";
 import { createClient } from "@/lib/supabase/client";
-import type { BusinessRow, CombinedBusiness, NoteRow, OverpassResponse, ProfileRow } from "@/lib/types";
+import {
+  buildPriorityChangeText,
+  buildStatusChangeText,
+  logBusinessEvent,
+  parseFollowUpIso,
+} from "@/lib/commercial/business-events";
+import type { BusinessEventRow, BusinessRow, CombinedBusiness, NoteRow, OverpassResponse, ProfileRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import { useAccountCommercialProfile } from "../commercial/use-account-commercial-profile";
@@ -70,7 +76,9 @@ export function MapWorkspace({ profile }: Props) {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const [selectedNotes, setSelectedNotes] = useState<NoteRow[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<BusinessEventRow[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(false);
+  const [loadingEvents, setLoadingEvents] = useState(false);
 
   const [loadingSaved, setLoadingSaved] = useState(true);
   const [loadingOverpass, setLoadingOverpass] = useState(false);
@@ -283,6 +291,7 @@ export function MapWorkspace({ profile }: Props) {
   useEffect(() => {
     if (!selectedBusiness || selectedBusiness.mode !== "saved" || !selectedBusiness.business) {
       setSelectedNotes([]);
+      setSelectedEvents([]);
       return;
     }
 
@@ -290,21 +299,38 @@ export function MapWorkspace({ profile }: Props) {
 
     const loadNotes = async () => {
       setLoadingNotes(true);
-      const { data, error } = await supabase
-        .from("business_notes")
-        .select("*")
-        .eq("business_id", businessId)
-        .order("created_at", { ascending: false });
+      setLoadingEvents(true);
+      const [notesResponse, eventsResponse] = await Promise.all([
+        supabase
+          .from("business_notes")
+          .select("*")
+          .eq("business_id", businessId)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("business_events")
+          .select("*")
+          .eq("business_id", businessId)
+          .order("created_at", { ascending: false })
+          .limit(120),
+      ]);
 
-      if (!error && data) {
-        setSelectedNotes(data);
+      if (!notesResponse.error && notesResponse.data) {
+        setSelectedNotes(notesResponse.data);
+      }
+
+      if (!eventsResponse.error && eventsResponse.data) {
+        setSelectedEvents(eventsResponse.data);
+      } else {
+        setSelectedEvents([]);
       }
 
       setLoadingNotes(false);
+      setLoadingEvents(false);
     };
 
     loadNotes().catch(() => {
       setLoadingNotes(false);
+      setLoadingEvents(false);
     });
   }, [selectedBusiness, supabase]);
 
@@ -358,6 +384,16 @@ export function MapWorkspace({ profile }: Props) {
 
     await loadSavedBusinesses();
     setSelectedKey(`saved:${data.id}`);
+    await logBusinessEvent(supabase, {
+      userId: profile.id,
+      businessId: data.id,
+      type: "business_saved",
+      details: "Guardado desde Territorio.",
+      metadata: {
+        source: "overpass",
+        external_source_id: business.overpass.externalSourceId,
+      },
+    });
     showMessage({ type: "success", text: "Negocio guardado correctamente." });
     setBusy(false);
   };
@@ -386,6 +422,7 @@ export function MapWorkspace({ profile }: Props) {
     },
   ) => {
     const toNullable = (value?: string) => (value && value.trim() ? value.trim() : null);
+    const previous = savedBusinesses.find((entry) => entry.id === businessId) ?? null;
 
     setBusy(true);
 
@@ -419,6 +456,72 @@ export function MapWorkspace({ profile }: Props) {
       return;
     }
 
+    if (previous) {
+      const nextStatus = payload.prospect_status ?? previous.prospect_status;
+      const nextPriority = payload.priority ?? previous.priority;
+      const nextFollowUp = parseFollowUpIso(payload.next_follow_up_at) ?? previous.next_follow_up_at;
+
+      if (previous.prospect_status !== nextStatus) {
+        await logBusinessEvent(supabase, {
+          userId: profile.id,
+          businessId,
+          type: "status_changed",
+          details: buildStatusChangeText(previous.prospect_status, nextStatus),
+          metadata: {
+            previous_status: previous.prospect_status,
+            next_status: nextStatus,
+          },
+        });
+      }
+
+      if (previous.priority !== nextPriority) {
+        await logBusinessEvent(supabase, {
+          userId: profile.id,
+          businessId,
+          type: "priority_changed",
+          details: buildPriorityChangeText(previous.priority, nextPriority),
+          metadata: {
+            previous_priority: previous.priority,
+            next_priority: nextPriority,
+          },
+        });
+      }
+
+      if (previous.next_follow_up_at !== nextFollowUp && nextFollowUp) {
+        await logBusinessEvent(supabase, {
+          userId: profile.id,
+          businessId,
+          type: "follow_up_scheduled",
+          details: "Seguimiento actualizado.",
+          metadata: {
+            previous_follow_up_at: previous.next_follow_up_at,
+            next_follow_up_at: nextFollowUp,
+          },
+        });
+      }
+
+      const hasGenericFieldChanges =
+        (payload.name && payload.name.trim() !== previous.name) ||
+        (payload.address !== undefined && toNullable(payload.address) !== previous.address) ||
+        (payload.city !== undefined && toNullable(payload.city) !== previous.city) ||
+        (payload.category !== undefined && toNullable(payload.category) !== previous.category) ||
+        (payload.phone !== undefined && toNullable(payload.phone) !== previous.phone) ||
+        (payload.email !== undefined && toNullable(payload.email) !== previous.email) ||
+        (payload.website !== undefined && toNullable(payload.website) !== previous.website) ||
+        (payload.owner_name !== undefined && toNullable(payload.owner_name) !== previous.owner_name) ||
+        (payload.owner_role !== undefined && toNullable(payload.owner_role) !== previous.owner_role) ||
+        (payload.contact_notes !== undefined && toNullable(payload.contact_notes) !== previous.contact_notes);
+
+      if (hasGenericFieldChanges) {
+        await logBusinessEvent(supabase, {
+          userId: profile.id,
+          businessId,
+          type: "business_updated",
+          details: "Datos de la ficha actualizados.",
+        });
+      }
+    }
+
     await loadSavedBusinesses();
     showMessage({ type: "success", text: "Cambios guardados." });
     setBusy(false);
@@ -439,14 +542,30 @@ export function MapWorkspace({ profile }: Props) {
       return;
     }
 
-    await loadSavedBusinesses();
-    const { data } = await supabase
-      .from("business_notes")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", { ascending: false });
+    await logBusinessEvent(supabase, {
+      userId: profile.id,
+      businessId,
+      type: "note_added",
+      details: note.trim().slice(0, 180),
+    });
 
-    setSelectedNotes(data ?? []);
+    await loadSavedBusinesses();
+    const [notesResponse, eventsResponse] = await Promise.all([
+      supabase
+        .from("business_notes")
+        .select("*")
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("business_events")
+        .select("*")
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: false })
+        .limit(120),
+    ]);
+
+    setSelectedNotes(notesResponse.data ?? []);
+    setSelectedEvents(eventsResponse.data ?? []);
     showMessage({ type: "success", text: "Nota añadida." });
     setSavingNote(false);
   };
@@ -685,6 +804,8 @@ export function MapWorkspace({ profile }: Props) {
             showDemoBadges
             notes={selectedNotes}
             notesLoading={loadingNotes}
+            events={selectedEvents}
+            eventsLoading={loadingEvents}
             busy={busy}
             savingNote={savingNote}
             onClose={() => setSelectedKey(null)}
@@ -706,6 +827,8 @@ export function MapWorkspace({ profile }: Props) {
                 showDemoBadges
                 notes={selectedNotes}
                 notesLoading={loadingNotes}
+                events={selectedEvents}
+                eventsLoading={loadingEvents}
                 busy={busy}
                 savingNote={savingNote}
                 onClose={() => setShowMobilePanel(false)}

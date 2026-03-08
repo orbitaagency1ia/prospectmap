@@ -17,13 +17,18 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [{ data: businesses }, { data: notes }] = await Promise.all([
+  const [{ data: businesses }, { data: notes }, { data: events }] = await Promise.all([
     supabase.from("businesses").select("*").order("updated_at", { ascending: false }),
     supabase
       .from("business_notes")
       .select("id,business_id,note_text,created_at,businesses(name)")
       .order("created_at", { ascending: false })
       .limit(100),
+    supabase
+      .from("business_events")
+      .select("id,business_id,event_type,title,details,created_at,businesses(name)")
+      .order("created_at", { ascending: false })
+      .limit(180),
   ]);
 
   const parsedNotes = (notes ?? []).map((note) => {
@@ -38,9 +43,24 @@ export default async function DashboardPage() {
     };
   });
 
+  const parsedEvents = (events ?? []).map((event) => {
+    const relation = event.businesses as { name?: string } | { name?: string }[] | null;
+
+    return {
+      id: event.id,
+      business_id: event.business_id,
+      event_type: event.event_type,
+      title: event.title,
+      details: event.details,
+      created_at: event.created_at,
+      business_name: Array.isArray(relation) ? relation[0]?.name : relation?.name,
+    };
+  });
+
   const data = buildDashboardData({
     businesses: businesses ?? [],
     notes: parsedNotes,
+    events: parsedEvents,
   });
 
   return <DashboardClient data={data} />;
