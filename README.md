@@ -217,6 +217,20 @@ Componentes más rehechos visualmente:
 
 La app abrirá directamente en `/today`.
 
+### Modo local sin login (opcional)
+
+Si quieres entrar sin pasar por login mientras desarrollas en local:
+
+1. En `.env.local` añade:
+   ```bash
+   LOCAL_AUTH_BYPASS=true
+   LOCAL_BYPASS_EMAIL=tu-email-ya-registrado-en-supabase
+   LOCAL_BYPASS_PASSWORD=tu-password
+   ```
+2. Reinicia `npm run dev`.
+
+Con ese modo activo, la app hace auto-login en local y abre directamente el flujo protegido.
+
 ## 4) Configuración de Supabase (obligatoria)
 
 1. Crea un proyecto en Supabase Free.

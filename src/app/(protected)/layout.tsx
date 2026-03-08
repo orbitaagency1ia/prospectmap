@@ -4,6 +4,7 @@ import { BarChart3, MapPin, Settings } from "lucide-react";
 
 import { AppNav } from "@/components/layout/app-nav";
 import { LogoutButton } from "@/components/layout/logout-button";
+import { isLocalAuthBypassEnabled } from "@/lib/local-auth-bypass";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ProtectedLayout({
@@ -17,7 +18,7 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(isLocalAuthBypassEnabled() ? "/auto-login" : "/login");
   }
 
   // Legacy-safe bootstrap so old users can enter without manual admin provisioning.

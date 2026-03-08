@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { isLocalAuthBypassEnabled } from "@/lib/local-auth-bypass";
 import { createClient } from "@/lib/supabase/server";
 import type { ProfileRow } from "@/lib/types";
 
@@ -10,7 +11,7 @@ export async function requireUser() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(isLocalAuthBypassEnabled() ? "/auto-login" : "/login");
   }
 
   return { supabase, user };
